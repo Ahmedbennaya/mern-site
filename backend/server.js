@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./Config/db.js";
 import userRoutes from "./Routes/userRoutes.js";
- import adminRoutes from "./Routes/adminRoutes.js";
+import adminRoutes from "./Routes/adminRoutes.js";
 import storeRoutes from "./Routes/StoreRoutes.js";
 import { errorHandler, notFound } from "./Middlewares/errorMiddleware.js";
 import cookieParser from "cookie-parser";
@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes); // Admin-specific routes
 app.use("/api/stores", storeRoutes);
+
 
 // Error Handling
 app.use(notFound);
