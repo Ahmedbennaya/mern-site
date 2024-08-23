@@ -66,7 +66,7 @@ const Login = () => {
                   name="password" // Fixed the name attribute
                 />
                 <Link
-                  to="#"
+                  to="/forgot-password"
                   className="text-xs text-gray-500 hover:text-gray-900 text-end w-full mt-2"
                 >
                   Forget Password?

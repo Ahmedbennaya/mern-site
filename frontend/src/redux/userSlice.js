@@ -34,7 +34,7 @@ export const signUp = createAsyncThunk(
         user
       );
       navigate("/signin");
-      toast.success("Account created Successfully");
+      toast.success("Account created successfully");
       return data;
     } catch (error) {
       toast.error(error.response.data.message);
@@ -44,16 +44,55 @@ export const signUp = createAsyncThunk(
 );
 
 // Async thunk to log out the user
-export const logout = createAsyncThunk("user/logout", async (navigate, { rejectWithValue }) => {
-  axios.defaults.withCredentials = true;
-  try {
-    const { data } = await axios.post("http://localhost:5000/api/users/logout");
-    navigate("/");
-    return data;
-  } catch (error) {
-    return rejectWithValue(error);
+export const logout = createAsyncThunk(
+  "user/logout",
+  async (navigate, { rejectWithValue }) => {
+    axios.defaults.withCredentials = true;
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/users/logout");
+      navigate("/");
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
   }
-});
+);
+
+// Async thunk to request a password reset
+export const requestPasswordReset = createAsyncThunk(
+  "user/requestPasswordReset",
+  async (email, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/users/forgot-password",
+        { email }
+      );
+      toast.success("Password reset link sent to your email.");
+      return data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Async thunk to reset the password
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `http://localhost:5000/api/users/reset-password/${token}`,
+        { password }
+      );
+      toast.success("Password has been reset successfully.");
+      return data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 // Create userSlice
 const userSlice = createSlice({
@@ -89,6 +128,29 @@ const userSlice = createSlice({
     });
     builder.addCase(logout.rejected, (state) => {
       state.loading = false;
+    });
+    // Handle password reset actions
+    builder.addCase(requestPasswordReset.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(requestPasswordReset.fulfilled, (state) => {
+      state.loading = false;
+      state.passwordResetRequested = true;
+    });
+    builder.addCase(requestPasswordReset.rejected, (state) => {
+      state.loading = false;
+      state.passwordResetRequested = false;
+    });
+    builder.addCase(resetPassword.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(resetPassword.fulfilled, (state) => {
+      state.loading = false;
+      state.passwordResetSuccessful = true;
+    });
+    builder.addCase(resetPassword.rejected, (state) => {
+      state.loading = false;
+      state.passwordResetSuccessful = false;
     });
   },
 });
