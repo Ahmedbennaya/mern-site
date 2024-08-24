@@ -5,9 +5,6 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import sendEmail from "../Utils/sendEmail.js";
 
-
-
-
 // @desc Register a new user
 // @route POST /api/users/registerUser
 // @access Public
@@ -72,7 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
-    expires: new Date(0),
+    expires: new Date(0),  // Expire the cookie immediately
   });
   res.status(200).json({ message: "Logged out successfully" });
 });
@@ -144,4 +141,42 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Password reset successfully" });
 });
 
-export { registerUser, loginUser, logoutUser, forgotPassword, resetPassword };
+// @desc Update user profile
+// @route PUT /api/users/update
+// @access Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id); // Assuming you use auth middleware that adds req.user
+
+  if (user) {
+    user.FirstName = req.body.FirstName || user.FirstName;
+    user.LastName = req.body.LastName || user.LastName;
+    user.email = req.body.email || user.email;
+    user.profileImage = req.body.profileImage || user.profileImage;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      FirstName: updatedUser.FirstName,
+      LastName: updatedUser.LastName,
+      email: updatedUser.email,
+      profileImage: updatedUser.profileImage,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+export { 
+  registerUser, 
+  loginUser, 
+  logoutUser, 
+  forgotPassword, 
+  resetPassword, 
+  updateUserProfile // Export the updateUserProfile function
+};

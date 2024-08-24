@@ -49,11 +49,15 @@ export const logout = createAsyncThunk(
   async (navigate, { rejectWithValue }) => {
     axios.defaults.withCredentials = true;
     try {
-      const { data } = await axios.post("http://localhost:5000/api/users/logout");
+      const { data } = await axios.post(
+        "http://localhost:5000/api/users/logout"
+      );
       navigate("/");
+      toast.success("Logged out successfully");
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      toast.error("Failed to log out");
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -94,6 +98,25 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+// Async thunk to update the user profile
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (updatedUserData, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.put(
+        "http://localhost:5000/api/users/update", // Update this URL to match your API
+        updatedUserData,
+        { withCredentials: true }
+      );
+      toast.success("Profile updated successfully");
+      return data;
+    } catch (error) {
+      toast.error(error.response.data.message || "Failed to update profile");
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Create userSlice
 const userSlice = createSlice({
   name: "user",
@@ -122,14 +145,13 @@ const userSlice = createSlice({
     builder.addCase(logout.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(logout.fulfilled, (state, action) => {
+    builder.addCase(logout.fulfilled, (state) => {
       state.loading = false;
-      state.logoutedUser = action.payload;
+      state.loggedInUser = null;
     });
     builder.addCase(logout.rejected, (state) => {
       state.loading = false;
     });
-    // Handle password reset actions
     builder.addCase(requestPasswordReset.pending, (state) => {
       state.loading = true;
     });
@@ -152,8 +174,18 @@ const userSlice = createSlice({
       state.loading = false;
       state.passwordResetSuccessful = false;
     });
+    builder.addCase(updateUser.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.updatedUser = action.payload;
+    });
+    builder.addCase(updateUser.rejected, (state) => {
+      state.loading = false;
+    });
   },
 });
 
-// Export the user reducer as default
+// Export the user reducer and updateUser
 export default userSlice.reducer;

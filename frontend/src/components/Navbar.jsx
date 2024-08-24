@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCredentials } from '../redux/authSlice';
+import { logout } from '../redux/userSlice';
 import logo from '../assets/logo/LOGONOIR.png';
 import shopping from '../assets/logo/shoping.png';
 import img from '../assets/logo/img1.webp';
@@ -11,15 +14,17 @@ const Navbar = () => {
   const [showingPromotion1, setShowingPromotion1] = useState(true);
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
-  
-  const navigate = useNavigate(); // Create a navigate function to use for navigation
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.auth);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleLangDropdown = () => setShowLangDropdown(!showLangDropdown);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setShowingPromotion1(prev => !prev);
+      setShowingPromotion1((prev) => !prev);
     }, 4000);
 
     return () => clearInterval(interval);
@@ -54,14 +59,20 @@ const Navbar = () => {
   };
 
   const handleFindStoreClick = () => {
-    navigate('/stores'); // Navigate to the Stores component
+    navigate('/stores');
+  };
+
+  const logoutHandler = (e) => {
+    e.preventDefault();
+    dispatch(logout(navigate));
+    dispatch(clearCredentials());
   };
 
   const navLinks = [
-    { name: 'CURTAINS & DRAPES', id: 'curtains-drapes-dropdown', path: '/curtains-drapes' },
-    { name: 'BLINDS & SHADES', id: 'blinds-shades-dropdown', path: '/blinds-shades' },
-    { name: 'SMART HOME', id: 'smart-home-dropdown', path: '/smart-home' },
-    { name: 'FURNISHINGS', id: 'furnishings-dropdown', path: '/furnishings' },
+    { name: 'CURTAINS & DRAPES', id: 'curtains-drapes', path: '/curtains-drapes' },
+    { name: 'BLINDS & SHADES', id: 'blinds-shades', path: '/blinds-shades' },
+    { name: 'SMART HOME', id: 'smart-home', path: '/smart-home' },
+    { name: 'FURNISHINGS', id: 'furnishings', path: '/furnishings' },
     { name: 'PROJECTS', id: 'projects', path: '/projects' },
     { name: 'FRANCHISE', id: 'franchise', path: '/franchise' },
   ];
@@ -69,18 +80,18 @@ const Navbar = () => {
   const translatedNavLinks = {
     EN: navLinks,
     FR: [
-      { name: 'RIDEAUX ET DRAPERIES', id: 'curtains-drapes-dropdown', path: '/curtains-drapes' },
-      { name: 'STORES ET OMBRES', id: 'blinds-shades-dropdown', path: '/blinds-shades' },
-      { name: 'MAISON INTELLIGENTE', id: 'smart-home-dropdown', path: '/smart-home' },
-      { name: 'AMEUBLEMENT', id: 'furnishings-dropdown', path: '/furnishings' },
+      { name: 'RIDEAUX ET DRAPERIES', id: 'curtains-drapes', path: '/curtains-drapes' },
+      { name: 'STORES ET OMBRES', id: 'blinds-shades', path: '/blinds-shades' },
+      { name: 'MAISON INTELLIGENTE', id: 'smart-home', path: '/smart-home' },
+      { name: 'AMEUBLEMENT', id: 'furnishings', path: '/furnishings' },
       { name: 'PROJETS', id: 'projects', path: '/projects' },
       { name: 'FRANCHISE', id: 'franchise', path: '/franchise' },
     ],
     AR: [
-      { name: 'الستائر', id: 'curtains-drapes-dropdown', path: '/curtains-drapes' },
-      { name: 'الستائر والظلال', id: 'blinds-shades-dropdown', path: '/blinds-shades' },
-      { name: 'المنزل الذكي', id: 'smart-home-dropdown', path: '/smart-home' },
-      { name: 'الأثاث', id: 'furnishings-dropdown', path: '/furnishings' },
+      { name: 'الستائر', id: 'curtains-drapes', path: '/curtains-drapes' },
+      { name: 'الستائر والظلال', id: 'blinds-shades', path: '/blinds-shades' },
+      { name: 'المنزل الذكي', id: 'smart-home', path: '/smart-home' },
+      { name: 'الأثاث', id: 'furnishings', path: '/furnishings' },
       { name: 'المشاريع', id: 'projects', path: '/projects' },
       { name: 'الامتياز', id: 'franchise', path: '/franchise' },
     ],
@@ -160,25 +171,24 @@ const Navbar = () => {
 
           {/* Primary Navigation */}
           <div className="hidden lg:flex space-x-8">
-            {translatedNavLinks[language].map(link => (
+            {translatedNavLinks[language].map((link) => (
               <div key={link.id} className="relative group">
                 <Link to={link.path} className="text-gray-700 hover:text-gray-900 font-medium">
                   {link.name}
                 </Link>
-                {link.id !== 'projects' && link.id !== 'franchise' && (
-                  <div className="absolute left-0 top-full mt-2 w-full bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div className="grid grid-cols-2 gap-4 p-4">
-                      <div>
-                        <h2 className="text-lg font-bold mb-2">{link.name}</h2>
-                        <div className="space-y-2">
-                          {['Pinch Pleat Curtains', 'Eyelet Curtains', 'Rod Pocket Curtains', 'Tab Top Curtains'].map(
-                            (item, index) => (
-                              <div key={index} className="flex items-center">
-                                <img src={img} alt={item} className="h-12 w-12 mr-3 rounded-md" />
-                                <span className="text-sm text-gray-700">{item}</span>
-                              </div>
-                            )
-                          )}
+                {(link.id !== 'projects' && link.id !== 'franchise') && (
+                  <div className="absolute left-0 top-full mt-2 w-full bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="p-4 space-y-4">
+                      <div className="flex flex-col space-y-2">
+                        <span className="text-gray-900 font-semibold">Subcategories</span>
+                        <div className="flex flex-col space-y-2">
+                          {/* Example Subcategory List */}
+                          {['Subcategory 1', 'Subcategory 2', 'Subcategory 3'].map((item, index) => (
+                            <div key={index} className="flex items-center">
+                              <img src={img} alt={item} className="h-12 w-12 mr-3 rounded-md" />
+                              <span className="text-sm text-gray-700">{item}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                       <div className="flex flex-col items-center">
@@ -196,9 +206,35 @@ const Navbar = () => {
 
           {/* Secondary Navigation */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link to="/signIn" className="text-gray-700 hover:text-gray-900 font-medium">
-              {language === 'EN' ? 'Login' : language === 'FR' ? 'Connexion' : 'تسجيل الدخول'}
-            </Link>
+            {userInfo ? (
+              <div className="flex items-center gap-2">
+                <h3>{userInfo.firstName ? userInfo.firstName.toUpperCase() : 'User'}</h3>
+                <Link to="/profile">
+                  <img src={userInfo.photo} className="h-11 rounded-full" alt="User Profile" />
+                </Link>
+                <button
+                  onClick={logoutHandler}
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 sm:inline-flex"
+                  to="/signup"
+                >
+                  SignUp
+                </Link>
+                <Link
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  to="/signin"
+                >
+                  SignIn
+                </Link>
+              </div>
+            )}
             <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium flex items-center">
               {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
               <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
@@ -219,14 +255,33 @@ const Navbar = () => {
         {isOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {translatedNavLinks[language].map(link => (
+              {translatedNavLinks[language].map((link) => (
                 <Link key={link.id} to={link.path} className="block text-gray-700 hover:text-gray-900 font-medium">
                   {link.name}
                 </Link>
               ))}
-              <Link to="/signIn" className="block text-gray-700 hover:text-gray-900 font-medium">
-                {language === 'EN' ? 'Login' : language === 'FR' ? 'Connexion' : 'تسجيل الدخول'}
-              </Link>
+              {userInfo ? (
+                <>
+                  <Link to="/profile" className="block text-gray-700 hover:text-gray-900 font-medium">
+                    {userInfo.firstName || 'User'}
+                  </Link>
+                  <button
+                    onClick={logoutHandler}
+                    className="block text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/signup" className="block text-gray-700 hover:text-gray-900 font-medium">
+                    SignUp
+                  </Link>
+                  <Link to="/signin" className="block text-gray-700 hover:text-gray-900 font-medium">
+                    SignIn
+                  </Link>
+                </>
+              )}
               <Link to="#" className="block text-gray-700 hover:text-gray-900 font-medium flex items-center">
                 {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
                 <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
