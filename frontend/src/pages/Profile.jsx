@@ -55,18 +55,18 @@ const Profile = () => {
         <div className="sticky top-16 p-4 border-r border-gray-200">
           <h2 className="text-2xl font-semibold mb-6">Settings</h2>
           <nav className="space-y-2">
-            <a href="#" className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
+            <button className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
               Public Profile
-            </a>
-            <a href="#" className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
+            </button>
+            <button className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
               Account Settings
-            </a>
-            <a href="#" className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
+            </button>
+            <button className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
               Notifications
-            </a>
-            <a href="#" className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
+            </button>
+            <button className="block py-2 font-semibold text-indigo-900 rounded-full hover:bg-indigo-50">
               PRO Account
-            </a>
+            </button>
           </nav>
         </div>
       </aside>

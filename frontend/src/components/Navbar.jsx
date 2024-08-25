@@ -5,8 +5,7 @@ import { clearCredentials } from '../redux/authSlice';
 import { logout } from '../redux/userSlice';
 import logo from '../assets/logo/LOGONOIR.png';
 import shopping from '../assets/logo/shoping.png';
-import img from '../assets/logo/img1.webp';
-import img1 from '../assets/imgs/img.jpg';
+import CartSidebar from './CartSidebar'; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,13 +13,16 @@ const Navbar = () => {
   const [showingPromotion1, setShowingPromotion1] = useState(true);
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
+  const cartItemsCount = useSelector((state) => state.cart.cartItems.length); // Get the cart items count from Redux
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleLangDropdown = () => setShowLangDropdown(!showLangDropdown);
+  const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -166,41 +168,15 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src={logo} alt="Bargaoui Tahar Logo" className="h-10" />
-            <span className="font-bold text-xl text-gray-900">Bargaoui Rideaux Tahar</span>
+            <span className="font-bold text-xl text-gray-900"></span>
           </Link>
 
           {/* Primary Navigation */}
           <div className="hidden lg:flex space-x-8">
             {translatedNavLinks[language].map((link) => (
-              <div key={link.id} className="relative group">
-                <Link to={link.path} className="text-gray-700 hover:text-gray-900 font-medium">
-                  {link.name}
-                </Link>
-                {(link.id !== 'projects' && link.id !== 'franchise') && (
-                  <div className="absolute left-0 top-full mt-2 w-full bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="p-4 space-y-4">
-                      <div className="flex flex-col space-y-2">
-                        <span className="text-gray-900 font-semibold">Subcategories</span>
-                        <div className="flex flex-col space-y-2">
-                          {/* Example Subcategory List */}
-                          {['Subcategory 1', 'Subcategory 2', 'Subcategory 3'].map((item, index) => (
-                            <div key={index} className="flex items-center">
-                              <img src={img} alt={item} className="h-12 w-12 mr-3 rounded-md" />
-                              <span className="text-sm text-gray-700">{item}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <img src={img1} alt="Curtains Image" className="h-32 w-auto mb-2 rounded-md" />
-                        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
-                          Shop All
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <Link key={link.id} to={link.path} className="text-gray-700 hover:text-gray-900 font-medium">
+                {link.name}
+              </Link>
             ))}
           </div>
 
@@ -235,10 +211,15 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
-            <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium flex items-center">
+            <button onClick={toggleCart} className="relative text-gray-700 hover:text-gray-900 font-medium flex items-center">
               {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
               <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
-            </Link>
+              {cartItemsCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -282,14 +263,21 @@ const Navbar = () => {
                   </Link>
                 </>
               )}
-              <Link to="#" className="block text-gray-700 hover:text-gray-900 font-medium flex items-center">
-                {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
+              <button onClick={toggleCart} className="block text-gray-700 hover:text-gray-900 font-medium flex items-center">
                 <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
-              </Link>
+                {cartItemsCount > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         )}
       </nav>
+
+      {/* Cart Sidebar */}
+      <CartSidebar isCartOpen={isCartOpen} toggleCart={toggleCart} />
     </header>
   );
 };

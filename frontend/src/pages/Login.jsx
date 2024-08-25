@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/userSlice";
-import Footer from "../components/Footer"; // Import the Footer component
+import Footer from "../components/Footer"; 
 
 const Login = () => {
   const [user, setUser] = useState({
     email: "",
-    password: "", // Changed from "Password" to "password" for consistency
+    password: "", 
   });
   const { loggedInUser } = useSelector((state) => state.user);
 

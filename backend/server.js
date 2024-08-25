@@ -4,6 +4,8 @@ import connectDB from "./Config/db.js";
 import userRoutes from "./Routes/userRoutes.js";
 import adminRoutes from "./Routes/adminRoutes.js";
 import storeRoutes from "./Routes/StoreRoutes.js";
+import productRoutes from './Routes/productRoutes.js';
+
 import { errorHandler, notFound } from "./Middlewares/errorMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -23,6 +25,7 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes); // Admin-specific routes
 app.use("/api/stores", storeRoutes);
+app.use('/api/products', productRoutes);
 
 
 // Error Handling

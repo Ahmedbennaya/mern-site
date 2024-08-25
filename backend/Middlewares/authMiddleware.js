@@ -3,7 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../Model/userModel.js";
 
 const authenticate = expressAsyncHandler(async (req, res, next) => {
-  let token = req.cookies.jwt; // Corrected the cookie name to lowercase 'jwt'
+  let token = req.cookies.jwt; 
 
   if (token) {
     try {

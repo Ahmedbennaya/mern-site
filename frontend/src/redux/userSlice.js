@@ -104,7 +104,7 @@ export const updateUser = createAsyncThunk(
   async (updatedUserData, { rejectWithValue }) => {
     try {
       const { data } = await axios.put(
-        "http://localhost:5000/api/users/update", // Update this URL to match your API
+        "http://localhost:5000/api/users/update", 
         updatedUserData,
         { withCredentials: true }
       );

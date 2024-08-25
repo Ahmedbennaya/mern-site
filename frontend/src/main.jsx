@@ -18,6 +18,7 @@ import Projects from "./pages/Projects";
 import Franchise from "./pages/Franchise";
 import Profile from "./pages/Profile";
 import "./index.css";
+import Checkout from "./components/Checkout";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="projects" element={<Projects />} />
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
+      <Route path="checkout" element={<Checkout />} /> {/* Added the Checkout route */}
     </Route>
   )
 );

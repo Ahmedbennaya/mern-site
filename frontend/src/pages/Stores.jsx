@@ -17,9 +17,9 @@ const Stores = () => {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/stores'); // Replace with your API endpoint
+        const { data } = await axios.get('http://localhost:5000/api/stores'); 
         setStores(data);
-        setSelectedStore(data[0]); // Select the first store by default
+        setSelectedStore(data[0]); 
         setLoading(false);
       } catch (err) {
         setError(err.message);
