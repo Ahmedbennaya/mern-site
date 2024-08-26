@@ -111,3 +111,48 @@ export const getFurnishings = async (req, res) => {
     res.status(500).json({ message: 'Error fetching Furnishings products' });
   }
 };
+// @desc Add a product to "Blinds & Shades"
+// @route POST /api/products/category/blinds-shades
+// @access Public
+export const addBlindsShadesProduct = async (req, res) => {
+  try {
+    const newProduct = new Product({
+      ...req.body,
+      category: 'Blinds & Shades'
+    });
+    await newProduct.save();
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding Blinds & Shades product' });
+  }
+};
+// @desc Add a product to "Curtains & Drapes"
+// @route POST /api/products/category/curtains-drapes
+// @access Public
+export const addCurtainsDrapesProduct = async (req, res) => {
+  try {
+    const newProduct = new Product({
+      ...req.body,
+      category: 'Curtains & Drapes'
+    });
+    await newProduct.save();
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding Curtains & Drapes product' });
+  }
+};
+// @desc Add a product to "Furnishings"
+// @route POST /api/products/category/furnishings
+// @access Public
+export const addFurnishingsProduct = async (req, res) => {
+  try {
+    const newProduct = new Product({
+      ...req.body,
+      category: 'Furnishings'
+    });
+    await newProduct.save();
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding Furnishings product' });
+  }
+};

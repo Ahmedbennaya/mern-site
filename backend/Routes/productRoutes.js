@@ -8,6 +8,9 @@ import {
   getBlindsShades,
   getCurtainsDrapes,
   getFurnishings,
+  addBlindsShadesProduct,
+  addCurtainsDrapesProduct,
+  addFurnishingsProduct
 } from '../Controllers/productController.js';
 
 const router = express.Router();
@@ -21,6 +24,9 @@ router.get('/category/furnishings', getFurnishings);
 
 // Admin routes (require admin authentication middleware)
 router.post('/', createProduct);
+router.post('/category/blinds-shades', addBlindsShadesProduct);
+router.post('/category/curtains-drapes', addCurtainsDrapesProduct);
+router.post('/category/furnishings', addFurnishingsProduct);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
 
