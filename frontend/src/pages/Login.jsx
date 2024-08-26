@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/userSlice";
 import Footer from "../components/Footer"; 
+import loginimg from "../assets/imgs/img.jpg"; 
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -35,7 +36,7 @@ const Login = () => {
           <div
             className="hidden md:block lg:w-1/2 bg-cover bg-blue-700"
             style={{
-              backgroundImage: `url(https://scontent.ftun4-2.fna.fbcdn.net/v/t39.30808-6/417513013_322833044070126_1597369421224813335_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=oD_5R6DfDb4Q7kNvgHrXn7p&_nc_ht=scontent.ftun4-2.fna&oh=00_AYCSsiehu5yvYNMRjxniIZRrhJh0uz4Bal0F8GAgMODTzA&oe=66C9A73C)`,
+              backgroundImage: `url(${loginimg})`,
             }}
           ></div>
           <div className="w-full p-8 lg:w-1/2">
