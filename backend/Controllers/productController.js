@@ -76,14 +76,38 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// @desc Get products by category
-// @route GET /api/products/category/:category
+// @desc Get products by category "Blinds & Shades"
+// @route GET /api/products/category/blinds-shades
 // @access Public
-export const getProductsByCategory = async (req, res) => {
+export const getBlindsShades = async (req, res) => {
   try {
-    const products = await Product.find({ category: req.params.category });
+    const products = await Product.find({ category: 'Blinds & Shades' });
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching products by category' });
+    res.status(500).json({ message: 'Error fetching Blinds & Shades products' });
+  }
+};
+
+// @desc Get products by category "Curtains & Drapes"
+// @route GET /api/products/category/curtains-drapes
+// @access Public
+export const getCurtainsDrapes = async (req, res) => {
+  try {
+    const products = await Product.find({ category: 'Curtains & Drapes' });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching Curtains & Drapes products' });
+  }
+};
+
+// @desc Get products by category "Furnishings"
+// @route GET /api/products/category/furnishings
+// @access Public
+export const getFurnishings = async (req, res) => {
+  try {
+    const products = await Product.find({ category: 'Furnishings' });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching Furnishings products' });
   }
 };

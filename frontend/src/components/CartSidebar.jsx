@@ -8,13 +8,15 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
     <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg shadow-sm" />
     <div className="ml-4 flex-grow">
       <h3 className="font-medium text-lg">{item.name}</h3>
-      <p className="text-gray-500">${item.price} x {item.quantity} = ${(item.price * item.quantity).toFixed(2)}</p>
+      <p className="text-gray-500">
+        ${item.price} x {item.quantity} = ${(item.price * item.quantity).toFixed(2)}
+      </p>
       <div className="flex items-center mt-2">
         <button
           onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
           className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
           disabled={item.quantity === 1}
-          aria-label="Decrease quantity"
+          aria-label={`Decrease quantity of ${item.name}`}
         >
           -
         </button>
@@ -22,7 +24,7 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
         <button
           onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
           className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-          aria-label="Increase quantity"
+          aria-label={`Increase quantity of ${item.name}`}
         >
           +
         </button>
@@ -68,7 +70,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
   }, [dispatch]);
 
   return (
-    <div className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'transform translate-x-0' : 'transform translate-x-full'}`}>
+    <div className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <div className="w-80 bg-white p-6 shadow-lg relative">
         <button
           onClick={toggleCart}
@@ -110,7 +112,11 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           </div>
         )}
       </div>
-      <div onClick={toggleCart} className="flex-grow bg-black bg-opacity-50" aria-hidden="true" />
+      <div
+        onClick={toggleCart}
+        className="flex-grow bg-black bg-opacity-50"
+        aria-hidden="true"
+      />
     </div>
   );
 };

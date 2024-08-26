@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signUp } from '../redux/userSlice';
 import toast from 'react-hot-toast';
-import Footer from '../components/Footer'; // Import the Footer component
+import Footer from '../components/Footer'; 
 
 const Register = () => {
   const dispatch = useDispatch();
