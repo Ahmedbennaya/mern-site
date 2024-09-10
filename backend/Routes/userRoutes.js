@@ -5,9 +5,10 @@ import {
   logoutUser,
   forgotPassword,
   resetPassword,
-  updateUserProfile // Import the updateUserProfile function
+  updateUserProfile,
+  getAllUsers, // Import the getAllUsers function
 } from "../Controllers/userController.js";
-import { authenticate } from "../Middlewares/authMiddleware.js"; // Import the authenticate middleware
+import { authenticate, authorizeAdmin } from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -27,6 +28,9 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 // Update user profile (protected route)
-router.put("/update", authenticate, updateUserProfile); // Added the authenticate middleware
+router.put("/update", authenticate, updateUserProfile);
+
+// Get all users (admin only)
+router.get("/", authenticate, authorizeAdmin, getAllUsers);
 
 export default router;

@@ -18,13 +18,12 @@ const cartSlice = createSlice({
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.cartItems.push({ ...item, quantity: 0 });
+        state.cartItems.push({ ...item, quantity: 1 });
       }
 
       state.totalItems += 1;
       state.totalAmount += item.price;
 
-      // Show toast notification
       toast.success(`${item.name} added to cart!`);
     },
     removeItemFromCart: (state, action) => {
@@ -62,5 +61,4 @@ const cartSlice = createSlice({
 });
 
 export const { addItemToCart, removeItemFromCart, updateItemQuantity, clearCart } = cartSlice.actions;
-
 export default cartSlice.reducer;

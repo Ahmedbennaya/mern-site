@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 const Profile = () => {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo, token } = useSelector((state) => state.auth); // Get userInfo and token from Redux state
   const dispatch = useDispatch();
   const [user, setUser] = useState({
     firstName: userInfo?.firstName || "",
@@ -23,12 +23,15 @@ const Profile = () => {
 
   const updateHandler = async (e) => {
     e.preventDefault();
+
+    // Validate password match
     if (user.password !== user.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
 
-    let photoUrl = userInfo.photo;
+    // Handle image upload if a new file is selected
+    let photoUrl = userInfo?.photo || "";
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
@@ -36,17 +39,45 @@ const Profile = () => {
 
       try {
         const { data } = await axios.post(
-          "https://api.cloudinary.com/v1_1/dl6o7cgmp/image/upload",
+          "https://api.cloudinary.com/v1_1/dpcnuiynn/image/upload?upload_preset=oussamaCh",
           formData
         );
-        photoUrl = data.url;
+        photoUrl = data.url;  // Get the uploaded photo URL
       } catch (error) {
         toast.error("Image upload failed");
         return;
       }
     }
 
-    dispatch(updateUser({ ...user, photo: photoUrl }));
+    // Update user profile
+    try {
+      const response = await axios.put(
+        "http://localhost:5000/api/users/update",
+        { ...user, photo: photoUrl },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        }
+      );
+
+      dispatch(updateUser({ ...user, photo: photoUrl }));  // Dispatch the updated user info to Redux store
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("Failed to update profile:", error.response || error.message);
+      handleErrorResponse(error);  // Handle the error response
+    }
+  };
+
+  const handleErrorResponse = (error) => {
+    if (error.response?.status === 401) {  // Check for unauthorized error
+      toast.error("Unauthorized: Please log in again.");
+      // Optionally, redirect to login or handle re-authentication here
+    } else if (error.response?.status === 500) {
+      toast.error("Server error: Please try again later.");
+    } else {
+      toast.error("Failed to update profile.");
+    }
   };
 
   return (

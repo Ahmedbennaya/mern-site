@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import img from '../assets/hero section img/bargaoui.jpg';
-import Footer from '../components/Footer';
-import ClipLoader from 'react-spinners/ClipLoader'; // Import the spinner
+import ClipLoader from 'react-spinners/ClipLoader'; 
 import vedio from "../assets/imgs/login.mp4";
 
 const Home = () => {
@@ -13,7 +11,7 @@ const Home = () => {
       setLoading(false);
     }, 2000); // Adjust the delay as needed
 
-    return () => clearTimeout(timer); // Cleanup on component unmount
+    return () => clearTimeout(timer); 
   }, []);
 
   return (
@@ -85,9 +83,6 @@ const Home = () => {
               </div>
             </div>
           </section>
-
-          {/* Footer */}
-          <Footer />
         </>
       )}
     </div>

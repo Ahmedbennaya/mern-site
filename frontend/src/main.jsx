@@ -36,8 +36,9 @@ const router = createBrowserRouter(
       <Route path="projects" element={<Projects />} />
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
-      <Route path="checkout" element={<Checkout />} /> {/* Added the Checkout route */}
+      <Route path="checkout" element={<Checkout />} /> 
     </Route>
+    
   )
 );
 

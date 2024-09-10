@@ -12,7 +12,7 @@ export const getProducts = async (req, res) => {
   }
 };
 
-// @desc Get a single product by ID
+// @desc Get a product by ID
 // @route GET /api/products/:id
 // @access Public
 export const getProductById = async (req, res) => {
@@ -76,7 +76,7 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// @desc Get products by category "Blinds & Shades"
+// @desc Get all Blinds & Shades products
 // @route GET /api/products/category/blinds-shades
 // @access Public
 export const getBlindsShades = async (req, res) => {
@@ -88,19 +88,47 @@ export const getBlindsShades = async (req, res) => {
   }
 };
 
-// @desc Get products by category "Curtains & Drapes"
+// @desc Get all Curtains & Drapes products
 // @route GET /api/products/category/curtains-drapes
 // @access Public
 export const getCurtainsDrapes = async (req, res) => {
   try {
-    const products = await Product.find({ category: 'Curtains & Drapes' });
+    const { minWidth, maxWidth, minHeight, maxHeight, inStock, subcategory, colors } = req.query;
+
+    let filter = { category: 'Curtains & Drapes' };
+
+    if (minWidth || maxWidth) {
+      filter['dimensions.width'] = {};
+      if (minWidth) filter['dimensions.width'].$gte = parseInt(minWidth);
+      if (maxWidth) filter['dimensions.width'].$lte = parseInt(maxWidth);
+    }
+
+    if (minHeight || maxHeight) {
+      filter['dimensions.height'] = {};
+      if (minHeight) filter['dimensions.height'].$gte = parseInt(minHeight);
+      if (maxHeight) filter['dimensions.height'].$lte = parseInt(maxHeight);
+    }
+
+    if (inStock) {
+      filter.inStock = inStock === 'true';
+    }
+
+    if (subcategory) {
+      filter.subcategory = { $in: subcategory.split(',') };
+    }
+
+    if (colors) {
+      filter.colors = { $in: colors.split(',') };
+    }
+
+    const products = await Product.find(filter);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching Curtains & Drapes products' });
   }
 };
 
-// @desc Get products by category "Furnishings"
+// @desc Get all Furnishings products
 // @route GET /api/products/category/furnishings
 // @access Public
 export const getFurnishings = async (req, res) => {
@@ -111,9 +139,10 @@ export const getFurnishings = async (req, res) => {
     res.status(500).json({ message: 'Error fetching Furnishings products' });
   }
 };
+
 // @desc Add a product to "Blinds & Shades"
 // @route POST /api/products/category/blinds-shades
-// @access Public
+// @access Private/Admin
 export const addBlindsShadesProduct = async (req, res) => {
   try {
     const newProduct = new Product({
@@ -126,9 +155,10 @@ export const addBlindsShadesProduct = async (req, res) => {
     res.status(500).json({ message: 'Error adding Blinds & Shades product' });
   }
 };
+
 // @desc Add a product to "Curtains & Drapes"
 // @route POST /api/products/category/curtains-drapes
-// @access Public
+// @access Private/Admin
 export const addCurtainsDrapesProduct = async (req, res) => {
   try {
     const newProduct = new Product({
@@ -141,9 +171,10 @@ export const addCurtainsDrapesProduct = async (req, res) => {
     res.status(500).json({ message: 'Error adding Curtains & Drapes product' });
   }
 };
+
 // @desc Add a product to "Furnishings"
 // @route POST /api/products/category/furnishings
-// @access Public
+// @access Private/Admin
 export const addFurnishingsProduct = async (req, res) => {
   try {
     const newProduct = new Product({

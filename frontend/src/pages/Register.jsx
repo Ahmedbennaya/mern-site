@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signUp } from '../redux/userSlice';
 import toast from 'react-hot-toast';
-import Footer from '../components/Footer'; 
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -132,7 +131,6 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <Footer /> {/* Footer is placed here at the bottom */}
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScriptNext } from '@react-google-maps/api';
-import Footer from '../components/Footer'; // Import the Footer component
 
 const mapContainerStyle = {
   width: '100%',
@@ -112,8 +111,6 @@ const Stores = () => {
           )}
         </div>
       </div>
-
-      <Footer /> {/* Add Footer component here */}
     </div>
   );
 };

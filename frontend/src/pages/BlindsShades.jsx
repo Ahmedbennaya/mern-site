@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import { addItemToCart } from '../redux/cartSlice';
 import curtain from "../assets/imgs/curtain.jpg";
+import { addItemToCart } from '../redux/features/cartSlice';
 
 const BlindsShades = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState({ minPrice: 0, maxPrice: 1000 }); // Added filter state
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,6 +29,19 @@ const BlindsShades = () => {
 
   const handleAddToCart = (product) => {
     dispatch(addItemToCart(product));
+  };
+
+  // Filter products based on price range
+  const filteredProducts = products.filter(
+    (product) => product.price >= filter.minPrice && product.price <= filter.maxPrice
+  );
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
   };
 
   const HeroSection = () => (
@@ -90,6 +104,34 @@ const BlindsShades = () => {
     </section>
   );
 
+  const FilterSection = () => (
+    <section className="py-8 text-center">
+      <h2 className="text-2xl font-semibold mb-4">Filter Products</h2>
+      <div className="flex justify-center gap-4 mb-8">
+        <div>
+          <label className="block text-lg font-medium mb-2">Min Price</label>
+          <input
+            type="number"
+            name="minPrice"
+            value={filter.minPrice}
+            onChange={handleFilterChange}
+            className="border border-gray-300 rounded-lg p-2"
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium mb-2">Max Price</label>
+          <input
+            type="number"
+            name="maxPrice"
+            value={filter.maxPrice}
+            onChange={handleFilterChange}
+            className="border border-gray-300 rounded-lg p-2"
+          />
+        </div>
+      </div>
+    </section>
+  );
+
   const TestimonialsSection = () => (
     <section className="py-16 bg-gray-100 text-center">
       <h2 className="text-4xl font-semibold mb-8">What Our Customers Say</h2>
@@ -124,7 +166,8 @@ const BlindsShades = () => {
     <div className="font-sans bg-white text-gray-900">
       <HeroSection />
       <FeaturesSection />
-      <ProductGallery products={products} handleAddToCart={handleAddToCart} />
+      <FilterSection /> {/* Filter section added */}
+      <ProductGallery products={filteredProducts} handleAddToCart={handleAddToCart} />
       <TestimonialsSection />
     </div>
   );

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import { addItemToCart } from '../redux/cartSlice';
 import curtain from "../assets/imgs/curtain.jpg";
+import { addItemToCart } from '../redux/features/cartSlice';
 const SmartHome = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);

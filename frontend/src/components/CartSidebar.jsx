@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeItemFromCart, clearCart, updateItemQuantity } from '../redux/cartSlice';
+import { removeItemFromCart, clearCart, updateItemQuantity } from '../redux/features/cartSlice';
 import { Link } from 'react-router-dom';
 
 const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearCredentials } from '../redux/authSlice';
 import { logout } from '../redux/userSlice';
 import logo from '../assets/logo/LOGONOIR.png';
 import shopping from '../assets/logo/shoping.png';
-import CartSidebar from './CartSidebar'; 
+import CartSidebar from './CartSidebar';
+import { clearCredentials } from '../redux/features/authSlice';
+import { FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'; // Importing icons
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [promotionText, setPromotionText] = useState('PROMOTION 2024');
-  const [showingPromotion1, setShowingPromotion1] = useState(true);
+  const [promotionText, setPromotionText] = useState('Great Deals for 2024');
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -18,39 +18,13 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
-  const cartItemsCount = useSelector((state) => state.cart.cartItems.length); // Get the cart items count from Redux
+
+  // Fix: Safely check if cart exists before accessing length
+  const cartItemsCount = useSelector((state) => state.cart?.length || 0);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleLangDropdown = () => setShowLangDropdown(!showLangDropdown);
   const toggleCart = () => setIsCartOpen(!isCartOpen);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowingPromotion1((prev) => !prev);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (showingPromotion1) {
-      setPromotionText(
-        language === 'EN'
-          ? 'PROMOTION 2024 Choix et Qualité'
-          : language === 'FR'
-          ? 'PROMOTION 2024 Choix et Qualité'
-          : '👌👌 تنوّر العين و الخلاص على عامين'
-      );
-    } else {
-      setPromotionText(
-        language === 'EN'
-          ? 'Great Deals for 2024'
-          : language === 'FR'
-          ? 'Grandes Affaires pour 2024'
-          : '👌👌 عروض رائعة لعام 2024'
-      );
-    }
-  }, [showingPromotion1, language]);
 
   const handlePhoneClick = () => {
     window.location.href = 'tel:+21650929292';
@@ -101,33 +75,36 @@ const Navbar = () => {
 
   return (
     <header>
-      {/* Promotion Widget */}
+      {/* Top Bar with Promotion and Contact Info */}
       <div className="bg-gray-800 text-white py-2">
         <div className="container mx-auto flex justify-between items-center">
+          {/* Promotion Text */}
           <div className="text-center w-full lg:w-auto">
-            <span className={`block text-sm ${showingPromotion1 ? 'animate-slide-up' : 'animate-slide-up-reverse'}`}>
-              {promotionText}
-            </span>
+            <span className="block text-sm">{promotionText}</span>
           </div>
-          <div className="hidden lg:flex items-center space-x-4">
-            <button onClick={handlePhoneClick} className="text-white hover:underline">
-              {language === 'EN' ? 'Call Us' : language === 'FR' ? 'Appelez-nous' : 'اتصل بنا'} +216 50929292
-            </button>
-            <span>|</span>
-            <button onClick={handleEmailClick} className="text-white hover:underline">
-              {language === 'EN' ? 'Email Us' : language === 'FR' ? 'Envoyez-nous un email' : 'أرسل لنا بريدًا إلكترونيًا'}
-            </button>
-            <span>|</span>
-            <button onClick={handleFindStoreClick} className="text-white hover:underline">
-              {language === 'EN' ? 'Find Your Store' : language === 'FR' ? 'Trouvez Votre Magasin' : 'ابحث عن المتجر الخاص بك'}
-            </button>
-            <span>|</span>
+
+          {/* Contact and Language Selector */}
+          <div className="flex items-center space-x-4">
+            {/* Contact Icons for Mobile and Desktop */}
+            <div className="flex items-center space-x-3">
+              <button onClick={handlePhoneClick} className="text-white hover:underline" aria-label="Call us">
+                <FiPhone className="inline-block h-5 w-5" />
+              </button>
+              <button onClick={handleEmailClick} className="text-white hover:underline" aria-label="Email us">
+                <FiMail className="inline-block h-5 w-5" />
+              </button>
+              <button onClick={handleFindStoreClick} className="text-white hover:underline" aria-label="Find store">
+                <FiMapPin className="inline-block h-5 w-5" />
+              </button>
+            </div>
+            {/* Language Dropdown */}
             <div className="relative">
-              <button onClick={toggleLangDropdown} className="text-white hover:underline">
+              <button onClick={toggleLangDropdown} className="text-white hover:underline flex items-center" aria-label="Change language">
                 {language === 'EN' ? 'English' : language === 'FR' ? 'Français' : 'عربي'}
+                <FiChevronDown className="ml-1" />
               </button>
               {showLangDropdown && (
-                <div className="absolute mt-2 right-0 w-32 bg-white shadow-lg rounded-md text-gray-700 z-10">
+                <div className="absolute mt-2 right-0 w-32 bg-white shadow-lg rounded-md text-gray-700 z-10 transition ease-out duration-200">
                   <button
                     onClick={() => {
                       setLanguage('EN');
@@ -168,13 +145,12 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src={logo} alt="Bargaoui Tahar Logo" className="h-10" />
-            <span className="font-bold text-xl text-gray-900"></span>
           </Link>
 
           {/* Primary Navigation */}
           <div className="hidden lg:flex space-x-8">
             {translatedNavLinks[language].map((link) => (
-              <Link key={link.id} to={link.path} className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link key={link.id} to={link.path} className="text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
                 {link.name}
               </Link>
             ))}
@@ -198,7 +174,7 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 sm:inline-flex"
+                  className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50"
                   to="/signup"
                 >
                   SignUp
@@ -211,11 +187,11 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
-            <button onClick={toggleCart} className="relative text-gray-700 hover:text-gray-900 font-medium flex items-center">
+            <button onClick={toggleCart} className="relative text-gray-700 hover:text-gray-900 font-medium flex items-center transition duration-200 ease-in-out">
               {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
               <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
               {cartItemsCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center transition duration-200 ease-in-out">
                   {cartItemsCount}
                 </span>
               )}
@@ -224,7 +200,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center">
-            <button onClick={toggleMenu} className="text-gray-700 hover:text-gray-900 focus:outline-none">
+            <button onClick={toggleMenu} className="text-gray-700 hover:text-gray-900 focus:outline-none transition duration-200 ease-in-out">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
               </svg>
@@ -237,7 +213,7 @@ const Navbar = () => {
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {translatedNavLinks[language].map((link) => (
-                <Link key={link.id} to={link.path} className="block text-gray-700 hover:text-gray-900 font-medium">
+                <Link key={link.id} to={link.path} className="block text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
                   {link.name}
                 </Link>
               ))}
@@ -263,10 +239,10 @@ const Navbar = () => {
                   </Link>
                 </>
               )}
-              <button onClick={toggleCart} className="block text-gray-700 hover:text-gray-900 font-medium flex items-center">
+              <button onClick={toggleCart} className="block text-gray-700 hover:text-gray-900 font-medium flex items-center transition duration-200 ease-in-out">
                 <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
                 {cartItemsCount > 0 && (
-                  <span className="ml-2 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="ml-2 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center transition duration-200 ease-in-out">
                     {cartItemsCount}
                   </span>
                 )}

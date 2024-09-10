@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   userInfo: localStorage.getItem("userInfo")
@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     setCredentials: (state, action) => {
@@ -21,6 +21,5 @@ const authSlice = createSlice({
   },
 });
 
-export default authSlice.reducer;
-
 export const { setCredentials, clearCredentials } = authSlice.actions;
+export default authSlice.reducer;

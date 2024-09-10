@@ -27,11 +27,10 @@ app.use("/api/admin", adminRoutes); // Admin-specific routes
 app.use("/api/stores", storeRoutes);
 app.use('/api/products', productRoutes);
 
-
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
+  console.log(`Server is running on Port ${PORT}`);
 });

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/userSlice";
-import Footer from "../components/Footer"; 
 import loginimg from "../assets/imgs/img.jpg"; 
 
 const Login = () => {
@@ -64,7 +63,7 @@ const Login = () => {
                   onChange={handleChange}
                   className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
                   type="password"
-                  name="password" // Fixed the name attribute
+                  name="password" 
                 />
                 <Link
                   to="/forgot-password"
@@ -75,7 +74,7 @@ const Login = () => {
               </div>
               <div className="mt-8">
                 <button
-                  type="submit" // Added type="submit" to trigger form submission
+                  type="submit" 
                   className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600"
                 >
                   Login
@@ -84,7 +83,7 @@ const Login = () => {
             </form>
             <div className="mt-4 flex items-center w-full text-center">
               <Link
-                to="/signup" // Changed to use `to` instead of `href`
+                to="/signup" 
                 className="text-xs text-gray-500 capitalize text-center w-full"
               >
                 Don&apos;t have any account yet?
@@ -94,7 +93,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <Footer /> {/* Add Footer component here */}
     </div>
   );
 };
