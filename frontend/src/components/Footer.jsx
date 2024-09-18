@@ -2,82 +2,142 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { FaInstagram, FaYoutube, FaTiktok, FaPinterest } from 'react-icons/fa';
 
+const footerClasses = "bg-black text-white py-8";
+const gridClasses = "container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8";
+const listClasses = "mt-4 space-y-2";
+const flexClasses = "container mx-auto flex flex-col md:flex-row justify-between items-center py-4";
+const flexItemsClasses = "flex items-center space-x-4";
+const flexSpaceClasses = "flex space-x-4 mt-4 md:mt-0";
+const textCenterClasses = "text-center text-sm mt-4";
+
 const Footer = () => {
-  const footerNavLinks = [
-    { name: 'CURTAINS & DRAPES', path: '/curtains-drapes' },
-    { name: 'BLINDS & SHADES', path: '/blinds-shades' },
-    { name: 'SMART HOME', path: '/smart-home' },
-    { name: 'FURNISHINGS', path: '/furnishings' },
-    { name: 'PROJECTS', path: '/projects' },
-    { name: 'FRANCHISE', path: '/franchise' },
-  ];
+    return (
+        <footer className={footerClasses}>
+            {/* Main Footer Links */}
+            <div className={gridClasses}>
+                <FooterSection 
+                    title="Products" 
+                    links={[
+                        { text: "Curtains & Drapes", url: "/curtains-drapes" },
+                        { text: "Blinds & Shades", url: "/blinds-shades" },
+                        { text: "Smart Home", url: "/smart-home" },
+                        { text: "Furnishings", url: "/furnishings" },
+                        { text: "Projects", url: "/projects" },
+                        { text: "Franchise", url: "/franchise" }
+                    ]} 
+                />
+                <FooterSection 
+                    title="Design Assistance" 
+                    links={[
+                        { text: "Interior Design Services", url: "/design-services" },
+                        { text: "Tools & Guides", url: "/tools-guides" }
+                    ]} 
+                />
+                <FooterSection 
+                    title="About Us" 
+                    links={[
+                        { text: "Our Story", url: "/our-story" },
+                        { text: "Completed Projects", url: "/completed-projects" },
+                        { text: "Blog & Media Coverage", url: "/blog-media" }
+                    ]} 
+                />
+                <FooterSection 
+                    title="Customer Service" 
+                    links={[
+                        { text: "Find Your Store", url: "/stores" },
+                        { text: "Order Tracking", url: "/order-tracking" },
+                        { text: "Contact Us", url: "/contact-us" },
+                        { text: "FAQs", url: "/faqs" },
+                        { text: "Returns & Refunds", url: "/returns-refunds" }
+                    ]} 
+                />
+            </div>
 
-  return (
-    <footer className="bg-gray-800 text-white py-6">
-      <div className="container mx-auto text-center">
-        <h2 className="text-2xl font-bold mb-4">Stay Connected</h2>
+            {/* Social Media Links and Subscribe Form */}
+            <div className="mt-8 border-t border-gray-700">
+                <div className={flexClasses}>
+                    {/* Contact Info */}
+                    <div className={flexItemsClasses}>
+                        <span className="text-gray-400">Contact Number: +216 50 929 292</span>
+                        <span className="text-gray-400">Support Services: bargaoui_rideaux@yahoo.fr</span>
+                    </div>
 
-        {/* Navigation Links */}
-        <div className="flex justify-center space-x-8 mb-4">
-          {footerNavLinks.map((link) => (
-            <RouterLink 
-              key={link.name} 
-              to={link.path} 
-              className="text-white hover:text-blue-500 transition-all duration-150"
-            >
-              {link.name}
-            </RouterLink>
-          ))}
+                    {/* Payment Icons */}
+                    <div className={flexSpaceClasses}>
+                        <img aria-hidden="true" alt="visa" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
+                        <img aria-hidden="true" alt="mastercard" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
+                        <img aria-hidden="true" alt="amex" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Social Media and Subscribe */}
+            <div className="container mx-auto flex flex-col md:flex-row justify-between items-center py-4">
+                {/* Subscribe Form */}
+                <form className="flex items-center mb-4 md:mb-0">
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        className="py-2 px-4 rounded-l-full border border-gray-300"
+                    />
+                    <button className="bg-blue-500 text-white py-2 px-4 rounded-r-full hover:bg-blue-600 transition-all duration-150">
+                        Subscribe
+                    </button>
+                </form>
+
+                {/* Social Media Links */}
+                <div className="flex space-x-4">
+                    <button
+                        onClick={() => window.location.href = 'https://www.instagram.com/bargaoui_rideaux_tahar/'}
+                        className="hover:text-blue-500 transition-all duration-150"
+                    >
+                        <FaInstagram className="w-8 h-8 inline-block" />
+                    </button>
+                    <button
+                        onClick={() => window.location.href = 'https://www.youtube.com/@BargaouiRideauxTahar'}
+                        className="hover:text-blue-500 transition-all duration-150"
+                    >
+                        <FaYoutube className="w-8 h-8 inline-block" />
+                    </button>
+                    <button
+                        onClick={() => window.location.href = 'https://www.tiktok.com/@bargaouirideauxtahar'}
+                        className="hover:text-blue-500 transition-all duration-150"
+                    >
+                        <FaTiktok className="w-8 h-8 inline-block" />
+                    </button>
+                    <button
+                        onClick={() => window.location.href = 'https://www.pinterest.com/BargaouiRideauxTahar/'}
+                        className="hover:text-blue-500 transition-all duration-150"
+                    >
+                        <FaPinterest className="w-8 h-8 inline-block" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Copyright and Policies */}
+            <div className={textCenterClasses}>
+                <p>&copy; {new Date().getFullYear()} Bargaoui Rideaux Tahar, All Rights Reserved</p>
+                <p>Accessibility | Privacy Policy | Terms and Conditions | Cookie Policy</p>
+            </div>
+        </footer>
+    );
+};
+
+const FooterSection = ({ title, links }) => {
+    return (
+        <div>
+            <h2 className="font-bold text-lg">{title}</h2>
+            <ul className={listClasses}>
+                {links.map((link, index) => (
+                    <li key={index}>
+                        <RouterLink to={link.url} className="hover:underline text-gray-400 transition duration-150 ease-in-out">
+                            {link.text}
+                        </RouterLink>
+                    </li>
+                ))}
+            </ul>
         </div>
-
-        {/* Subscribe Form */}
-        <p className="mb-4">Subscribe to our newsletter for the latest updates.</p>
-        <form className="mb-4">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="py-2 px-4 rounded-l-full border border-gray-300"
-          />
-          <button className="bg-blue-500 text-white py-2 px-4 rounded-r-full hover:bg-blue-600 transition-all duration-150">
-            Subscribe
-          </button>
-        </form>
-
-        {/* Social Media Links */}
-        <div className="flex justify-center space-x-4 mb-4">
-          <button
-            onClick={() => window.location.href = 'https://www.instagram.com/bargaoui_rideaux_tahar/'}
-            className="hover:text-blue-500 transition-all duration-150"
-          >
-            <FaInstagram className="w-8 h-8 inline-block" />
-          </button>
-          <button
-            onClick={() => window.location.href = 'https://www.youtube.com/@BargaouiRideauxTahar'}
-            className="hover:text-blue-500 transition-all duration-150"
-          >
-            <FaYoutube className="w-8 h-8 inline-block" />
-          </button>
-          <button
-            onClick={() => window.location.href = 'https://www.tiktok.com/@bargaouirideauxtahar'}
-            className="hover:text-blue-500 transition-all duration-150"
-          >
-            <FaTiktok className="w-8 h-8 inline-block" />
-          </button>
-          <button
-            onClick={() => window.location.href = 'https://www.pinterest.com/BargaouiRideauxTahar/'}
-            className="hover:text-blue-500 transition-all duration-150"
-          >
-            <FaPinterest className="w-8 h-8 inline-block" />
-          </button>
-        </div>
-
-        {/* Copyright */}
-        <p className="text-sm">
-          &copy; {new Date().getFullYear()} Your Company. All rights reserved.
-        </p>
-      </div>
-    </footer>
-  );
+    );
 };
 
 export default Footer;

@@ -1,12 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./Config/db.js";
+import connectDB from "./config/db.js";
 import userRoutes from "./Routes/userRoutes.js";
-import adminRoutes from "./Routes/adminRoutes.js";
-import storeRoutes from "./Routes/StoreRoutes.js";
-import productRoutes from './Routes/productRoutes.js';
-
-import { errorHandler, notFound } from "./Middlewares/errorMiddleware.js";
+import storeRoutes from "./Routes/storeRoutes.js";
+import productRoutes from "./Routes/productRoutes.js";
+import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -16,6 +14,7 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// CORS configuration
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,14 +22,13 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/users", userRoutes);
-app.use("/api/admin", adminRoutes); // Admin-specific routes
 app.use("/api/stores", storeRoutes);
-app.use('/api/products', productRoutes);
+app.use("/api/products", productRoutes);
 
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on Port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

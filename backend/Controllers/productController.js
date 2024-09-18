@@ -31,13 +31,35 @@ export const getProductById = async (req, res) => {
 // @route POST /api/products
 // @access Private/Admin
 export const createProduct = async (req, res) => {
-  const { name, description, price, imageUrl, category } = req.body;  
   try {
-    const newProduct = new Product({ name, description, price, imageUrl, category });
-    await newProduct.save();
-    res.status(201).json(newProduct);
+    const { name, description, price, imageUrl, category, dimensions, inStock, subcategory, colors } = req.body;
+
+    // Validate required fields
+    if (!name || !description || !price || !imageUrl || !category || !dimensions || !dimensions.width || !dimensions.height || inStock === undefined) {
+      return res.status(400).json({ message: 'All required fields must be provided.' });
+    }
+
+    // Create a new product
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      imageUrl,
+      category,
+      dimensions,
+      inStock,
+      subcategory,
+      colors,
+    });
+
+    // Save the product to the database
+    const savedProduct = await newProduct.save();
+
+    // Respond with the saved product
+    res.status(201).json(savedProduct);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating product' });
+    console.error('Error creating product:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -45,7 +67,7 @@ export const createProduct = async (req, res) => {
 // @route PUT /api/products/:id
 // @access Private/Admin
 export const updateProduct = async (req, res) => {
-  const { name, description, price, imageUrl, category } = req.body;  
+  const { name, description, price, imageUrl, category } = req.body;
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
@@ -88,13 +110,12 @@ export const getBlindsShades = async (req, res) => {
   }
 };
 
-// @desc Get all Curtains & Drapes products
+// @desc Get all Curtains & Drapes products with filters
 // @route GET /api/products/category/curtains-drapes
 // @access Public
 export const getCurtainsDrapes = async (req, res) => {
   try {
-    const { minWidth, maxWidth, minHeight, maxHeight, inStock, subcategory, colors } = req.query;
-
+    const { minWidth, maxWidth, minHeight, maxHeight, inStock, subcategory, colors, minPrice, maxPrice } = req.query;
     let filter = { category: 'Curtains & Drapes' };
 
     if (minWidth || maxWidth) {
@@ -107,6 +128,12 @@ export const getCurtainsDrapes = async (req, res) => {
       filter['dimensions.height'] = {};
       if (minHeight) filter['dimensions.height'].$gte = parseInt(minHeight);
       if (maxHeight) filter['dimensions.height'].$lte = parseInt(maxHeight);
+    }
+
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseInt(minPrice);
+      if (maxPrice) filter.price.$lte = parseInt(maxPrice);
     }
 
     if (inStock) {
@@ -137,6 +164,18 @@ export const getFurnishings = async (req, res) => {
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching Furnishings products' });
+  }
+};
+
+// @desc Get all Smart Home products
+// @route GET /api/products/category/smart-home
+// @access Public
+export const getSmartHome = async (req, res) => {
+  try {
+    const products = await Product.find({ category: 'Smart Home' });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching Smart Home products' });
   }
 };
 
@@ -185,5 +224,21 @@ export const addFurnishingsProduct = async (req, res) => {
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(500).json({ message: 'Error adding Furnishings product' });
+  }
+};
+
+// @desc Add a product to "Smart Home"
+// @route POST /api/products/category/smart-home
+// @access Private/Admin
+export const addSmartHomeProduct = async (req, res) => {
+  try {
+    const newProduct = new Product({
+      ...req.body,
+      category: 'Smart Home'
+    });
+    await newProduct.save();
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding Smart Home product' });
   }
 };

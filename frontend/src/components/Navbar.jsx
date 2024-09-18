@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/userSlice';
@@ -19,7 +19,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // Fix: Safely check if cart exists before accessing length
+  // Safely check if cart exists before accessing length
   const cartItemsCount = useSelector((state) => state.cart?.length || 0);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -85,7 +85,6 @@ const Navbar = () => {
 
           {/* Contact and Language Selector */}
           <div className="flex items-center space-x-4">
-            {/* Contact Icons for Mobile and Desktop */}
             <div className="flex items-center space-x-3">
               <button onClick={handlePhoneClick} className="text-white hover:underline" aria-label="Call us">
                 <FiPhone className="inline-block h-5 w-5" />
@@ -97,6 +96,7 @@ const Navbar = () => {
                 <FiMapPin className="inline-block h-5 w-5" />
               </button>
             </div>
+
             {/* Language Dropdown */}
             <div className="relative">
               <button onClick={toggleLangDropdown} className="text-white hover:underline flex items-center" aria-label="Change language">
@@ -154,6 +154,13 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+
+            {/* Add Admin Link for Admin Users */}
+            {userInfo?.isAdmin && (
+              <Link to="/admin" className="text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* Secondary Navigation */}
@@ -187,8 +194,9 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
+
             <button onClick={toggleCart} className="relative text-gray-700 hover:text-gray-900 font-medium flex items-center transition duration-200 ease-in-out">
-              {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}{' '}
+              {language === 'EN' ? 'Cart' : language === 'FR' ? 'Panier' : 'عربة التسوق'}
               <img src={shopping} alt="Shopping Cart" className="h-6 ml-2" />
               {cartItemsCount > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center transition duration-200 ease-in-out">
@@ -217,6 +225,14 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+
+              {/* Admin Link for Mobile View */}
+              {userInfo?.isAdmin && (
+                <Link to="/admin" className="block text-gray-700 hover:text-gray-900 font-medium">
+                  Admin
+                </Link>
+              )}
+
               {userInfo ? (
                 <>
                   <Link to="/profile" className="block text-gray-700 hover:text-gray-900 font-medium">

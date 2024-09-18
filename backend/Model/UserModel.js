@@ -1,63 +1,41 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
-const userSchema = new mongoose.Schema({
-    FirstName: {
-        type: String,
-        required: [true, 'FirstName is required.'],
-        trim: true,
-        minlength: 3,
-        maxlength: 30,
-    },
-    LastName: {
-        type: String,
-        required: [true, 'LastName is required.'],
-        trim: true,
-    },
-    email: {
-        type: String,
-        required: [true, 'Email is required.'],
-        unique: true,
-        trim: true,
-        lowercase: true,
-        validate: {
-            validator: function (value) {
-                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value);
-            },
-            message: 'Please provide a valid email address.',
-        },
-    },
-    password: {
-        type: String,
-        required: [true, 'Password is required.'],
-        minlength: 8,
-    },
-    profileImage: {
-        type: String,
-        default: 'https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png',
+const userSchema = mongoose.Schema(
+  {
+    firstName: { type: String, require: true },
+    lastName: { type: String, require: true },
+    photo: {
+      type: String,
+      default:
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png",
     },
     isAdmin: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      require: true,
+      default: false,
     },
-    resetPasswordToken: {
-        type: String,
-    },
-    resetPasswordExpire: {
-        type: Date,
-    },
-}, { timestamps: true });
+    email: { type: String, require: true, unique: true },
+    password: { type: String, require: true },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  },
+  { timestamps: true }
+);
 
-// Password hashing before saving the user
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
-    const salt = await bcrypt.genSalt(14);
-    this.password = await bcrypt.hash(this.password, salt);
+// hashing passowrd
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     next();
+  }
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model('User', userSchema);
+// comparing password for login
+userSchema.methods.matchPassword = async function (enteredPass) {
+  return await bcrypt.compare(enteredPass, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
 
 export default User;

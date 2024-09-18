@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 const Profile = () => {
-  const { userInfo, token } = useSelector((state) => state.auth); // Get userInfo and token from Redux state
+  const { userInfo, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [user, setUser] = useState({
     firstName: userInfo?.firstName || "",
@@ -39,10 +39,10 @@ const Profile = () => {
 
       try {
         const { data } = await axios.post(
-          "https://api.cloudinary.com/v1_1/dpcnuiynn/image/upload?upload_preset=oussamaCh",
+          "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload",
           formData
         );
-        photoUrl = data.url;  // Get the uploaded photo URL
+        photoUrl = data.url;  
       } catch (error) {
         toast.error("Image upload failed");
         return;
@@ -56,12 +56,12 @@ const Profile = () => {
         { ...user, photo: photoUrl },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
 
-      dispatch(updateUser({ ...user, photo: photoUrl }));  // Dispatch the updated user info to Redux store
+      dispatch(updateUser({ ...user, photo: photoUrl }));  
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Failed to update profile:", error.response || error.message);
@@ -72,7 +72,6 @@ const Profile = () => {
   const handleErrorResponse = (error) => {
     if (error.response?.status === 401) {  // Check for unauthorized error
       toast.error("Unauthorized: Please log in again.");
-      // Optionally, redirect to login or handle re-authentication here
     } else if (error.response?.status === 500) {
       toast.error("Server error: Please try again later.");
     } else {
@@ -112,8 +111,9 @@ const Profile = () => {
               className="w-24 h-24 rounded-full border-2 border-indigo-300"
             />
             <div className="ml-6">
-              <label className="block text-sm font-medium mb-2">Change Picture</label>
+              <label className="block text-sm font-medium mb-2" htmlFor="file">Change Picture</label>
               <input
+                id="file"
                 type="file"
                 onChange={(e) => setFile(e.target.files[0])}
                 className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
@@ -125,6 +125,7 @@ const Profile = () => {
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-900">First Name</label>
               <input
+                id="firstName"
                 type="text"
                 name="firstName"
                 value={user.firstName}
@@ -136,6 +137,7 @@ const Profile = () => {
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-900">Last Name</label>
               <input
+                id="lastName"
                 type="text"
                 name="lastName"
                 value={user.lastName}
@@ -149,18 +151,21 @@ const Profile = () => {
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-900">Email</label>
             <input
+              id="email"
               type="email"
               name="email"
               value={user.email}
               onChange={changeHandler}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
+              autoComplete="email"
             />
           </div>
 
           <div>
             <label htmlFor="age" className="block text-sm font-medium text-gray-900">Age</label>
             <input
+              id="age"
               type="number"
               name="age"
               value={user.age}
@@ -174,21 +179,25 @@ const Profile = () => {
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-900">Password</label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 value={user.password}
                 onChange={changeHandler}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                autoComplete="new-password"
               />
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">Confirm Password</label>
               <input
+                id="confirmPassword"
                 type="password"
                 name="confirmPassword"
                 value={user.confirmPassword}
                 onChange={changeHandler}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                autoComplete="new-password"
               />
             </div>
           </div>

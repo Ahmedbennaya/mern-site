@@ -1,8 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types'; // for prop validation
 import { removeItemFromCart, clearCart, updateItemQuantity } from '../redux/features/cartSlice';
 import { Link } from 'react-router-dom';
 
+// CartItem Component
 const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
   <div className="flex justify-between items-center mb-6">
     <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg shadow-sm" />
@@ -40,10 +42,18 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
   </div>
 ));
 
+CartItem.propTypes = {
+  item: PropTypes.object.isRequired,
+  onUpdateQuantity: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+};
+
+// CartSidebar Component
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();
   const { cartItems = [], totalAmount } = useSelector((state) => state.cart);
 
+  // Handle ESC key to close the cart
   const handleEsc = useCallback((event) => {
     if (event.keyCode === 27) {
       toggleCart();
@@ -86,7 +96,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item.id}
+                key={item._id} // Ensure each item has a unique id
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}
@@ -119,6 +129,11 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
       />
     </div>
   );
+};
+
+CartSidebar.propTypes = {
+  isCartOpen: PropTypes.bool.isRequired,
+  toggleCart: PropTypes.func.isRequired,
 };
 
 export default CartSidebar;

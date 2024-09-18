@@ -1,24 +1,30 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
-import { Provider } from "react-redux";
-import store from "./redux/store";
-import App from "./App";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Stores from "./pages/Stores";
-import CurtainsDrapes from "./pages/CurtainsDrapes";
-import BlindsShades from "./pages/BlindsShades";
-import SmartHome from "./pages/SmartHome";
-import Furnishings from "./pages/Furnishings";
-import Projects from "./pages/Projects";
-import Franchise from "./pages/Franchise";
-import Profile from "./pages/Profile";
-import "./index.css";
-import Checkout from "./components/Checkout";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store';  
+import App from './App';
+import Home from './pages/Home';
+import Register from './auth/Register';
+import Login from './auth/Login';
+import ForgotPassword from './auth/ForgotPassword';  
+import ResetPassword from './auth/ResetPassword';    
+import Stores from './pages/Stores';
+import CurtainsDrapes from './pages/CurtainsDrapes';
+import BlindsShades from './pages/BlindsShades';
+import SmartHome from './pages/SmartHome';
+import Furnishings from './pages/Furnishings';
+import Projects from './pages/Projects';
+import Franchise from './pages/Franchise';
+import Profile from './pages/Profile';
+import Checkout from './components/Checkout';
+import './index.css'; 
+import AdminDashboard from './admin/AdminDashboard';
+import EditProduct from './admin/EditProduct';
+import ProductList from './admin/ProductList';
+import UserList from './admin/UserList';
+import CreateProduct from './admin/CreateProduct';
+import StoreList from './admin/StoreList';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,9 +42,16 @@ const router = createBrowserRouter(
       <Route path="projects" element={<Projects />} />
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
-      <Route path="checkout" element={<Checkout />} /> 
+      <Route path="checkout" element={<Checkout />} />
+
+      {/* Admin routes */}
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/products" element={<ProductList />} />
+      <Route path="/admin/products/create" element={<CreateProduct />} />
+      <Route path="/admin/products/edit/:id" element={<EditProduct />} />
+      <Route path="/admin/users" element={<UserList />} />
+      <Route path="/admin/stores" element={<StoreList />} />
     </Route>
-    
   )
 );
 

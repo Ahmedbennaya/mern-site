@@ -1,16 +1,16 @@
-// controllers/userController.js
 import asyncHandler from "express-async-handler";
 import User from "../Model/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+import JWT from "jsonwebtoken"; // Import jsonwebtoken
 
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { FirstName, LastName, email, password, profileImage } = req.body;
+  const { FirstName, LastName, email, password, photo, isAdmin} = req.body;
 
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -18,49 +18,64 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
-  const user = await User.create({
+    const user = await User.create({
     FirstName,
     LastName,
     email,
     password,
-    profileImage,
+    isAdmin,
+    photo,
   });
 
   if (user) {
     generateToken(res, user._id);
     res.status(201).json({
-      _id: user._id,
-      FirstName: user.FirstName,
+      id: user._id,
+      FirstName: user.firstName,
       LastName: user.LastName,
       email: user.email,
-      profileImage: user.profileImage,
+      password: user.password,
+      isAdmin: user.isAdmin,
+      photo: user.photo,
     });
   } else {
     res.status(400);
-    throw new Error("Invalid user data");
+    throw new Error("Try again ..");
   }
 });
-
 // @desc    Authenticate user & get token
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
+  // Check if user exists
   const user = await User.findOne({ email });
-
+  
   if (user && (await bcrypt.compare(password, user.password))) {
-    generateToken(res, user._id);
-    res.json({
-      _id: user._id,
-      FirstName: user.FirstName,
-      LastName: user.LastName,
-      email: user.email,
-      profileImage: user.profileImage,
-    });
+      // Generate a JWT token including the isAdmin field
+      const token = JWT.sign({ _id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
+          expiresIn: "30d",
+      });
+
+      res.cookie("jwt", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "development", 
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      });
+
+      // Return user data along with admin status
+      res.json({
+          _id: user._id,
+          FirstName: user.FirstName,
+          LastName: user.LastName,
+          email: user.email,
+          isAdmin: user.isAdmin, // Include isAdmin field
+          token,
+      });
   } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+      res.status(401);
+      throw new Error("Invalid email or password");
   }
 });
 
@@ -148,11 +163,6 @@ const resetPassword = asyncHandler(async (req, res) => {
 // @route   PUT /api/users/update
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  if (!req.user) {
-    res.status(401);
-    throw new Error("User not authenticated");
-  }
-
   const user = await User.findById(req.user._id);
 
   if (!user) {
@@ -160,11 +170,32 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
+  // Update user details
   user.FirstName = req.body.FirstName || user.FirstName;
   user.LastName = req.body.LastName || user.LastName;
   user.email = req.body.email || user.email;
-  user.profileImage = req.body.profileImage || user.profileImage;
 
+  // Handle image upload
+  if (req.file) {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "profile_pictures" },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(result);
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+
+    // Save the uploaded image URL to the user's profile
+    user.photo = result.secure_url;
+  }
+
+  // Update password if provided
   if (req.body.password) {
     user.password = req.body.password; // Ensure to hash the password in the model
   }
@@ -176,9 +207,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     FirstName: updatedUser.FirstName,
     LastName: updatedUser.LastName,
     email: updatedUser.email,
-    profileImage: updatedUser.profileImage,
+    photo: updatedUser.photo,
   });
 });
+
 
 // @desc    Get all users
 // @route   GET /api/users
