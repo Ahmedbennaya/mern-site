@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { GoogleMap, LoadScriptNext } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon issue with Webpack
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
 const mapContainerStyle = {
   width: '100%',
@@ -12,13 +22,14 @@ const Stores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
+  const mapRef = useRef();
 
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/stores'); 
+        const { data } = await axios.get('http://localhost:5000/api/stores'); // Adjust to your backend URL
         setStores(data);
-        setSelectedStore(data[0]); 
+        setSelectedStore(data[0]); // Select the first store as default
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -29,22 +40,16 @@ const Stores = () => {
     fetchStores();
   }, []);
 
-  const handleMapLoad = (map) => {
-    if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
-      new google.maps.marker.AdvancedMarkerElement({
-        position: {
-          lat: selectedStore.latitude || 0,
-          lng: selectedStore.longitude || 0,
-        },
-        map: map,
-        title: selectedStore.name,
-      });
+  const handleStoreClick = (store) => {
+    setSelectedStore(store);
+    if (mapRef.current) {
+      mapRef.current.setView([store.latitude, store.longitude], 15);
     }
   };
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="flex justify-center items-center h-screen">
         <div className="spinner">Loading...</div>
       </div>
     );
@@ -63,7 +68,7 @@ const Stores = () => {
             {stores.map((store) => (
               <li
                 key={store._id}
-                onClick={() => setSelectedStore(store)}
+                onClick={() => handleStoreClick(store)}
                 className={`cursor-pointer hover:text-blue-500 transition ${
                   selectedStore && selectedStore._id === store._id ? 'font-bold text-blue-700' : ''
                 }`}
@@ -78,22 +83,22 @@ const Stores = () => {
           {selectedStore && (
             <>
               <div className="flex-1">
-                <LoadScriptNext
-                  googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} // Ensure this is set correctly
-                  loadingElement={<div>Loading Maps...</div>}
-                  async
-                  defer
+                <MapContainer
+                  style={mapContainerStyle}
+                  center={[selectedStore.latitude || 0, selectedStore.longitude || 0]}
+                  zoom={15}
+                  whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
                 >
-                  <GoogleMap
-                    mapContainerStyle={mapContainerStyle}
-                    center={{
-                      lat: selectedStore.latitude || 0,
-                      lng: selectedStore.longitude || 0,
-                    }}
-                    zoom={15}
-                    onLoad={handleMapLoad}
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                </LoadScriptNext>
+                  <Marker position={[selectedStore.latitude || 0, selectedStore.longitude || 0]}>
+                    <Popup>
+                      {selectedStore.name}
+                    </Popup>
+                  </Marker>
+                </MapContainer>
               </div>
 
               <div className="p-6 bg-white shadow-lg">

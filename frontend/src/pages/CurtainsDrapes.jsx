@@ -119,11 +119,15 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ imageUrl, alt, price, description, onAddToCart }) => (
+const ProductCard = ({ title, imageUrl, alt, price, description, material, onAddToCart }) => (
   <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
+    {/* Product Title */}
     <img src={imageUrl} alt={alt} className="w-full h-56 object-cover rounded-lg mb-4" />
-    <h3 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h3>
+    <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
+    <h4 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h4>
     <p className="text-gray-600 mb-4">{description}</p>
+    {/* Additional Product Detail (Material, etc.) */}
+    <p className="text-gray-500 mb-4"><strong>Material:</strong> {material}</p>
     <button
       onClick={onAddToCart}
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
@@ -138,10 +142,12 @@ const ProductGallery = ({ products, handleAddToCart }) => (
     {products.map((product) => (
       <ProductCard
         key={product._id}
+        title={product.name}
         imageUrl={product.imageUrl}
         alt={product.name}
         price={product.price}
         description={product.description}
+        material={product.material} // Assuming material is included in the product data
         onAddToCart={() => handleAddToCart(product)}
       />
     ))}

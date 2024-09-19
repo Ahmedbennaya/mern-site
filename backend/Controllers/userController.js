@@ -5,12 +5,14 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 import JWT from "jsonwebtoken"; // Import jsonwebtoken
+import { cloudinary } from "../config/cloudinaryConfig.js"; // Cloudinary config
+import streamifier from "streamifier"; // For handling file streams
 
 // @desc    Register a new user
-// @route   POST /api/users/register
+// @route   POST /api/users/registerUser
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { FirstName, LastName, email, password, photo, isAdmin} = req.body;
+  const { FirstName, LastName, email, password, photo, isAdmin } = req.body;
 
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -18,11 +20,12 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
-    const user = await User.create({
+  const hashedPassword = await bcrypt.hash(password, 10); // Hash the password before saving
+  const user = await User.create({
     FirstName,
     LastName,
     email,
-    password,
+    password: hashedPassword,
     isAdmin,
     photo,
   });
@@ -30,52 +33,52 @@ const registerUser = asyncHandler(async (req, res) => {
   if (user) {
     generateToken(res, user._id);
     res.status(201).json({
-      id: user._id,
-      FirstName: user.firstName,
+      _id: user._id,
+      FirstName: user.FirstName,
       LastName: user.LastName,
       email: user.email,
-      password: user.password,
       isAdmin: user.isAdmin,
       photo: user.photo,
     });
   } else {
     res.status(400);
-    throw new Error("Try again ..");
+    throw new Error("Invalid user data");
   }
 });
+
 // @desc    Authenticate user & get token
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Check if user exists
   const user = await User.findOne({ email });
-  
+
   if (user && (await bcrypt.compare(password, user.password))) {
-      // Generate a JWT token including the isAdmin field
-      const token = JWT.sign({ _id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
-          expiresIn: "30d",
-      });
+    const token = JWT.sign(
+      { _id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
 
-      res.cookie("jwt", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "development", 
-          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
 
-      // Return user data along with admin status
-      res.json({
-          _id: user._id,
-          FirstName: user.FirstName,
-          LastName: user.LastName,
-          email: user.email,
-          isAdmin: user.isAdmin, // Include isAdmin field
-          token,
-      });
+    res.json({
+      _id: user._id,
+      FirstName: user.FirstName,
+      LastName: user.LastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token,
+    });
   } else {
-      res.status(401);
-      throw new Error("Invalid email or password");
+    res.status(401);
+    throw new Error("Invalid email or password");
   }
 });
 
@@ -106,15 +109,18 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   const resetToken = crypto.randomBytes(20).toString("hex");
 
-  user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  user.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
   user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
   await user.save();
 
-  const resetUrl = `${req.protocol}://${req.get("host")}/api/users/reset-password/${resetToken}`;
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
   const message = `
     You are receiving this email because you (or someone else) has requested the reset of a password. 
-    Please make a PUT request to: \n\n ${resetUrl}
+    Please click the link below to reset your password: \n\n ${resetUrl}
   `;
 
   try {
@@ -137,27 +143,34 @@ const forgotPassword = asyncHandler(async (req, res) => {
 // @desc    Reset user password
 // @route   POST /api/users/reset-password/:token
 // @access  Public
-const resetPassword = asyncHandler(async (req, res) => {
-  const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
 
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() },
-  });
+  try {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-  if (!user) {
-    res.status(400);
-    throw new Error("Invalid token or token has expired");
+    // Find user with valid token and not expired
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    // Update user password
+    user.password = password; // Make sure to hash the password before saving
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
-
-  generateToken(res, user._id);
-  res.status(200).json({ message: "Password reset successfully" });
-});
+};
 
 // @desc    Update user profile
 // @route   PUT /api/users/update
@@ -170,12 +183,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  // Update user details
   user.FirstName = req.body.FirstName || user.FirstName;
   user.LastName = req.body.LastName || user.LastName;
   user.email = req.body.email || user.email;
 
-  // Handle image upload
   if (req.file) {
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
@@ -187,17 +198,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
           resolve(result);
         }
       );
-
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
 
-    // Save the uploaded image URL to the user's profile
     user.photo = result.secure_url;
   }
 
-  // Update password if provided
   if (req.body.password) {
-    user.password = req.body.password; // Ensure to hash the password in the model
+    user.password = await bcrypt.hash(req.body.password, 10); // Ensure password is hashed
   }
 
   const updatedUser = await user.save();
@@ -210,7 +218,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     photo: updatedUser.photo,
   });
 });
-
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -227,5 +234,5 @@ export {
   forgotPassword,
   resetPassword,
   updateUserProfile,
-  getAllUsers
+  getAllUsers,
 };

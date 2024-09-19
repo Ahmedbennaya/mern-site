@@ -27,5 +27,20 @@ const createStore = asyncHandler(async (req, res) => {
   const createdStore = await store.save();
   res.status(201).json(createdStore);
 });
+// @desc Get a single store by ID
+// @route GET /api/stores/:id
+// @access Public
+ const getStoreById = async (req, res) => {
+  try {
+    const store = await Store.findById(req.params.id);
 
-export { getStores, createStore };
+    if (store) {
+      res.json(store);
+    } else {
+      res.status(404).json({ message: 'Store not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+export { getStores, createStore,getStoreById };

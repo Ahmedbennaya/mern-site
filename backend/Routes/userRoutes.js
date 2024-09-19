@@ -1,4 +1,3 @@
-// routes/userRoutes.js
 import express from "express";
 import {
   registerUser,
@@ -9,9 +8,9 @@ import {
   updateUserProfile,
   getAllUsers,
 } from "../Controllers/userController.js";
+
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import { upload } from "../config/cloudinaryConfig.js";
-
 
 const router = express.Router();
 

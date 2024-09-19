@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStores } from '../Controllers/storeController.js';
+import { getStores, getStoreById } from '../Controllers/storeController.js';
 
 const router = express.Router();
 
@@ -7,5 +7,10 @@ const router = express.Router();
 // @route GET /api/stores
 // @access Public
 router.route('/').get(getStores);
+
+// @desc Get a single store by ID
+// @route GET /api/stores/:id
+// @access Public
+router.route('/:id').get(getStoreById);  // New route for fetching a store by its ID
 
 export default router;

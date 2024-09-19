@@ -5,12 +5,15 @@ import { setCredentials, clearCredentials } from './features/authSlice';
 
 axios.defaults.withCredentials = true;
 
+// Base URL for API requests
+const API_URL = 'http://localhost:5000/api/users';
+
 // Sign in an existing user
 export const signin = createAsyncThunk(
   'user/signin',
   async (user, { dispatch, rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/login', user);
+      const { data } = await axios.post(`${API_URL}/login`, user);
       dispatch(setCredentials(data)); 
       toast.success('Logged In');
       return data;
@@ -26,7 +29,7 @@ export const signUp = createAsyncThunk(
   'user/signup',
   async ({ user, navigate }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/registerUser', user);
+      const { data } = await axios.post(`${API_URL}/registerUser`, user);
       toast.success('Account created successfully');
       navigate('/signin');
       return data;
@@ -42,7 +45,7 @@ export const logout = createAsyncThunk(
   'user/logout',
   async (navigate, { dispatch, rejectWithValue }) => {
     try {
-      await axios.post('http://localhost:5000/api/users/logout');
+      await axios.post(`${API_URL}/logout`);
       dispatch(clearCredentials());
       toast.success('Logged out successfully');
       navigate('/');
@@ -58,7 +61,7 @@ export const requestPasswordReset = createAsyncThunk(
   'user/requestPasswordReset',
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
+      const { data } = await axios.post(`${API_URL}/forgot-password`, { email });
       toast.success('Password reset link sent to your email.');
       return data;
     } catch (error) {
@@ -73,7 +76,7 @@ export const resetPassword = createAsyncThunk(
   'user/resetPassword',
   async ({ token, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`http://localhost:5000/api/users/reset-password/${token}`, { password });
+      const { data } = await axios.post(`${API_URL}/reset-password/${token}`, { password });
       toast.success('Password has been reset successfully.');
       return data;
     } catch (error) {
@@ -96,7 +99,7 @@ export const updateUser = createAsyncThunk(
       }
 
       const { data } = await axios.put(
-        'http://localhost:5000/api/users/update',
+        `${API_URL}/update`,
         updatedUserData,
         {
           headers: {
@@ -120,7 +123,7 @@ export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users');
+      const { data } = await axios.get(`${API_URL}`);
       return data;
     } catch (error) {
       toast.error('Failed to fetch users');
@@ -134,7 +137,7 @@ export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`);
+      await axios.delete(`${API_URL}/${userId}`);
       toast.success('User deleted successfully');
       return userId;
     } catch (error) {
@@ -161,7 +164,7 @@ const userSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      // Existing reducers...
+      // Signin cases
       .addCase(signin.pending, (state) => {
         state.loading = true;
       })
@@ -172,6 +175,7 @@ const userSlice = createSlice({
       .addCase(signin.rejected, (state) => {
         state.loading = false;
       })
+      // Signup cases
       .addCase(signUp.pending, (state) => {
         state.loading = true;
       })
@@ -182,6 +186,7 @@ const userSlice = createSlice({
       .addCase(signUp.rejected, (state) => {
         state.loading = false;
       })
+      // Logout cases
       .addCase(logout.pending, (state) => {
         state.loading = true;
       })
@@ -192,6 +197,7 @@ const userSlice = createSlice({
       .addCase(logout.rejected, (state) => {
         state.loading = false;
       })
+      // Request password reset cases
       .addCase(requestPasswordReset.pending, (state) => {
         state.loading = true;
       })
@@ -203,6 +209,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetRequested = false;
       })
+      // Reset password cases
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
       })
@@ -214,6 +221,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetSuccessful = false;
       })
+      // Update user profile cases
       .addCase(updateUser.pending, (state) => {
         state.loading = true;
       })

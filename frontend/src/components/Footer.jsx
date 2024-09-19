@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { FaInstagram, FaYoutube, FaTiktok, FaPinterest } from 'react-icons/fa';
 
@@ -11,6 +11,18 @@ const flexSpaceClasses = "flex space-x-4 mt-4 md:mt-0";
 const textCenterClasses = "text-center text-sm mt-4";
 
 const Footer = () => {
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+
+    const handleSubscribe = async (e) => {
+        e.preventDefault();
+        // Here you would typically send the email to your backend or a third-party service
+        // For demonstration, we'll just log it to the console
+        console.log('Subscribed with email:', email);
+        setMessage('Thank you for subscribing!');
+        setEmail('');
+    };
+
     return (
         <footer className={footerClasses}>
             {/* Main Footer Links */}
@@ -74,16 +86,20 @@ const Footer = () => {
             {/* Social Media and Subscribe */}
             <div className="container mx-auto flex flex-col md:flex-row justify-between items-center py-4">
                 {/* Subscribe Form */}
-                <form className="flex items-center mb-4 md:mb-0">
+                <form className="flex items-center mb-4 md:mb-0" onSubmit={handleSubscribe}>
                     <input
                         type="email"
                         placeholder="Enter your email"
-                        className="py-2 px-4 rounded-l-full border border-gray-300"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="py-2 px-4 rounded-l-full border border-gray-300 text-black bg-white"
+                        required
                     />
-                    <button className="bg-blue-500 text-white py-2 px-4 rounded-r-full hover:bg-blue-600 transition-all duration-150">
+                    <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-r-full hover:bg-blue-600 transition-all duration-150">
                         Subscribe
                     </button>
                 </form>
+                {message && <p className="text-green-500 mt-2">{message}</p>}
 
                 {/* Social Media Links */}
                 <div className="flex space-x-4">
@@ -130,11 +146,14 @@ const FooterSection = ({ title, links }) => {
             <ul className={listClasses}>
                 {links.map((link, index) => (
                     <li key={index}>
-                        <RouterLink to={link.url} className="hover:underline text-gray-400 transition duration-150 ease-in-out">
+                        <RouterLink 
+                            to={link.url} 
+                            className="text-gray-400 hover:text-black transition duration-150 ease-in-out"
+                        >
                             {link.text}
                         </RouterLink>
                     </li>
-                ))}
+                ))} 
             </ul>
         </div>
     );

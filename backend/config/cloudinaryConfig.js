@@ -1,11 +1,11 @@
-import cloudinary from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import dotenv from "dotenv";
-import multer from "multer";  
+import cloudinary from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer from 'multer';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Configure Cloudinary
+// Configure Cloudinary with credentials from .env
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -16,9 +16,11 @@ cloudinary.v2.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
-    folder: "profile_pictures", // Folder in Cloudinary
-    allowed_formats: ["jpg", "png", "jpeg"],
+    folder: 'profile_pictures',  // Folder to store uploaded images
+    allowed_formats: ['jpg', 'png', 'jpeg'],  // Allowed formats
   },
 });
 
-export const upload = multer({ storage });
+const upload = multer({ storage });
+
+export { upload, cloudinary };

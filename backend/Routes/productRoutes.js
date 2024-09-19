@@ -11,7 +11,8 @@ import {
   addBlindsShadesProduct,
   addCurtainsDrapesProduct,
   addFurnishingsProduct,
-  addSmartHomeProduct
+  addSmartHomeProduct,
+  getSmartHome
 } from '../Controllers/productController.js';
 
 const router = express.Router();
@@ -27,14 +28,12 @@ router.delete('/:id', deleteProduct);
 router.get('/category/blinds-shades', getBlindsShades);
 router.get('/category/curtains-drapes', getCurtainsDrapes);
 router.get('/category/furnishings', getFurnishings);
+router.get('/category/smart-home', getSmartHome);
 
 // Add products to specific categories
 router.post('/category/blinds-shades', addBlindsShadesProduct);
 router.post('/category/curtains-drapes', addCurtainsDrapesProduct);
 router.post('/category/furnishings', addFurnishingsProduct);
-router.post('/category/smarthome', addSmartHomeProduct);
-
-// Catch-all category route should be last to avoid conflicts
-router.post('/category/:category', createProduct);
+router.post('/category/smart-home', addSmartHomeProduct);
 
 export default router;

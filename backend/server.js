@@ -7,6 +7,8 @@ import productRoutes from "./Routes/productRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import consultationRoutes from "./Routes/bookConsultationRoutes.js";
+import emailRoutes from './Routes/emailRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -24,7 +26,10 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api", consultationRoutes);
 
+// email routes
+app.use('/api/v1/emails', emailRoutes);
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);

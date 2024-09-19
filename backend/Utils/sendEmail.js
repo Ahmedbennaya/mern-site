@@ -1,4 +1,7 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const sendEmail = async (options) => {
   try {
@@ -7,13 +10,13 @@ const sendEmail = async (options) => {
       service: 'Gmail',
       auth: {
         user: process.env.EMAIL_USER, // Your Gmail address
-        pass: process.env.EMAIL_PASS, // Your Gmail password or app-specific password
+        pass: process.env.EMAIL_PASS, // Your Gmail app-specific password
       },
     });
 
     // Define the email options
     const mailOptions = {
-      from: 'Your Company <aopenking95@gmail.com>', 
+      from: `"Bargaoui-Rideux-Tahar" <${process.env.EMAIL_USER}>`, // Sender address
       to: options.email, // Recipient's email
       subject: options.subject, // Subject of the email
       text: options.message, // Plain text body of the email
@@ -21,6 +24,7 @@ const sendEmail = async (options) => {
 
     // Send the email
     await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully!');
   } catch (error) {
     console.error('Error sending email:', error);
     throw new Error('Email could not be sent');
