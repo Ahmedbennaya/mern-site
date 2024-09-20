@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signUp } from '../redux/userSlice';
-import toast from 'react-hot-toast';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -37,11 +36,9 @@ const Register = () => {
     dispatch(signUp({ user, navigate }))
       .unwrap()
       .then(() => {
-        toast.success('Account created successfully!');
         navigate('/signIn'); // Navigate to login page on success
       })
       .catch((error) => {
-        toast.error(error.message); // Display error message
         // Do not navigate if there's an error
       });
   };

@@ -70,8 +70,8 @@ const Footer = () => {
                 <div className={flexClasses}>
                     {/* Contact Info */}
                     <div className={flexItemsClasses}>
-                        <span className="text-gray-400">Contact Number: +216 50 929 292</span>
-                        <span className="text-gray-400">Support Services: bargaoui_rideaux@yahoo.fr</span>
+                        <span className="text-gray-400">Contact Number:<br/>+216 50 929 292</span>
+                        <span className="text-gray-400">Support Services:<br/> bargaoui_rideaux@yahoo.fr</span>
                     </div>
 
                     {/* Payment Icons */}

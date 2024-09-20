@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import curtain from "../assets/imgs/curtain.jpg";
 import { addItemToCart } from '../redux/features/cartSlice';
 
 const sharedClasses = {
@@ -211,8 +210,8 @@ const BlindsShades = () => {
 
   const HeroSection = () => (
     <section
-    className="relative bg-cover bg-center text-white flex items-center justify-center p-6 sm:p-12"
-          style={{ backgroundImage: `url(${curtain})`, height: '500px' }}
+    className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+    style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770562/best-smart-shades-100853311-orig_uvrwir.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">

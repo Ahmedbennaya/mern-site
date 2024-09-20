@@ -1,14 +1,12 @@
+// redux/userSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { setCredentials, clearCredentials } from './features/authSlice'; 
 
 axios.defaults.withCredentials = true;
-
-// Base URL for API requests
 const API_URL = 'http://localhost:5000/api/users';
 
-// Sign in an existing user
 export const signin = createAsyncThunk(
   'user/signin',
   async (user, { dispatch, rejectWithValue }) => {
@@ -18,13 +16,13 @@ export const signin = createAsyncThunk(
       toast.success('Logged In');
       return data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to sign in');
+      const errorMsg = error?.response?.data?.message || 'Failed to sign in';
+      toast.error(errorMsg);
       return rejectWithValue(error?.response?.data || 'An error occurred');
     }
   }
 );
 
-// Register a new user
 export const signUp = createAsyncThunk(
   'user/signup',
   async ({ user, navigate }, { rejectWithValue }) => {
@@ -34,13 +32,13 @@ export const signUp = createAsyncThunk(
       navigate('/signin');
       return data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to sign up');
+      const errorMsg = error?.response?.data?.message || 'Failed to sign up';
+      toast.error(errorMsg);
       return rejectWithValue(error?.response?.data || 'An error occurred');
     }
   }
 );
 
-// Log out the current user
 export const logout = createAsyncThunk(
   'user/logout',
   async (navigate, { dispatch, rejectWithValue }) => {
@@ -56,7 +54,6 @@ export const logout = createAsyncThunk(
   }
 );
 
-// Request password reset link
 export const requestPasswordReset = createAsyncThunk(
   'user/requestPasswordReset',
   async (email, { rejectWithValue }) => {
@@ -65,13 +62,13 @@ export const requestPasswordReset = createAsyncThunk(
       toast.success('Password reset link sent to your email.');
       return data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to request password reset');
+      const errorMsg = error?.response?.data?.message || 'Failed to request password reset';
+      toast.error(errorMsg);
       return rejectWithValue(error?.response?.data || 'An error occurred');
     }
   }
 );
 
-// Reset password with token
 export const resetPassword = createAsyncThunk(
   'user/resetPassword',
   async ({ token, password }, { rejectWithValue }) => {
@@ -80,13 +77,13 @@ export const resetPassword = createAsyncThunk(
       toast.success('Password has been reset successfully.');
       return data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to reset password');
+      const errorMsg = error?.response?.data?.message || 'Failed to reset password';
+      toast.error(errorMsg);
       return rejectWithValue(error?.response?.data || 'An error occurred');
     }
   }
 );
 
-// Update user profile
 export const updateUser = createAsyncThunk(
   'user/updateUser',
   async (updatedUserData, { dispatch, getState, rejectWithValue }) => {
@@ -98,32 +95,26 @@ export const updateUser = createAsyncThunk(
         throw new Error('No token found. Please log in.');
       }
 
-      const { data } = await axios.put(
-        `${API_URL}/update`,
-        updatedUserData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.put(`${API_URL}/update`, updatedUserData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       dispatch(setCredentials(data)); 
       toast.success('Profile updated successfully');
       return data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to update profile');
+      const errorMsg = error?.response?.data?.message || 'Failed to update profile';
+      toast.error(errorMsg);
       return rejectWithValue(error?.response?.data || 'An error occurred');
     }
   }
 );
 
-// Fetch all users
 export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`${API_URL}`);
+      const { data } = await axios.get(API_URL);
       return data;
     } catch (error) {
       toast.error('Failed to fetch users');
@@ -132,7 +123,6 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
-// Delete a user
 export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   async (userId, { rejectWithValue }) => {
@@ -147,7 +137,6 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-// Initial state for the user slice
 const initialState = {
   loading: false,
   loggedInUser: null,
@@ -164,43 +153,25 @@ const userSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      // Signin cases
-      .addCase(signin.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(signin.pending, (state) => { state.loading = true; })
       .addCase(signin.fulfilled, (state, action) => {
         state.loading = false;
         state.loggedInUser = action.payload;
       })
-      .addCase(signin.rejected, (state) => {
-        state.loading = false;
-      })
-      // Signup cases
-      .addCase(signUp.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(signin.rejected, (state) => { state.loading = false; })
+      .addCase(signUp.pending, (state) => { state.loading = true; })
       .addCase(signUp.fulfilled, (state, action) => {
         state.loading = false;
         state.createdUser = action.payload;
       })
-      .addCase(signUp.rejected, (state) => {
-        state.loading = false;
-      })
-      // Logout cases
-      .addCase(logout.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(signUp.rejected, (state) => { state.loading = false; })
+      .addCase(logout.pending, (state) => { state.loading = true; })
       .addCase(logout.fulfilled, (state) => {
         state.loading = false;
         state.loggedInUser = null;
       })
-      .addCase(logout.rejected, (state) => {
-        state.loading = false;
-      })
-      // Request password reset cases
-      .addCase(requestPasswordReset.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(logout.rejected, (state) => { state.loading = false; })
+      .addCase(requestPasswordReset.pending, (state) => { state.loading = true; })
       .addCase(requestPasswordReset.fulfilled, (state) => {
         state.loading = false;
         state.passwordResetRequested = true;
@@ -209,10 +180,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetRequested = false;
       })
-      // Reset password cases
-      .addCase(resetPassword.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(resetPassword.pending, (state) => { state.loading = true; })
       .addCase(resetPassword.fulfilled, (state) => {
         state.loading = false;
         state.passwordResetSuccessful = true;
@@ -221,22 +189,14 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetSuccessful = false;
       })
-      // Update user profile cases
-      .addCase(updateUser.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(updateUser.pending, (state) => { state.loading = true; })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.updatedUser = action.payload;
         state.loggedInUser = action.payload;
       })
-      .addCase(updateUser.rejected, (state) => {
-        state.loading = false;
-      })
-      // Fetch users cases
-      .addCase(fetchUsers.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(updateUser.rejected, (state) => { state.loading = false; })
+      .addCase(fetchUsers.pending, (state) => { state.loading = true; })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
@@ -245,10 +205,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Delete user cases
-      .addCase(deleteUser.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(deleteUser.pending, (state) => { state.loading = true; })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.loading = false;
         state.users = state.users.filter(user => user._id !== action.payload);

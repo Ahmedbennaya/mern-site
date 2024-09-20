@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -17,6 +17,28 @@ const mapContainerStyle = {
   height: '100%',
 };
 
+const LocateUser = ({ mapRef }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const userLatLng = [latitude, longitude];
+        map.setView(userLatLng, 14); // Center the map on the user's location
+
+        // Optionally, add a marker for the user's location
+        const userMarker = L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
+
+        // Update mapRef to keep track of map instance
+        mapRef.current = map;
+      });
+    }
+  }, [map, mapRef]);
+
+  return null;
+};
+
 const Stores = () => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +51,9 @@ const Stores = () => {
       try {
         const { data } = await axios.get('http://localhost:5000/api/stores'); // Adjust to your backend URL
         setStores(data);
-        setSelectedStore(data[0]); // Select the first store as default
+        if (data.length > 0) {
+          setSelectedStore(data[0]); // Select the first store as default
+        }
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -43,7 +67,10 @@ const Stores = () => {
   const handleStoreClick = (store) => {
     setSelectedStore(store);
     if (mapRef.current) {
-      mapRef.current.setView([store.latitude, store.longitude], 15);
+      mapRef.current.flyTo([store.latitude, store.longitude], 15); // Smooth transition to store location
+      setTimeout(() => {
+        mapRef.current.invalidateSize(); // Refresh map layout to ensure the view updates
+      }, 500); // Delay to ensure the map transitions first
     }
   };
 
@@ -57,7 +84,7 @@ const Stores = () => {
 
   if (error) return <p>Error: {error}</p>;
 
-  if (!selectedStore) return <p>No store selected or no valid coordinates.</p>;
+  if (!stores.length) return <p>No stores available.</p>;
 
   return (
     <div className="flex flex-col h-screen">
@@ -93,11 +120,18 @@ const Stores = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  <Marker position={[selectedStore.latitude || 0, selectedStore.longitude || 0]}>
-                    <Popup>
-                      {selectedStore.name}
-                    </Popup>
-                  </Marker>
+                  <LocateUser mapRef={mapRef} /> {/* User location tracking */}
+                  {stores.map((store) => (
+                    <Marker 
+                      key={store._id} 
+                      position={[store.latitude, store.longitude]}
+                      opacity={selectedStore._id === store._id ? 1 : 0.5} // Highlight selected store's marker
+                    >
+                      <Popup>
+                        {store.name}<br/>{store.address}<br/>{store.phone}
+                      </Popup>
+                    </Marker>
+                  ))}
                 </MapContainer>
               </div>
 
@@ -107,7 +141,7 @@ const Stores = () => {
                 <p className="text-gray-700 mb-4"><strong>Phone:</strong> {selectedStore.phone}</p>
                 <div className="mb-4">
                   <strong>Opening Hours:</strong>
-                  {selectedStore.hours.map((hour, index) => (
+                  {selectedStore.hours && selectedStore.hours.map((hour, index) => (
                     <p key={index} className="text-gray-600">{hour}</p>
                   ))}
                 </div>

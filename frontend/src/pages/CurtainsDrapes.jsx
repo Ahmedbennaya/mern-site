@@ -217,8 +217,8 @@ const CurtainsDrapes = () => {
 
   const HeroSection = () => (
     <section
-      className="relative bg-cover bg-center text-white flex items-center justify-center p-6 sm:p-12"
-      style={{ backgroundImage: `url(${curtains})`, height: '500px' }}
+    className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+    style={{ backgroundImage: `url(${curtains})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">

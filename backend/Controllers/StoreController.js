@@ -1,3 +1,4 @@
+
 import asyncHandler from 'express-async-handler';
 import Store from '../Model/StoreModel.js';
 
@@ -13,11 +14,13 @@ const getStores = asyncHandler(async (req, res) => {
 // @route POST /api/admin/stores/create
 // @access Private/Admin
 const createStore = asyncHandler(async (req, res) => {
-  const { name, address, hours, phone, mapLink, mapImage } = req.body;
+  const { name, address, hours, phone, mapLink, mapImage, latitude, longitude } = req.body;
 
   const store = new Store({
     name,
     address,
+    latitude, // include latitude
+    longitude, // include longitude
     hours,
     phone,
     mapLink,
@@ -27,10 +30,11 @@ const createStore = asyncHandler(async (req, res) => {
   const createdStore = await store.save();
   res.status(201).json(createdStore);
 });
+
 // @desc Get a single store by ID
 // @route GET /api/stores/:id
 // @access Public
- const getStoreById = async (req, res) => {
+const getStoreById = asyncHandler(async (req, res) => {
   try {
     const store = await Store.findById(req.params.id);
 
@@ -42,5 +46,6 @@ const createStore = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
-};
-export { getStores, createStore,getStoreById };
+});
+
+export { getStores, createStore, getStoreById };

@@ -1,5 +1,4 @@
 import asyncHandler from "express-async-handler";
-import User from "../Model/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -7,44 +6,46 @@ import sendEmail from "../utils/sendEmail.js";
 import JWT from "jsonwebtoken"; // Import jsonwebtoken
 import { cloudinary } from "../config/cloudinaryConfig.js"; // Cloudinary config
 import streamifier from "streamifier"; // For handling file streams
+import User from "../Model/UserModel.js";
 
-// @desc    Register a new user
-// @route   POST /api/users/registerUser
-// @access  Public
-const registerUser = asyncHandler(async (req, res) => {
-  const { FirstName, LastName, email, password, photo, isAdmin } = req.body;
+// @desc    Register a new user  
+// @route   POST /api/users/registerUser  
+// @access  Public  
+const registerUser = asyncHandler(async (req, res) => {  
+  const { FirstName, LastName, email, password, profileImage, isAdmin } = req.body; 
 
-  const userExists = await User.findOne({ email });
-  if (userExists) {
-    res.status(400);
-    throw new Error("User already exists");
-  }
+  const userExists = await User.findOne({ email });  
+  if (userExists) {  
+    res.status(400);  
+    throw new Error("User already exists");  
+  }  
 
-  const hashedPassword = await bcrypt.hash(password, 10); // Hash the password before saving
-  const user = await User.create({
-    FirstName,
-    LastName,
-    email,
-    password: hashedPassword,
-    isAdmin,
-    photo,
-  });
+  // No manual password hashing, just pass it to the model
+  const user = await User.create({  
+    FirstName, 
+    LastName,   
+    email,  
+    password,  // password will be hashed in the User model's pre-save hook
+    isAdmin,  
+    profileImage,  
+  });  
 
-  if (user) {
-    generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      FirstName: user.FirstName,
-      LastName: user.LastName,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      photo: user.photo,
-    });
-  } else {
-    res.status(400);
-    throw new Error("Invalid user data");
-  }
+  if (user) {  
+    generateToken(res, user._id);  
+    res.status(201).json({  
+      _id: user._id,  
+      FirstName: user.FirstName,  
+      LastName: user.LastName,    
+      email: user.email,  
+      isAdmin: user.isAdmin,  
+      photo: user.profileImage,  
+    });  
+  } else {  
+    res.status(400);  
+    throw new Error("Invalid user data");  
+  }  
 });
+
 
 // @desc    Authenticate user & get token
 // @route   POST /api/users/login
@@ -54,19 +55,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user && (await bcrypt.compare(password, user.password))) {
-    const token = JWT.sign(
-      { _id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
-
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+  // Use the matchPassword method from the user model
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id); // Sign JWT token
 
     res.json({
       _id: user._id,
@@ -74,13 +65,14 @@ const loginUser = asyncHandler(async (req, res) => {
       LastName: user.LastName,
       email: user.email,
       isAdmin: user.isAdmin,
-      token,
+      photo: user.profileImage,
     });
   } else {
     res.status(401);
     throw new Error("Invalid email or password");
   }
 });
+
 
 // @desc    Logout user & clear cookie
 // @route   POST /api/users/logout
@@ -226,7 +218,20 @@ const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select("-password");
   res.json(users);
 });
+// @desc    Delete a user by ID
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
 
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  await user.remove();
+  res.json({ message: "User deleted successfully" });
+});
 export {
   registerUser,
   loginUser,
@@ -235,4 +240,5 @@ export {
   resetPassword,
   updateUserProfile,
   getAllUsers,
+  deleteUser
 };

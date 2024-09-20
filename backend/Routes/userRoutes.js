@@ -7,6 +7,7 @@ import {
   resetPassword,
   updateUserProfile,
   getAllUsers,
+  deleteUser, 
 } from "../Controllers/userController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -22,5 +23,6 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.put("/update", authenticate, upload.single("photo"), updateUserProfile);
 router.get("/", authenticate, authorizeAdmin, getAllUsers);
+router.delete("/:id", authenticate, authorizeAdmin, deleteUser); // Add DELETE route
 
 export default router;

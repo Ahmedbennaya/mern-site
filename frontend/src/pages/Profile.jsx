@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../redux/userSlice";
 import toast from "react-hot-toast";
@@ -8,14 +8,30 @@ const Profile = () => {
   const { userInfo, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [user, setUser] = useState({
-    firstName: userInfo?.firstName || "",
-    lastName: userInfo?.lastName || "",
-    age: userInfo?.age || "",
-    email: userInfo?.email || "",
+    firstName: "",
+    lastName: "",
+    age: "",
+    email: "",
     password: "",
     confirmPassword: "",
+    profileImage: ""
   });
   const [file, setFile] = useState(null);
+
+  // Update user state when userInfo changes
+  useEffect(() => {
+    if (userInfo) {
+      setUser({
+        firstName: userInfo.firstName || "",
+        lastName: userInfo.lastName || "",
+        age: userInfo.age || "",
+        email: userInfo.email || "",
+        password: "",
+        confirmPassword: "",
+        profileImage: userInfo.profileImage || ""
+      });
+    }
+  }, [userInfo]);
 
   const changeHandler = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -31,16 +47,16 @@ const Profile = () => {
     }
 
     // Handle image upload if a new file is selected
-    let photoUrl = userInfo?.photo || "";
+    let photoUrl = userInfo?.profileImage || "";
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "ec5cj3s7");
+      formData.append("upload_preset", "dc1zy9h63");
 
       try {
         const { data } = await axios.post(
           "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload",
-          formData
+          formData,
         );
         photoUrl = data.url;  
       } catch (error) {
@@ -53,7 +69,7 @@ const Profile = () => {
     try {
       const response = await axios.put(
         "http://localhost:5000/api/users/update",
-        { ...user, photo: photoUrl },
+        { ...user, profileImage: photoUrl },
         {
           headers: {
             Authorization: `Bearer ${token}`, 
@@ -61,7 +77,7 @@ const Profile = () => {
         }
       );
 
-      dispatch(updateUser({ ...user, photo: photoUrl }));  
+      dispatch(updateUser({ ...user, profileImage: photoUrl }));  
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Failed to update profile:", error.response || error.message);
@@ -70,7 +86,7 @@ const Profile = () => {
   };
 
   const handleErrorResponse = (error) => {
-    if (error.response?.status === 401) {  // Check for unauthorized error
+    if (error.response?.status === 401) {  
       toast.error("Unauthorized: Please log in again.");
     } else if (error.response?.status === 500) {
       toast.error("Server error: Please try again later.");
@@ -106,7 +122,7 @@ const Profile = () => {
         <div className="space-y-6">
           <div className="flex items-center">
             <img
-              src={userInfo.photo || "https://via.placeholder.com/150"}
+              src={user.profileImage || "https://via.placeholder.com/150"}
               alt="User avatar"
               className="w-24 h-24 rounded-full border-2 border-indigo-300"
             />

@@ -9,7 +9,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import consultationRoutes from "./Routes/bookConsultationRoutes.js";
 import emailRoutes from './Routes/emailRoutes.js';
-
+import orderRoutes from './Routes/orderRoutes.js';
+import uploadRoutes from './Routes/uploadRoutes.js'; 
 dotenv.config();
 connectDB();
 
@@ -27,9 +28,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api", consultationRoutes);
-
-// email routes
+app.use('/api/orders', orderRoutes);
 app.use('/api/v1/emails', emailRoutes);
+
+// Add the upload route
+app.use("/api/uploads", uploadRoutes);  
+
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);

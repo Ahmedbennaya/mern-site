@@ -1,51 +1,62 @@
+// components/EditUser.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';  // Use `useNavigate` instead of `useHistory`
+import { useParams, useNavigate } from 'react-router-dom';
 
 const EditUser = () => {
-  const { userId } = useParams();
-  const navigate = useNavigate();  // Use `useNavigate` hook
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    role: '',
-  });
+  const { userId } = useParams();  // Get the userId from the URL
+  const navigate = useNavigate();  // For navigation after updating
+  const [user, setUser] = useState({ name: '', email: '', role: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch user data when the component mounts
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // Ensure the correct API URL for getting a single user
         const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`);
-        setUser(data);
-        setLoading(false);
+        setUser(data);  // Populate form with user data
+        setLoading(false);  // End loading
       } catch (error) {
-        setError('Failed to load user data');
+        // Handle errors and 404 (User not found)
+        if (error.response && error.response.status === 404) {
+          setError('User not found');
+        } else {
+          setError('Failed to load user data');
+        }
         setLoading(false);
       }
     };
-
     fetchUser();
-  }, [userId]);
+  }, [userId]);  // Re-run the effect when userId changes
 
+  // Handle form input changes
   const handleChange = (e) => {
     setUser({
       ...user,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,  // Update the corresponding field
     });
   };
 
+  // Handle form submission to update the user data
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();  // Prevent default form submission
     try {
+      // Call the API to update user details
       await axios.put(`http://localhost:5000/api/users/${userId}`, user);
-      navigate('/admin/users');  // Use `navigate` to programmatically redirect
+      // On success, redirect to admin users page
+      navigate('/admin/users');
     } catch (error) {
+      // Handle update errors
       setError('Failed to update user');
     }
   };
 
+  // Show loading spinner while fetching user data
   if (loading) return <p>Loading...</p>;
+  
+  // Show error message if there's any
   if (error) return <p>{error}</p>;
 
   return (
@@ -60,6 +71,7 @@ const EditUser = () => {
             value={user.name}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
+            required  // Ensure name field is not empty
           />
         </div>
         <div className="mb-4">
@@ -70,6 +82,7 @@ const EditUser = () => {
             value={user.email}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
+            required  // Ensure email field is valid
           />
         </div>
         <div className="mb-4">
@@ -79,6 +92,7 @@ const EditUser = () => {
             value={user.role}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
+            required  // Ensure role is selected
           >
             <option value="user">User</option>
             <option value="admin">Admin</option>

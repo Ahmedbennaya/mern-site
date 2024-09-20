@@ -26,9 +26,9 @@ const Login = () => {
   useEffect(() => {
     if (loggedInUser) {
       if (loggedInUser.isAdmin) {
-        navigate("/admin"); // Redirect to admin dashboard if admin
+        navigate("/admin"); 
       } else {
-        navigate("/"); // Redirect to home if normal user
+        navigate("/");
       }
     }
   }, [loggedInUser, navigate]);

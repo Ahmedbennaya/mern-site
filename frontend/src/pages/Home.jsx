@@ -1,10 +1,11 @@
-// src/Home.js
 import React, { useState, useEffect } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import AOS from 'aos'; // Import AOS for scroll animations
+import 'aos/dist/aos.css'; // Import AOS CSS
 import video from "../assets/imgs/login.mp4"; // Corrected 'vedio' to 'video'
 
 const Home = () => {
@@ -24,9 +25,9 @@ const Home = () => {
       { src: 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726680473/stoneside-custom-drapery-inverted-pleat-living-room-take-away-snow-thumbnail_ihrk2x.webp', alt: 'Curtain Image 3', path: '/curtains-drapes' },
     ],
     'Smart Home': [
-      { src: 'https://example.com/smarthome1.jpg', alt: 'Smart Home Image 1', path: '/smart-home' },
-      { src: 'https://example.com/smarthome2.jpg', alt: 'Smart Home Image 2', path: '/smart-home' },
-      { src: 'https://example.com/smarthome3.jpg', alt: 'Smart Home Image 3', path: '/smart-home' },
+      { src: 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745576/Tuya-Smart-Blind-Motor-Wifi-Automatic-Electric-Roller-Shutter-Shadows-App-Control-Lifting-Curtain-Opening-Closing_vg77e5.webp', alt: 'Smart Home Image 1', path: '/smart-home' },
+      { src: 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745626/Battery-Tuya-WiFi-Smart-Shade-Chain-Curtin-Motor-with-APP-WiFi-Remote-Control-Roller-Blinds-Drive-Motor_ua8dlk.webp', alt: 'Smart Home Image 2', path: '/smart-home' },
+      { src: 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745779/71gfPRvFqMS._AC_SL1500__xndpak.jpg', alt: 'Smart Home Image 3', path: '/smart-home' },
     ],
   };
 
@@ -39,6 +40,10 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    AOS.init({ duration: 1000 }); // Initialize AOS animations
+  }, []);
+
   const settings = {
     dots: true,
     infinite: true,
@@ -47,7 +52,7 @@ const Home = () => {
     slidesToScroll: 1,
     arrows: true,
     autoplay: true,
-    autoplaySpeed: 7000, // 7 seconds
+    autoplaySpeed: 2000, // 7 seconds
   };
 
   return (
@@ -56,13 +61,17 @@ const Home = () => {
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white">
           <div className="text-center">
             <ClipLoader color="#0000ff" size={50} />
-            <p className="mt-4 text-blue-600 text-lg">Loading, please wait...</p>
+            <p className="mt-4 text-blue-600 text-lg" aria-live="polite">Loading, please wait...</p>
           </div>
         </div>
       ) : (
         <>
-          {/* Hero Section */}
-          <section className="relative h-screen flex items-center justify-center bg-cover bg-center">
+          {/* Hero Section with Parallax Effect */}
+          <section
+            className="relative h-screen flex items-center justify-center bg-cover bg-center"
+            style={{ backgroundAttachment: 'fixed' }} // Parallax Effect
+            data-aos="fade-up"
+          >
             <video
               autoPlay
               loop
@@ -74,11 +83,12 @@ const Home = () => {
             </video>
             <div className="absolute inset-0 bg-black opacity-50"></div>
             <div className="relative z-10 text-white text-center">
-              <h1 className="text-4xl font-bold mb-4">Discover Premium Curtains</h1>
-              <p className="text-xl mb-6">Tailored for your home and style</p>
+              <h1 className="text-4xl font-bold mb-4" data-aos="fade-down">Discover Premium Curtains</h1>
+              <p className="text-xl mb-6" data-aos="fade-up">Tailored for your home and style</p>
               <button
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                 onClick={() => navigate('/blinds-shades')}
+                data-aos="fade-right"
               >
                 Shop Now
               </button>
@@ -86,17 +96,17 @@ const Home = () => {
           </section>
 
           {/* Features Section */}
-          <section className="p-4 bg-white text-left">
+          <section id="features" className="p-4 bg-white text-left" data-aos="fade-up">
             <h5 className="text-2xl font-semibold text-gray-800 mb-5 ml-72">
               <span className='text-red-700'>|</span> Bargaoui Products
             </h5>
             <p className="text-gray-600 ml-72 italic hover:not-italic tracking-tight">
-              Start decorating your space the way you love with Bargaoui Rideaux Tahar's wide range of blinds, curtains, drapes, shades, wallpapers, folding doors, and more. <br /> Explore more to enjoy custom window coverings from Bargaoui Rideaux Tahar and bring your imagination to life.
+              Start decorating your space the way you love with Bargaoui Rideaux Tahar's wide range of blinds, curtains, drapes, shades, wallpapers, folding doors, and more.
             </p>
           </section>
 
           {/* Links Section */}
-          <section className="p-8 bg-white text-center">
+          <section className="p-8 bg-white text-center" data-aos="fade-up">
             <div className="max-w-4xl mx-auto">
               <div className="flex flex-wrap justify-center gap-4">
                 <button
@@ -124,15 +134,19 @@ const Home = () => {
           </section>
 
           {/* Slick Carousel Section */}
-          <section className="relative p-8 bg-white text-center">
+          <section className="relative p-8 bg-white text-center" data-aos="zoom-in">
             <div className="max-w-6xl mx-auto flex items-center justify-between">
               {/* Left Side: Carousel */}
               <div className="w-2/3">
                 <Slider {...settings}>
                   {carouselItems.map((item, index) => (
                     <div key={index} onClick={() => navigate(item.path)} className="cursor-pointer">
-                      <div className="flex justify-center items-center">
-                        <img src={item.src} alt={item.alt} className="w-full h-full object-cover" />
+                      <div className="relative flex justify-center items-center group">
+                        <img
+                          src={item.src}
+                          alt={item.alt}
+                          className="w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 group-hover:opacity-80"
+                        />
                       </div>
                     </div>
                   ))}
@@ -141,7 +155,7 @@ const Home = () => {
 
               {/* Right Side: Dynamic Text Based on Category */}
               <div className="w-1/3 text-left pl-8">
-                <h3 className="text-2xl font-semibold mb-4 text-gray-800">About {category}</h3>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-800" data-aos="fade-left">About {category}</h3>
                 <p className="text-gray-600">
                   {category === 'Blinds & Shades' && (
                     <>
@@ -164,7 +178,7 @@ const Home = () => {
           </section>
 
           {/* Consultation Section */}
-          <section className="flex flex-col md:flex-row items-center bg-gray-100 text-gray-900 p-10 relative">
+          <section className="flex flex-col md:flex-row items-center bg-gray-100 text-gray-900 p-10 relative" data-aos="fade-up">
             {/* Left Section (Text) */}
             <div className="md:w-1/2 text-center md:text-left p-8">
               <p className="text-sm uppercase tracking-widest text-gray-600 mb-2">Let's bring our showroom to you!</p>
@@ -189,6 +203,49 @@ const Home = () => {
             {/* Right Section (Image) */}
             <div className="md:w-1/2">
               <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726688230/agencement_rvnhmz.jpg" alt="Consultation" className="object-cover w-full h-full rounded-lg shadow-lg" />
+            </div>
+          </section>
+
+          {/* Customer Reviews Section */}
+          <section className="bg-gray-50 py-12" data-aos="fade-up">
+            <h2 className="text-center text-4xl font-bold text-gray-800 mb-8">What Our Customers Say</h2>
+            <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row md:gap-8">
+              <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
+                <p className="text-lg text-gray-700 italic">"The quality of the blinds I bought was beyond my expectations. They fit perfectly in my living room!"</p>
+                <p className="mt-4 text-sm text-gray-500">- Sarah K.</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
+                <p className="text-lg text-gray-700 italic">"I loved the in-home consultation. It made choosing the right curtains so easy and stress-free."</p>
+                <p className="mt-4 text-sm text-gray-500">- John M.</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <p className="text-lg text-gray-700 italic">"The smart home solutions I installed have made my life so much easier. Highly recommend!"</p>
+                <p className="mt-4 text-sm text-gray-500">- Emily L.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Image Section with Navigation */}
+          <section className="p-8 bg-white text-center">
+            <div className="relative max-w-4xl mx-auto md:w-1/2">
+              {/* Clickable Image with Hover Text */}
+              <div className="relative group">
+                <img
+                  src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745978/the-shade-store-showroom-product-displays-25-off-sitewide-women-in-showroom-d-hp-content-block-2024-florida-950x400-1_a7xmjr.jpg"
+                  alt="Showroom"
+                  className="object-cover w-full h-full rounded-lg shadow-lg cursor-pointer"
+                  onClick={() => navigate('/stores')}
+                />
+                <div
+                  className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
+                  onClick={() => navigate('/stores')}
+                >
+                  <div className="text-white text-center p-5">
+                    <h2 className="text-2xl font-semibold">7 Showrooms Nationwide</h2>
+                    <p className="text-lg mt-2">VIEW MORE SHOWROOMS IN YOUR AREA</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         </>

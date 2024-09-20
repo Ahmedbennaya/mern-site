@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-// Fetch stores
+// Fetch stores (all stores)
 export const fetchStores = createAsyncThunk(
   'stores/fetchStores',
   async (_, { rejectWithValue }) => {
@@ -10,13 +10,14 @@ export const fetchStores = createAsyncThunk(
       const { data } = await axios.get('http://localhost:5000/api/stores');
       return data;
     } catch (error) {
+      const errorMessage = error.response?.data || 'An error occurred';
       toast.error('Failed to fetch stores');
-      return rejectWithValue(error.response.data || 'An error occurred');
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
-// Delete a store
+// Delete a store by ID
 export const deleteStore = createAsyncThunk(
   'stores/deleteStore',
   async (storeId, { rejectWithValue }) => {
@@ -25,8 +26,9 @@ export const deleteStore = createAsyncThunk(
       toast.success('Store deleted successfully');
       return storeId;
     } catch (error) {
+      const errorMessage = error.response?.data || 'An error occurred';
       toast.error('Failed to delete store');
-      return rejectWithValue(error.response.data || 'An error occurred');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -60,7 +62,7 @@ const storesSlice = createSlice({
       })
       .addCase(deleteStore.fulfilled, (state, action) => {
         state.loading = false;
-        state.stores = state.stores.filter(store => store._id !== action.payload);
+        state.stores = state.stores.filter((store) => store._id !== action.payload);
       })
       .addCase(deleteStore.rejected, (state, action) => {
         state.loading = false;
@@ -70,4 +72,3 @@ const storesSlice = createSlice({
 });
 
 export default storesSlice.reducer;
-
