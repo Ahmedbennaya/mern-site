@@ -1,5 +1,62 @@
-import { createSlice } from '@reduxjs/toolkit';
+// File: slices/cartSlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+
+// Async Thunks for Cart Operations
+
+// Fetch Cart
+export const fetchCart = createAsyncThunk('cart/fetchCart', async (userId, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Error fetching cart');
+  }
+});
+
+// Add to Cart
+export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, productId, quantity }, { rejectWithValue }) => {
+  try {
+    // Validate that productId and quantity are provided
+    if (!productId || !quantity) {
+      return rejectWithValue('Product ID and quantity are required.');
+    }
+    const { data } = await axios.post('http://localhost:5000/api/cart', { userId, productId, quantity });
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Error adding to cart');
+  }
+});
+
+// Remove from Cart
+export const removeFromCart = createAsyncThunk('cart/removeFromCart', async ({ userId, productId }, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.delete(`http://localhost:5000/api/cart/${userId}/${productId}`);
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Error removing item from cart');
+  }
+});
+
+// Clear Cart
+export const clearCart = createAsyncThunk('cart/clearCart', async (userId, { rejectWithValue }) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/cart/${userId}`);
+    return { cartItems: [], totalAmount: 0 };
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Error clearing cart');
+  }
+});
+
+// Purchase Cart
+export const purchaseCart = createAsyncThunk('cart/purchaseCart', async (orderData, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.post('http://localhost:5000/api/orders/create', orderData);
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || 'Error processing purchase');
+  }
+});
 
 const initialState = {
   cartItems: [],
@@ -12,69 +69,90 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    setCart(state, action) {
-      state.cartItems = action.payload.cartItems || [];
-      state.totalAmount = action.payload.totalAmount || 0;
-      state.error = null;  // Clear errors when cart is successfully updated
+    clearCartState(state) {
+      state.cartItems = [];
+      state.totalAmount = 0;
+      state.error = null;
     },
-    setLoading(state, action) {
-      state.loading = action.payload;
-    },
-    setError(state, action) {
-      state.error = action.payload;
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Cart
+      .addCase(fetchCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.cartItems = action.payload.cartItems || [];
+        state.totalAmount = action.payload.totalAmount || 0;
+        state.loading = false;
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Add to Cart
+      .addCase(addToCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        state.cartItems = action.payload.cartItems || [];
+        state.totalAmount = action.payload.totalAmount || 0;
+        state.loading = false;
+      })
+      .addCase(addToCart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Remove from Cart
+      .addCase(removeFromCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeFromCart.fulfilled, (state, action) => {
+        state.cartItems = action.payload.cartItems || [];
+        state.totalAmount = action.payload.totalAmount || 0;
+        state.loading = false;
+      })
+      .addCase(removeFromCart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Clear Cart
+      .addCase(clearCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(clearCart.fulfilled, (state, action) => {
+        state.cartItems = [];
+        state.totalAmount = 0;
+        state.loading = false;
+      })
+      .addCase(clearCart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Purchase Cart
+      .addCase(purchaseCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(purchaseCart.fulfilled, (state, action) => {
+        state.cartItems = [];
+        state.totalAmount = 0;
+        state.loading = false;
+      })
+      .addCase(purchaseCart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      });
   },
 });
 
-export const { setCart, setLoading, setError } = cartSlice.actions;
-
+export const { clearCartState } = cartSlice.actions;
 export default cartSlice.reducer;
-
-// Thunks for cart actions
-export const fetchCart = (userId) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const { data } = await axios.get(`http://localhost:5000/api/cart/${userId}`);
-    dispatch(setCart(data));
-  } catch (error) {
-    dispatch(setError(error.response?.data?.message || 'Error fetching cart'));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-export const addToCart = (userId, productId, quantity) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const { data } = await axios.post('http://localhost:5000/api/cart', { userId, productId, quantity });
-    dispatch(setCart(data));
-  } catch (error) {
-    dispatch(setError(error.response?.data?.message || 'Error adding to cart'));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-export const removeFromCart = (userId, productId) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const { data } = await axios.delete(`http://localhost:5000/api/cart/${userId}/${productId}`);
-    dispatch(setCart(data));
-  } catch (error) {
-    dispatch(setError(error.response?.data?.message || 'Error removing item from cart'));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-export const clearCart = (userId) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    await axios.delete(`http://localhost:5000/api/cart/${userId}`);
-    dispatch(setCart({ cartItems: [], totalAmount: 0 }));
-  } catch (error) {
-    dispatch(setError(error.response?.data?.message || 'Error clearing cart'));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};

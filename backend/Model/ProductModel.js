@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema({
   inStock: { type: Boolean, required: true },
   subcategory: [String],
   colors: [String],
+  quantity: { type: Number, required: true },  
 });
 
 const Product = mongoose.model('Product', productSchema);

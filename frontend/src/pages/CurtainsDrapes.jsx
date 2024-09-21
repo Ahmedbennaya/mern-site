@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../redux/features/cartSlice';  // Ensure we're importing the correct action
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, fetchCart } from '../redux/features/cartSlice'; 
 import curtains from "../assets/imgs/curtain.jpg";
 
 const sharedClasses = {
@@ -167,6 +167,7 @@ const CurtainsDrapes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.id); // Assuming you have user state in your Redux store
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -187,7 +188,7 @@ const CurtainsDrapes = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addToCart(product));  // Corrected the action name to match the import
+    dispatch(addToCart({ userId, productId: product._id, quantity: 1 }));
   };
 
   const handleFilterChange = (e) => {
@@ -217,8 +218,8 @@ const CurtainsDrapes = () => {
 
   const HeroSection = () => (
     <section
-    className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-    style={{ backgroundImage: `url(${curtains})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+      style={{ backgroundImage: `url(${curtains})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">
