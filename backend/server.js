@@ -20,7 +20,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // CORS configuration
-app.use(cors({ credentials: true, origin: "http://localhost:3000",   origin: "https://bargaoui-rideaux-Tahar.onrender.com",}));
+app.use(cors({ credentials: true, origin: "http://localhost:3000",   origin: "https://mern-ecommerce-ubak.onrender.com",}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
