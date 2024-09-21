@@ -3,7 +3,7 @@ import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
 import furnishings from "../assets/imgs/curtain.jpg";  
-import { addItemToCart } from '../redux/features/cartSlice';
+import { addToCart } from '../redux/features/cartSlice';
 
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
@@ -69,7 +69,7 @@ const Furnishings = () => {
   }, [filters, currentPage]); // Include currentPage in dependency array
 
   const handleAddToCart = (product) => {
-    dispatch(addItemToCart(product));
+    dispatch(addToCart(product));
   };
 
   const handleFilterChange = (e) => {

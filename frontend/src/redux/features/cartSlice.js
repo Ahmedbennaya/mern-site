@@ -1,64 +1,80 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const initialState = {
   cartItems: [],
   totalAmount: 0,
-  totalItems: 0,
+  loading: false,
+  error: null,
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addItemToCart: (state, action) => {
-      const item = action.payload;
-      const existingItem = state.cartItems.find(cartItem => cartItem.id === item.id);
-
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        state.cartItems.push({ ...item, quantity: 1 });
-      }
-
-      state.totalItems += 1;
-      state.totalAmount += item.price;
-
-      toast.success(`${item.name} added to cart!`);
+    setCart(state, action) {
+      state.cartItems = action.payload.cartItems || [];
+      state.totalAmount = action.payload.totalAmount || 0;
+      state.error = null;  // Clear errors when cart is successfully updated
     },
-    removeItemFromCart: (state, action) => {
-      const itemId = action.payload;
-      const existingItem = state.cartItems.find(cartItem => cartItem.id === itemId);
-
-      if (existingItem) {
-        state.totalItems -= 1;
-        state.totalAmount -= existingItem.price;
-
-        if (existingItem.quantity === 1) {
-          state.cartItems = state.cartItems.filter(cartItem => cartItem.id !== itemId);
-        } else {
-          existingItem.quantity -= 1;
-        }
-      }
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
-    updateItemQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const existingItem = state.cartItems.find(cartItem => cartItem.id === id);
-
-      if (existingItem && quantity > 0) {
-        const quantityDifference = quantity - existingItem.quantity;
-        existingItem.quantity = quantity;
-        state.totalAmount += quantityDifference * existingItem.price;
-        state.totalItems += quantityDifference;
-      }
+    setError(state, action) {
+      state.error = action.payload;
     },
-    clearCart: (state) => {
-      state.cartItems = [];
-      state.totalAmount = 0;
-      state.totalItems = 0;
-    }
   },
 });
 
-export const { addItemToCart, removeItemFromCart, updateItemQuantity, clearCart } = cartSlice.actions;
+export const { setCart, setLoading, setError } = cartSlice.actions;
+
 export default cartSlice.reducer;
+
+// Thunks for cart actions
+export const fetchCart = (userId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const { data } = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+    dispatch(setCart(data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Error fetching cart'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const addToCart = (userId, productId, quantity) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const { data } = await axios.post('http://localhost:5000/api/cart', { userId, productId, quantity });
+    dispatch(setCart(data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Error adding to cart'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const removeFromCart = (userId, productId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const { data } = await axios.delete(`http://localhost:5000/api/cart/${userId}/${productId}`);
+    dispatch(setCart(data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Error removing item from cart'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const clearCart = (userId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    await axios.delete(`http://localhost:5000/api/cart/${userId}`);
+    dispatch(setCart({ cartItems: [], totalAmount: 0 }));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Error clearing cart'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};

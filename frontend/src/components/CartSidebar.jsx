@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types'; // for prop validation
-import { removeItemFromCart, clearCart, updateItemQuantity } from '../redux/features/cartSlice';
+import PropTypes from 'prop-types';
+import { removeFromCart, clearCart, fetchCart, addToCart } from '../redux/features/cartSlice';
 import { Link } from 'react-router-dom';
 
 // CartItem Component
@@ -15,7 +15,7 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
       </p>
       <div className="flex items-center mt-2">
         <button
-          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+          onClick={() => onUpdateQuantity(item._id, item.quantity - 1)}
           className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
           disabled={item.quantity === 1}
           aria-label={`Decrease quantity of ${item.name}`}
@@ -24,7 +24,7 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
         </button>
         <span className="mx-2">{item.quantity}</span>
         <button
-          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+          onClick={() => onUpdateQuantity(item._id, item.quantity + 1)}
           className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
           aria-label={`Increase quantity of ${item.name}`}
         >
@@ -33,7 +33,7 @@ const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
       </div>
     </div>
     <button
-      onClick={() => onRemove(item.id)}
+      onClick={() => onRemove(item._id)}
       className="text-red-500 hover:text-red-600 transition duration-200 ml-4"
       aria-label={`Remove ${item.name} from cart`}
     >
@@ -51,9 +51,13 @@ CartItem.propTypes = {
 // CartSidebar Component
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();
-  const { cartItems = [], totalAmount } = useSelector((state) => state.cart);
+  const { cartItems = [], totalAmount, loading } = useSelector((state) => state.cart);
+  const userId = 'someUserId'; // Replace with actual user ID from auth or state
 
-  // Handle ESC key to close the cart
+  useEffect(() => {
+    dispatch(fetchCart(userId));
+  }, [dispatch, userId]);
+
   const handleEsc = useCallback((event) => {
     if (event.keyCode === 27) {
       toggleCart();
@@ -68,16 +72,24 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
   }, [handleEsc]);
 
   const handleUpdateQuantity = useCallback((id, quantity) => {
-    dispatch(updateItemQuantity({ id, quantity }));
-  }, [dispatch]);
+    if (quantity > 0) {
+      dispatch(addToCart(userId, id, quantity));
+    } else {
+      dispatch(removeFromCart(userId, id));
+    }
+  }, [dispatch, userId]);
 
   const handleRemoveItem = useCallback((id) => {
-    dispatch(removeItemFromCart(id));
-  }, [dispatch]);
+    dispatch(removeFromCart(userId, id));
+  }, [dispatch, userId]);
 
   const handleClearCart = useCallback(() => {
-    dispatch(clearCart());
-  }, [dispatch]);
+    dispatch(clearCart(userId));
+  }, [dispatch, userId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -96,7 +108,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item._id} // Ensure each item has a unique id
+                key={item._id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}

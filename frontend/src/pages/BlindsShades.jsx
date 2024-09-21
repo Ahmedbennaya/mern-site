@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import { addItemToCart } from '../redux/features/cartSlice';
+import { addToCart } from '../redux/features/cartSlice';  // Ensure we're importing the correct action
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
@@ -27,35 +27,6 @@ const FilterCheckbox = ({ label, checked, onChange }) => (
 const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
     <h2 className="text-2xl font-semibold mb-4 text-gray-900">Filter Products</h2>
-
-    {/* Size Filter */}
-    <div className="mb-6">
-      <h3 className="font-medium text-lg text-gray-700">Size</h3>
-      <div className="mt-4">
-        <label className="block text-sm text-gray-600">Width ({filters.width}cm)</label>
-        <input
-          type="range"
-          name="width"
-          min="100"
-          max="300"
-          value={filters.width}
-          onChange={handleFilterChange}
-          className="w-full mt-1"
-        />
-      </div>
-      <div className="mt-4">
-        <label className="block text-sm text-gray-600">Height ({filters.height}cm)</label>
-        <input
-          type="range"
-          name="height"
-          min="100"
-          max="300"
-          value={filters.height}
-          onChange={handleFilterChange}
-          className="w-full mt-1"
-        />
-      </div>
-    </div>
 
     {/* Availability Filter */}
     <div className="mb-6">
@@ -92,22 +63,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
       </ul>
     </div>
 
-    {/* Color Filter */}
-    <div className="mb-6">
-      <h3 className="font-medium text-lg text-gray-700">Color</h3>
-      <ul className="mt-2 space-y-2">
-        {['White', 'Beige'].map((color) => (
-          <li key={color}>
-            <FilterCheckbox
-              label={color}
-              checked={filters.color.includes(color)}
-              onChange={() => handleFilterChange({ target: { name: 'color', value: color } })}
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
-
     {/* Clear All Button */}
     <button
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full mt-4`}
@@ -118,10 +73,11 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ imageUrl, alt, price, description, onAddToCart }) => (
+const ProductCard = ({ title, imageUrl, alt, price, description, onAddToCart }) => (
   <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
     <img src={imageUrl} alt={alt} className="w-full h-56 object-cover rounded-lg mb-4" />
-    <h3 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h3>
+    <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
+    <h4 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h4>
     <p className="text-gray-600 mb-4">{description}</p>
     <button
       onClick={onAddToCart}
@@ -137,6 +93,7 @@ const ProductGallery = ({ products, handleAddToCart }) => (
     {products.map((product) => (
       <ProductCard
         key={product._id}
+        title={product.name}
         imageUrl={product.imageUrl}
         alt={product.name}
         price={product.price}
@@ -150,12 +107,9 @@ const ProductGallery = ({ products, handleAddToCart }) => (
 const BlindsShades = () => {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
-    width: 150,
-    height: 150,
     inStock: false,
     category: [],
     subCategory: [],
-    color: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -180,7 +134,7 @@ const BlindsShades = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addItemToCart(product));
+    dispatch(addToCart(product));  // Corrected the action name to match the import
   };
 
   const handleFilterChange = (e) => {
@@ -199,19 +153,16 @@ const BlindsShades = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      width: 150,
-      height: 150,
       inStock: false,
       category: [],
       subCategory: [],
-      color: [],
     });
   };
 
   const HeroSection = () => (
     <section
-    className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-    style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770562/best-smart-shades-100853311-orig_uvrwir.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+      style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770562/best-smart-shades-100853311-orig_uvrwir.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">
@@ -232,7 +183,7 @@ const BlindsShades = () => {
     return <p className="text-center mt-10 text-red-600">{error}</p>;
 
   return (
-    <div className="font-sans bg-white text-gray-900">
+    <div className="font-sans bg-gray-50 text-gray-900">
       <HeroSection />
       <div className="container mx-auto px-4 py-8">
         <div className="md:flex gap-8">

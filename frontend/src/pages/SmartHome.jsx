@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import { addItemToCart } from '../redux/features/cartSlice';
+import { addToCart } from '../redux/features/cartSlice';
 
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
@@ -66,7 +66,7 @@ const SmartHome = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addItemToCart(product));
+    dispatch(addToCart(product));
   };
 
   const handleFilterChange = (e) => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch } from 'react-redux';
-import { addItemToCart } from '../redux/features/cartSlice';
+import { addToCart } from '../redux/features/cartSlice';  // Ensure we're importing the correct action
 import curtains from "../assets/imgs/curtain.jpg";
 
 const sharedClasses = {
@@ -147,7 +147,7 @@ const ProductGallery = ({ products, handleAddToCart }) => (
         alt={product.name}
         price={product.price}
         description={product.description}
-        material={product.material} // Assuming material is included in the product data
+        material={product.material}
         onAddToCart={() => handleAddToCart(product)}
       />
     ))}
@@ -187,7 +187,7 @@ const CurtainsDrapes = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addItemToCart(product));
+    dispatch(addToCart(product));  // Corrected the action name to match the import
   };
 
   const handleFilterChange = (e) => {

@@ -1,6 +1,6 @@
 import express from 'express';
-import { getStores, createStore, getStoreById } from '../Controllers/StoreController.js'; // Ensure all controllers are imported
-import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js'; // Use authenticate and authorizeAdmin
+import { getStores, createStore, getStoreById } from '../Controllers/StoreController.js'; 
+import { authenticate, authorizeAdmin } from '../Middlewares/authMiddleware.js'; 
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.route('/').get(getStores);
 // @desc Create a new store
 // @route POST /api/admin/stores/create
 // @access Private/Admin
-router.route('/create').post(authenticate, authorizeAdmin, createStore); // Protected route, only for Admins
+router.route('/create').post(authenticate, authorizeAdmin, createStore); 
 
 // @desc Get a store by ID
 // @route GET /api/stores/:id
