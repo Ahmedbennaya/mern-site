@@ -12,7 +12,7 @@ import emailRoutes from './Routes/emailRoutes.js';
 import orderRoutes from './Routes/orderRoutes.js';
 import uploadRoutes from './Routes/uploadRoutes.js'; 
 import cartRoutes from './Routes/cartRoutes.js';
-
+import errorMiddleware from './middlewares/errorMiddleware.js';
 dotenv.config();
 connectDB();
 
