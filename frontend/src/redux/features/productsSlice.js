@@ -164,7 +164,7 @@ const productsSlice = createSlice({
         state.loading = false;
         const index = state.products.findIndex(p => p._id === action.payload._id);
         if (index !== -1) {
-          state.products[index] = action.payload; // Update the product in the state
+          state.products[index] = action.payload; 
         }
         toast.success('Product updated successfully');
       })

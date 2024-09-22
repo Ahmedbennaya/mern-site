@@ -1,10 +1,8 @@
-// src/slices/cartSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-// Define API Base URL directly
-const API_BASE_URL = 'http://localhost:5000'; // Replace with your backend URL
+const API_BASE_URL = 'http://localhost:5000';
 
 // Fetch Cart Items
 export const fetchCart = createAsyncThunk(
@@ -48,7 +46,7 @@ export const removeFromCart = createAsyncThunk(
     try {
       const { data } = await axios.delete(`${API_BASE_URL}/api/cart/${userId}/${productId}`);
       toast.success('Item removed from cart');
-      return data;
+      return data; // Return updated cart
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error removing item from cart';
       toast.error(errorMsg);
@@ -120,45 +118,57 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
-        state.cartItems = action.payload.cartItems || [];
-        state.totalAmount = action.payload.totalAmount || 0;
+        const cartItems = action.payload.cartItems || [];
+        const totalAmount = cartItems.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        );
+        state.cartItems = cartItems;
+        state.totalAmount = totalAmount;
         state.loading = false;
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
-
       // Add to Cart
       .addCase(addToCart.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
-        state.cartItems = action.payload.cartItems || [];
-        state.totalAmount = action.payload.totalAmount || 0;
+        const cartItems = action.payload.cartItems || [];
+        const totalAmount = cartItems.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        );
+        state.cartItems = cartItems;
+        state.totalAmount = totalAmount;
         state.loading = false;
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
-
       // Remove from Cart
       .addCase(removeFromCart.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.cartItems = action.payload.cartItems || [];
-        state.totalAmount = action.payload.totalAmount || 0;
+        const cartItems = action.payload.cartItems || [];
+        const totalAmount = cartItems.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        );
+        state.cartItems = cartItems;
+        state.totalAmount = totalAmount;
         state.loading = false;
       })
       .addCase(removeFromCart.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
-
       // Clear Cart
       .addCase(clearCart.pending, (state) => {
         state.loading = true;
@@ -173,7 +183,6 @@ const cartSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-
       // Purchase Cart
       .addCase(purchaseCart.pending, (state) => {
         state.loading = true;

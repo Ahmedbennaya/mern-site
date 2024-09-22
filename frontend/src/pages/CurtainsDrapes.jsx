@@ -91,7 +91,7 @@ const ProductGallery = ({ products, handleAddToCart }) => (
 const CurtainsDrapes = () => {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
-    inStock: false,
+    inStock: true,
     category: [],
   });
   const [loading, setLoading] = useState(true);
