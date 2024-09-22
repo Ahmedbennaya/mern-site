@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../redux/features/cartSlice';  
+import { addToCart } from '../redux/features/cartSlice';
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
@@ -98,7 +98,7 @@ const BlindsShades = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.user._id);  
+  const userInfo = useSelector((state) => state.auth.userInfo);  // Use userInfo from auth slice
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -119,7 +119,7 @@ const BlindsShades = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    if (!userId) {
+    if (!userInfo || !userInfo._id) {
       console.error('User ID is required to add to cart');
       return;
     }
@@ -130,7 +130,7 @@ const BlindsShades = () => {
     }
 
     // Dispatch action to add product to cart
-    dispatch(addToCart({ userId, productId: product._id, quantity: 1 }));
+    dispatch(addToCart({ userId: userInfo._id, productId: product._id, quantity: 1 }));
   };
 
   const handleFilterChange = (e) => {

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addToCart, removeFromCart, clearCart } from '../redux/features/cartSlice';
 import { Link } from 'react-router-dom';
+import CartItem from './CartItem';
 
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();

@@ -1,17 +1,23 @@
+// src/slices/cartSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+
+// Define API Base URL directly
+const API_BASE_URL = 'http://localhost:5000'; // Replace with your backend URL
 
 // Fetch Cart Items
 export const fetchCart = createAsyncThunk(
   'cart/fetchCart',
   async (userId, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`/api/cart/${userId}`);
+      const { data } = await axios.get(`${API_BASE_URL}/api/cart/${userId}`);
+      toast.success('Cart fetched successfully');
       return data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Error fetching cart'
-      );
+      const errorMsg = error.response?.data?.message || 'Error fetching cart';
+      toast.error(errorMsg);
+      return rejectWithValue(errorMsg);
     }
   }
 );
@@ -24,16 +30,13 @@ export const addToCart = createAsyncThunk(
       if (!productId || !quantity) {
         return rejectWithValue('Product ID and quantity are required.');
       }
-      const { data } = await axios.post(`/api/cart`, {
-        userId,
-        productId,
-        quantity,
-      });
+      const { data } = await axios.post(`${API_BASE_URL}/api/cart`, { userId, productId, quantity });
+      toast.success('Item added to cart');
       return data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Error adding to cart'
-      );
+      const errorMsg = error.response?.data?.message || 'Error adding to cart';
+      toast.error(errorMsg);
+      return rejectWithValue(errorMsg);
     }
   }
 );
@@ -43,12 +46,13 @@ export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.delete(`/api/cart/${userId}/${productId}`);
+      const { data } = await axios.delete(`${API_BASE_URL}/api/cart/${userId}/${productId}`);
+      toast.success('Item removed from cart');
       return data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Error removing item from cart'
-      );
+      const errorMsg = error.response?.data?.message || 'Error removing item from cart';
+      toast.error(errorMsg);
+      return rejectWithValue(errorMsg);
     }
   }
 );
@@ -58,12 +62,13 @@ export const clearCart = createAsyncThunk(
   'cart/clearCart',
   async (userId, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/cart/${userId}`);
+      await axios.delete(`${API_BASE_URL}/api/cart/${userId}`);
+      toast.success('Cart cleared');
       return { cartItems: [], totalAmount: 0 };
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Error clearing cart'
-      );
+      const errorMsg = error.response?.data?.message || 'Error clearing cart';
+      toast.error(errorMsg);
+      return rejectWithValue(errorMsg);
     }
   }
 );
@@ -73,16 +78,17 @@ export const purchaseCart = createAsyncThunk(
   'cart/purchaseCart',
   async ({ userId, shippingAddress, paymentMethod }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`/api/cart/purchase`, {
+      const { data } = await axios.post(`${API_BASE_URL}/api/cart/purchase`, {
         userId,
         shippingAddress,
         paymentMethod,
       });
+      toast.success('Purchase successful');
       return data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Error processing purchase'
-      );
+      const errorMsg = error.response?.data?.message || 'Error processing purchase';
+      toast.error(errorMsg);
+      return rejectWithValue(errorMsg);
     }
   }
 );
@@ -185,5 +191,8 @@ const cartSlice = createSlice({
   },
 });
 
+// Export clear cart action
 export const { clearCartState } = cartSlice.actions;
+
+// Export reducer as default
 export default cartSlice.reducer;

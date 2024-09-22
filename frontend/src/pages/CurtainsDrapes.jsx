@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, fetchCart } from '../redux/features/cartSlice'; 
+import { addToCart } from '../redux/features/cartSlice';
 import curtains from "../assets/imgs/curtain.jpg";
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
   button: 'px-4 py-2 rounded-lg font-semibold transition duration-300',
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondaryButton: 'bg-gray-200 text-gray-700 hover:bg-gray-300',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
 };
 
@@ -28,36 +27,7 @@ const FilterCheckbox = ({ label, checked, onChange }) => (
 const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
     <h2 className="text-2xl font-semibold mb-4 text-gray-900">Filter Products</h2>
-
-    {/* Size Filter */}
-    <div className="mb-6">
-      <h3 className="font-medium text-lg text-gray-700">Size</h3>
-      <div className="mt-4">
-        <label className="block text-sm text-gray-600">Width ({filters.width}cm)</label>
-        <input
-          type="range"
-          name="width"
-          min="100"
-          max="300"
-          value={filters.width}
-          onChange={handleFilterChange}
-          className="w-full mt-1"
-        />
-      </div>
-      <div className="mt-4">
-        <label className="block text-sm text-gray-600">Height ({filters.height}cm)</label>
-        <input
-          type="range"
-          name="height"
-          min="100"
-          max="300"
-          value={filters.height}
-          onChange={handleFilterChange}
-          className="w-full mt-1"
-        />
-      </div>
-    </div>
-
+    
     {/* Availability Filter */}
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Availability</h3>
@@ -74,39 +44,8 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
       <FilterCheckbox
         label="Curtains & Drapes"
         checked={filters.category.includes('Curtains & Drapes')}
-        onChange={() =>
-          handleFilterChange({ target: { name: 'category', value: 'Curtains & Drapes' } })
-        }
+        onChange={() => handleFilterChange({ target: { name: 'category', value: 'Curtains & Drapes' } })}
       />
-      <ul className="mt-2 space-y-2">
-        {['Pinch Pleat Curtains', 'Ripple Fold Curtains', 'Blackout Curtain'].map((subCategory) => (
-          <li key={subCategory}>
-            <FilterCheckbox
-              label={subCategory}
-              checked={filters.subCategory.includes(subCategory)}
-              onChange={() =>
-                handleFilterChange({ target: { name: 'subCategory', value: subCategory } })
-              }
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    {/* Color Filter */}
-    <div className="mb-6">
-      <h3 className="font-medium text-lg text-gray-700">Color</h3>
-      <ul className="mt-2 space-y-2">
-        {['White', 'Beige'].map((color) => (
-          <li key={color}>
-            <FilterCheckbox
-              label={color}
-              checked={filters.color.includes(color)}
-              onChange={() => handleFilterChange({ target: { name: 'color', value: color } })}
-            />
-          </li>
-        ))}
-      </ul>
     </div>
 
     {/* Clear All Button */}
@@ -119,15 +58,12 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ title, imageUrl, alt, price, description, material, onAddToCart }) => (
+const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => (
   <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
-    {/* Product Title */}
-    <img src={imageUrl} alt={alt} className="w-full h-56 object-cover rounded-lg mb-4" />
+    <img src={imageUrl} alt={title} className="w-full h-56 object-cover rounded-lg mb-4" />
     <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
     <h4 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h4>
     <p className="text-gray-600 mb-4">{description}</p>
-    {/* Additional Product Detail (Material, etc.) */}
-    <p className="text-gray-500 mb-4"><strong>Material:</strong> {material}</p>
     <button
       onClick={onAddToCart}
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
@@ -144,10 +80,8 @@ const ProductGallery = ({ products, handleAddToCart }) => (
         key={product._id}
         title={product.name}
         imageUrl={product.imageUrl}
-        alt={product.name}
         price={product.price}
         description={product.description}
-        material={product.material}
         onAddToCart={() => handleAddToCart(product)}
       />
     ))}
@@ -157,17 +91,13 @@ const ProductGallery = ({ products, handleAddToCart }) => (
 const CurtainsDrapes = () => {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
-    width: 150,
-    height: 150,
     inStock: false,
     category: [],
-    subCategory: [],
-    color: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.user.id); // Assuming you have user state in your Redux store
+  const userInfo = useSelector((state) => state.auth.userInfo);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -188,7 +118,17 @@ const CurtainsDrapes = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addToCart({ userId, productId: product._id, quantity: 1 }));
+    if (!userInfo || !userInfo._id) {
+      console.error('User ID is required to add to cart');
+      return;
+    }
+
+    if (!product || !product._id) {
+      console.error('Product ID is required to add to cart');
+      return;
+    }
+
+    dispatch(addToCart({ userId: userInfo._id, productId: product._id, quantity: 1 }));
   };
 
   const handleFilterChange = (e) => {
@@ -207,19 +147,15 @@ const CurtainsDrapes = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      width: 150,
-      height: 150,
       inStock: false,
       category: [],
-      subCategory: [],
-      color: [],
     });
   };
 
   const HeroSection = () => (
     <section
       className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-      style={{ backgroundImage: `url(${curtains})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{ backgroundImage: `url(${curtains})` }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">
