@@ -27,7 +27,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
     <h2 className="text-2xl font-semibold mb-4 text-gray-900">Filter Products</h2>
 
-    {/* Availability Filter */}
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Availability</h3>
       <FilterCheckbox
@@ -37,7 +36,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
       />
     </div>
 
-    {/* Category Filter */}
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Product Category</h3>
       <FilterCheckbox
@@ -49,7 +47,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
       />
     </div>
 
-    {/* Clear All Button */}
     <button
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full mt-4`}
       onClick={handleClearFilters}
@@ -166,6 +163,18 @@ const BlindsShades = () => {
 
   return (
     <div className="font-sans bg-gray-50 text-gray-900">
+      {/* Hero Section */}
+      <section
+        className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+        style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770948/RS_AUTO_AF02006_LIV_MODEL_03_zkllcm.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      >
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        <div className="relative z-10 text-center">
+          <h1 className="text-5xl font-bold">BlindsShades</h1>
+          <p className="mt-4 text-lg">Enhance your home with smart technology.</p>
+        </div>
+      </section>
+
       <div className="container mx-auto px-4 py-8">
         <div className="md:flex gap-8">
           <div className="md:w-1/4">

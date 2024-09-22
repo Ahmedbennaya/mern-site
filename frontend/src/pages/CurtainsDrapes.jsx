@@ -11,7 +11,9 @@ const sharedClasses = {
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
 };
-
+<div>
+  
+</div>
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
     <input
@@ -193,7 +195,9 @@ const CurtainsDrapes = () => {
         </div>
       </div>
     </div>
+    
   );
+  
 };
 
 export default CurtainsDrapes;
