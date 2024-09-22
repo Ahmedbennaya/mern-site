@@ -2,27 +2,27 @@ import Cart from '../Model/CartModel.js';
 import Product from '../Model/ProductModel.js';
 import Order from '../Model/orderModel.js';
 
-// Purchase Items and Remove from Stock
+/**
+ * @desc Purchase Items and Remove from Stock
+ * @route POST /api/cart/purchase
+ * @access Private
+ */
 export const purchaseItems = async (req, res) => {
   const { userId, shippingAddress, paymentMethod } = req.body;
 
   try {
-    // Find the cart and populate the cartItems with product details
     const cart = await Cart.findOne({ user: userId }).populate('cartItems.product');
 
-    // Check if the cart exists and has items
     if (!cart || !cart.cartItems || cart.cartItems.length === 0) {
       return res.status(400).json({ message: 'Cart is empty or not found' });
     }
 
-    // Create the order items from the cart
     const orderItems = cart.cartItems.map(item => ({
       product: item.product._id,
       quantity: item.quantity,
       price: item.product.price,
     }));
 
-    // Create the order
     const order = new Order({
       user: userId,
       orderItems,
@@ -31,23 +31,19 @@ export const purchaseItems = async (req, res) => {
       totalAmount: orderItems.reduce((total, item) => total + item.price * item.quantity, 0),
     });
 
-    // Save the order
     await order.save();
 
-    // Update stock for each product in the cart and remove purchased items
     for (const item of cart.cartItems) {
       const product = await Product.findById(item.product._id);
       if (product.quantity < item.quantity) {
         return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
       }
       product.quantity -= item.quantity;
-      await product.save();  // Save updated product stock
+      await product.save();
     }
 
-    // Clear the cart after purchase
     await Cart.findOneAndDelete({ user: userId });
 
-    // Send a success response
     res.status(200).json({ message: 'Purchase successful', order });
   } catch (error) {
     console.error('Error purchasing items:', error);
@@ -55,7 +51,11 @@ export const purchaseItems = async (req, res) => {
   }
 };
 
-// Get Cart for a User
+/**
+ * @desc Get Cart for a User
+ * @route GET /api/cart/:userId
+ * @access Private
+ */
 export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.params.userId }).populate('cartItems.product');
@@ -69,7 +69,11 @@ export const getCart = async (req, res) => {
   }
 };
 
-// Add to Cart
+/**
+ * @desc Add to Cart
+ * @route POST /api/cart
+ * @access Private
+ */
 export const addToCart = async (req, res) => {
   const { userId, productId, quantity } = req.body;
 
@@ -105,7 +109,11 @@ export const addToCart = async (req, res) => {
   }
 };
 
-// Remove from Cart
+/**
+ * @desc Remove from Cart
+ * @route DELETE /api/cart/:userId/:productId
+ * @access Private
+ */
 export const removeFromCart = async (req, res) => {
   const { userId, productId } = req.params;
 
@@ -124,7 +132,11 @@ export const removeFromCart = async (req, res) => {
   }
 };
 
-// Clear Cart
+/**
+ * @desc Clear Cart
+ * @route DELETE /api/cart/:userId
+ * @access Private
+ */
 export const clearCart = async (req, res) => {
   try {
     const cart = await Cart.findOneAndDelete({ user: req.params.userId });

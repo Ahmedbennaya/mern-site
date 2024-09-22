@@ -1,4 +1,3 @@
-
 import asyncHandler from 'express-async-handler';
 import Store from '../Model/StoreModel.js';
 
@@ -19,8 +18,8 @@ const createStore = asyncHandler(async (req, res) => {
   const store = new Store({
     name,
     address,
-    latitude, // include latitude
-    longitude, // include longitude
+    latitude, 
+    longitude, 
     hours,
     phone,
     mapLink,

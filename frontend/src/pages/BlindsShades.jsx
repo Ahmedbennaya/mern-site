@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../redux/features/cartSlice';  // Ensure we're importing the correct action
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/features/cartSlice';  
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
   button: 'px-4 py-2 rounded-lg font-semibold transition duration-300',
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondaryButton: 'bg-gray-200 text-gray-700 hover:bg-gray-300',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
 };
 
@@ -48,19 +47,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
           handleFilterChange({ target: { name: 'category', value: 'Blinds & Shades' } })
         }
       />
-      <ul className="mt-2 space-y-2">
-        {['Roller Shades', 'Roman Shades', 'Vertical Blinds'].map((subCategory) => (
-          <li key={subCategory}>
-            <FilterCheckbox
-              label={subCategory}
-              checked={filters.subCategory.includes(subCategory)}
-              onChange={() =>
-                handleFilterChange({ target: { name: 'subCategory', value: subCategory } })
-              }
-            />
-          </li>
-        ))}
-      </ul>
     </div>
 
     {/* Clear All Button */}
@@ -73,9 +59,9 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ title, imageUrl, alt, price, description, onAddToCart }) => (
+const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => (
   <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
-    <img src={imageUrl} alt={alt} className="w-full h-56 object-cover rounded-lg mb-4" />
+    <img src={imageUrl} alt={title} className="w-full h-56 object-cover rounded-lg mb-4" />
     <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
     <h4 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h4>
     <p className="text-gray-600 mb-4">{description}</p>
@@ -92,10 +78,9 @@ const ProductGallery = ({ products, handleAddToCart }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {products.map((product) => (
       <ProductCard
-        key={product._id}
+        key={product._id}  
         title={product.name}
         imageUrl={product.imageUrl}
-        alt={product.name}
         price={product.price}
         description={product.description}
         onAddToCart={() => handleAddToCart(product)}
@@ -109,11 +94,11 @@ const BlindsShades = () => {
   const [filters, setFilters] = useState({
     inStock: false,
     category: [],
-    subCategory: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user._id);  
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -134,7 +119,18 @@ const BlindsShades = () => {
   }, [filters]);
 
   const handleAddToCart = (product) => {
-    dispatch(addToCart(product));  // Corrected the action name to match the import
+    if (!userId) {
+      console.error('User ID is required to add to cart');
+      return;
+    }
+
+    if (!product || !product._id) {
+      console.error('Product ID is required to add to cart');
+      return;
+    }
+
+    // Dispatch action to add product to cart
+    dispatch(addToCart({ userId, productId: product._id, quantity: 1 }));
   };
 
   const handleFilterChange = (e) => {
@@ -155,22 +151,8 @@ const BlindsShades = () => {
     setFilters({
       inStock: false,
       category: [],
-      subCategory: [],
     });
   };
-
-  const HeroSection = () => (
-    <section
-      className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-      style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770562/best-smart-shades-100853311-orig_uvrwir.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-    >
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="relative z-10 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold">Blinds & Shades</h1>
-        <p className="mt-4 text-lg sm:text-xl">Discover our range of stylish blinds and shades for every room.</p>
-      </div>
-    </section>
-  );
 
   if (loading)
     return (
@@ -184,7 +166,6 @@ const BlindsShades = () => {
 
   return (
     <div className="font-sans bg-gray-50 text-gray-900">
-      <HeroSection />
       <div className="container mx-auto px-4 py-8">
         <div className="md:flex gap-8">
           <div className="md:w-1/4">

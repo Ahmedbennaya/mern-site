@@ -181,7 +181,7 @@ const productsSlice = createSlice({
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = state.products.filter(product => product._id !== action.payload); // Remove the deleted product from the state
+        state.products = state.products.filter(product => product._id !== action.payload);
         toast.success('Product deleted successfully');
       })
       .addCase(deleteProduct.rejected, (state, action) => {

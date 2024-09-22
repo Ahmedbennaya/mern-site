@@ -110,7 +110,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item.id} // Ensure each item has a unique id
+                key={item._id} 
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}

@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import AOS from 'aos'; // Import AOS for scroll animations
-import 'aos/dist/aos.css'; // Import AOS CSS
-import video from "../assets/imgs/login.mp4"; // Corrected 'vedio' to 'video'
+import AOS from 'aos'; 
+import 'aos/dist/aos.css'; 
+import video from "../assets/imgs/login.mp4"; 
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState('Blinds & Shades'); // State to track selected category
+  const [category, setCategory] = useState('Blinds & Shades'); 
   const navigate = useNavigate();
 
   const carouselData = {
@@ -31,8 +31,7 @@ const Home = () => {
     ],
   };
 
-  const carouselItems = carouselData[category]; // Select carousel items based on selected category
-
+  const carouselItems = carouselData[category]; 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -41,7 +40,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    AOS.init({ duration: 1000 }); // Initialize AOS animations
+    AOS.init({ duration: 1000 }); 
   }, []);
 
   const settings = {
@@ -52,7 +51,7 @@ const Home = () => {
     slidesToScroll: 1,
     arrows: true,
     autoplay: true,
-    autoplaySpeed: 2000, // 7 seconds
+    autoplaySpeed: 2000, 
   };
 
   return (
@@ -69,7 +68,7 @@ const Home = () => {
           {/* Hero Section with Parallax Effect */}
           <section
             className="relative h-screen flex items-center justify-center bg-cover bg-center"
-            style={{ backgroundAttachment: 'fixed' }} // Parallax Effect
+            style={{ backgroundAttachment: 'fixed' }} 
             data-aos="fade-up"
           >
             <video

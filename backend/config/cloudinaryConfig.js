@@ -16,8 +16,8 @@ cloudinary.v2.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
-    folder: 'profile_pictures',  // Folder to store uploaded images
-    allowed_formats: ['jpg', 'png', 'jpeg'],  // Allowed formats
+    folder: 'profile_pictures',  
+    allowed_formats: ['jpg', 'png', 'jpeg'],  
   },
 });
 

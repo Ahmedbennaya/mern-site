@@ -1,4 +1,3 @@
-// File: slices/cartSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -17,10 +16,10 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (userId, { rej
 // Add to Cart
 export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, productId, quantity }, { rejectWithValue }) => {
   try {
-    // Validate that productId and quantity are provided
     if (!productId || !quantity) {
       return rejectWithValue('Product ID and quantity are required.');
     }
+
     const { data } = await axios.post('http://localhost:5000/api/cart', { userId, productId, quantity });
     return data;
   } catch (error) {
@@ -127,7 +126,7 @@ const cartSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(clearCart.fulfilled, (state, action) => {
+      .addCase(clearCart.fulfilled, (state) => {
         state.cartItems = [];
         state.totalAmount = 0;
         state.loading = false;
@@ -142,7 +141,7 @@ const cartSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(purchaseCart.fulfilled, (state, action) => {
+      .addCase(purchaseCart.fulfilled, (state) => {
         state.cartItems = [];
         state.totalAmount = 0;
         state.loading = false;

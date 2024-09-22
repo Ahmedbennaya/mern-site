@@ -10,6 +10,7 @@ const cartItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 1,
+    min: [1, 'Quantity must be at least 1'],
   },
 });
 
@@ -20,6 +21,17 @@ const cartSchema = new mongoose.Schema({
     required: true,
   },
   cartItems: [cartItemSchema],
+});
+
+
+cartSchema.pre('save', async function (next) {
+  for (const item of this.cartItems) {
+    const product = await mongoose.model('Product').findById(item.product);
+    if (product.quantity < item.quantity) {
+      return next(new Error(`Insufficient stock for product ${product.name}`));
+    }
+  }
+  next();
 });
 
 const Cart = mongoose.model('Cart', cartSchema);

@@ -26,7 +26,7 @@ const bookConsultation = asyncHandler(async (req, res) => {
 
   // Send email to the user with the consultation details
   await sendEmail({
-    email: consultation.email, // Use the correct variable
+    email: consultation.email, 
     subject: 'Consultation Request Received',
     message: `Dear ${consultation.name},
 
@@ -41,8 +41,8 @@ Here are the details you submitted:
 We will get back to you shortly.
 
 Best regards,
-[Your Company Name]
-    `, // Replace [Your Company Name] with your actual company name
+[Bargaoui rideux Tahar]
+    `, 
   });
 
   res.status(201).json({
