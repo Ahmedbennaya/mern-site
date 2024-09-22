@@ -1,4 +1,4 @@
-import sendEmail from "../utils/sendEmail.js"
+import sendEmail from "../Utils/sendEmail.js"
 
 export const sendWelcomeEmail = async (req, res) => {
   const { email, subject, message } = req.body;

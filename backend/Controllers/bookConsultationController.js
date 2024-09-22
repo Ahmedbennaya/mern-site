@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Consultation from "../Model/consultationModel.js"; 
-import sendEmail from "../utils/sendEmail.js";
+import sendEmail from "../Utils/sendEmail.js";
 
 // @desc Book a consultation
 // @route POST /api/book-consultation
