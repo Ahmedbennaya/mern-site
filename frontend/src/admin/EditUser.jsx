@@ -1,11 +1,10 @@
-// components/EditUser.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const EditUser = () => {
-  const { userId } = useParams();  // Get the userId from the URL
-  const navigate = useNavigate();  // For navigation after updating
+  const { userId } = useParams();  
+  const navigate = useNavigate(); 
   const [user, setUser] = useState({ name: '', email: '', role: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,13 +28,13 @@ const EditUser = () => {
       }
     };
     fetchUser();
-  }, [userId]);  // Re-run the effect when userId changes
+  }, [userId]);  
 
   // Handle form input changes
   const handleChange = (e) => {
     setUser({
       ...user,
-      [e.target.name]: e.target.value,  // Update the corresponding field
+      [e.target.name]: e.target.value,  
     });
   };
 

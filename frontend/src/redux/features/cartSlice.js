@@ -1,62 +1,93 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Async Thunks for Cart Operations
-
-// Fetch Cart
-export const fetchCart = createAsyncThunk('cart/fetchCart', async (userId, { rejectWithValue }) => {
-  try {
-    const { data } = await axios.get(`http://localhost:5000/api/cart/${userId}`);
-    return data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Error fetching cart');
+// Fetch Cart Items
+export const fetchCart = createAsyncThunk(
+  'cart/fetchCart',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/api/cart/${userId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error fetching cart'
+      );
+    }
   }
-});
+);
 
 // Add to Cart
-export const addToCart = createAsyncThunk('cart/addToCart', async ({ userId, productId, quantity }, { rejectWithValue }) => {
-  try {
-    if (!productId || !quantity) {
-      return rejectWithValue('Product ID and quantity are required.');
+export const addToCart = createAsyncThunk(
+  'cart/addToCart',
+  async ({ userId, productId, quantity }, { rejectWithValue }) => {
+    try {
+      if (!productId || !quantity) {
+        return rejectWithValue('Product ID and quantity are required.');
+      }
+      const { data } = await axios.post(`/api/cart`, {
+        userId,
+        productId,
+        quantity,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error adding to cart'
+      );
     }
-
-    const { data } = await axios.post('http://localhost:5000/api/cart', { userId, productId, quantity });
-    return data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Error adding to cart');
   }
-});
+);
 
 // Remove from Cart
-export const removeFromCart = createAsyncThunk('cart/removeFromCart', async ({ userId, productId }, { rejectWithValue }) => {
-  try {
-    const { data } = await axios.delete(`http://localhost:5000/api/cart/${userId}/${productId}`);
-    return data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Error removing item from cart');
+export const removeFromCart = createAsyncThunk(
+  'cart/removeFromCart',
+  async ({ userId, productId }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.delete(`/api/cart/${userId}/${productId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error removing item from cart'
+      );
+    }
   }
-});
+);
 
 // Clear Cart
-export const clearCart = createAsyncThunk('cart/clearCart', async (userId, { rejectWithValue }) => {
-  try {
-    await axios.delete(`http://localhost:5000/api/cart/${userId}`);
-    return { cartItems: [], totalAmount: 0 };
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Error clearing cart');
+export const clearCart = createAsyncThunk(
+  'cart/clearCart',
+  async (userId, { rejectWithValue }) => {
+    try {
+      await axios.delete(`/api/cart/${userId}`);
+      return { cartItems: [], totalAmount: 0 };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error clearing cart'
+      );
+    }
   }
-});
+);
 
 // Purchase Cart
-export const purchaseCart = createAsyncThunk('cart/purchaseCart', async (orderData, { rejectWithValue }) => {
-  try {
-    const { data } = await axios.post('http://localhost:5000/api/orders/create', orderData);
-    return data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Error processing purchase');
+export const purchaseCart = createAsyncThunk(
+  'cart/purchaseCart',
+  async ({ userId, shippingAddress, paymentMethod }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`/api/cart/purchase`, {
+        userId,
+        shippingAddress,
+        paymentMethod,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error processing purchase'
+      );
+    }
   }
-});
+);
 
+// Initial State
 const initialState = {
   cartItems: [],
   totalAmount: 0,
@@ -64,6 +95,7 @@ const initialState = {
   error: null,
 };
 
+// Cart Slice
 const cartSlice = createSlice({
   name: 'cart',
   initialState,

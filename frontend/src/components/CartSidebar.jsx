@@ -1,100 +1,75 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types'; // For prop validation
-import { removeFromCart, clearCart } from '../redux/features/cartSlice'; // Updated imports
+import PropTypes from 'prop-types';
+import { addToCart, removeFromCart, clearCart } from '../redux/features/cartSlice';
 import { Link } from 'react-router-dom';
 
-// CartItem Component
-const CartItem = React.memo(({ item, onUpdateQuantity, onRemove }) => (
-  <div className="flex justify-between items-center mb-6">
-    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg shadow-sm" />
-    <div className="ml-4 flex-grow">
-      <h3 className="font-medium text-lg">{item.name}</h3>
-      <p className="text-gray-500">
-        ${item.price} x {item.quantity} = ${(item.price * item.quantity).toFixed(2)}
-      </p>
-      <div className="flex items-center mt-2">
-        <button
-          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-          className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-          disabled={item.quantity === 1}
-          aria-label={`Decrease quantity of ${item.name}`}
-        >
-          -
-        </button>
-        <span className="mx-2">{item.quantity}</span>
-        <button
-          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-          className="px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-          aria-label={`Increase quantity of ${item.name}`}
-        >
-          +
-        </button>
-      </div>
-    </div>
-    <button
-      onClick={() => onRemove(item.id)}
-      className="text-red-500 hover:text-red-600 transition duration-200 ml-4"
-      aria-label={`Remove ${item.name} from cart`}
-    >
-      Remove
-    </button>
-  </div>
-));
-
-CartItem.propTypes = {
-  item: PropTypes.object.isRequired,
-  onUpdateQuantity: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-};
-
-// CartSidebar Component
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();
+
+  // Get user information from the Redux store (authSlice)
+  const { userInfo } = useSelector((state) => state.auth);  // Fetch userInfo from authSlice
   const { cartItems = [], totalAmount } = useSelector((state) => state.cart);
 
-  // Handle ESC key to close the cart
-  const handleEsc = useCallback((event) => {
-    if (event.keyCode === 27) {
-      toggleCart();
-    }
-  }, [toggleCart]);
+  const userId = userInfo?._id;  // Get userId from userInfo
 
   useEffect(() => {
-    window.addEventListener('keydown', handleEsc);
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-    };
-  }, [handleEsc]);
+    if (!userId) {
+      console.error('User ID is missing');  // Log an error if userId is missing
+    }
+  }, [userId]);
 
   // Update quantity in the cart
-  const handleUpdateQuantity = useCallback((id, quantity) => {
-    dispatch(
-      addToCart({
-        userId: 'USER_ID', // Replace with actual user ID
-        productId: id,
-        quantity
-      })
-    );
-  }, [dispatch]);
+  const handleUpdateQuantity = useCallback(
+    (id, quantity) => {
+      if (!userId) {
+        console.error('User ID is required to add to cart');
+        return;
+      }
+
+      dispatch(
+        addToCart({
+          userId,
+          productId: id,
+          quantity,
+        })
+      );
+    },
+    [dispatch, userId]
+  );
 
   // Remove item from cart
-  const handleRemoveItem = useCallback((id) => {
-    dispatch(
-      removeFromCart({
-        userId: 'USER_ID', // Replace with actual user ID
-        productId: id
-      })
-    );
-  }, [dispatch]);
+  const handleRemoveItem = useCallback(
+    (id) => {
+      if (!userId) {
+        console.error('User ID is required to remove from cart');
+        return;
+      }
+
+      dispatch(
+        removeFromCart({
+          userId,
+          productId: id,
+        })
+      );
+    },
+    [dispatch, userId]
+  );
 
   // Clear the entire cart
   const handleClearCart = useCallback(() => {
-    dispatch(clearCart('USER_ID')); // Replace with actual user ID
-  }, [dispatch]);
+    if (!userId) {
+      console.error('User ID is required to clear the cart');
+      return;
+    }
+
+    dispatch(clearCart(userId));
+  }, [dispatch, userId]);
 
   return (
-    <div className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+    <div
+      className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : '-translate-x-full'}`}
+    >
       <div className="w-80 bg-white p-6 shadow-lg relative h-full">
         <button
           onClick={toggleCart}
@@ -110,7 +85,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item._id} 
+                key={item._id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}
