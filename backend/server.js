@@ -1,21 +1,21 @@
-import express from "express";
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-import userRoutes from "./Routes/userRoutes.js";
-import storeRoutes from "./Routes/StoreRoutes.js";
+import express from 'express';
+import dotenv from 'dotenv';
+import connectDB from './config/db.js';
+import userRoutes from './Routes/userRoutes.js';
+import storeRoutes from './Routes/StoreRoutes.js';
 import productRoutes from "./Routes/productRoutes.js";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import consultationRoutes from "./Routes/bookConsultationRoutes.js";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import consultationRoutes from './Routes/bookConsultationRoutes.js';
 import emailRoutes from './Routes/emailRoutes.js';
 import orderRoutes from './Routes/orderRoutes.js';
 import uploadRoutes from './Routes/uploadRoutes.js'; 
 import cartRoutes from './Routes/cartRoutes.js';
-import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
+import { errorHandler, notFound } from './Middlewares/errorMiddleware.js';
 dotenv.config();
 connectDB();
 
-const app = express()
+const app = express();
 const PORT = process.env.PORT || 4000;
 
 // CORS configuration
