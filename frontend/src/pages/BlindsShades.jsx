@@ -63,7 +63,7 @@ const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => (
   <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
     <img src={imageUrl} alt={title} className="w-full h-56 object-cover rounded-lg mb-4" />
     <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
-    <h4 className="text-xl font-semibold mb-2 text-gray-900">From ${price.toFixed(2)}</h4>
+    <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {price.toFixed(2)}</h4>
     <p className="text-gray-600 mb-4">{description}</p>
     <button
       onClick={onAddToCart}
@@ -98,7 +98,7 @@ const BlindsShades = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.auth.userInfo);  // Use userInfo from auth slice
+  const userInfo = useSelector((state) => state.auth.userInfo);  
 
   useEffect(() => {
     const fetchProducts = async () => {

@@ -3,8 +3,8 @@ import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import JWT from "jsonwebtoken"; 
-import sendEmail from "../Utils/sendEmail.js";
 import User from "../Model/UserModel.js";
+import sendEmail from "../utils/sendEmail.js";
 
 // @desc    Register a new user  
 // @route   POST /api/users/registerUser  
