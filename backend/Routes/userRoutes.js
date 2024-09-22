@@ -10,7 +10,7 @@ import {
   deleteUser, 
 } from "../Controllers/userController.js";
 
-import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
+import { authenticate, authorizeAdmin } from "../Middlewares/authMiddleware.js";
 import { upload } from "../config/cloudinaryConfig.js";
 
 const router = express.Router();
