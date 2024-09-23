@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createOrder } from '../redux/features/orderSlice';
+import { clearCart } from '../redux/features/cartSlice'; // Import clearCart action
 import { toast } from 'react-hot-toast';
 
 const Checkout = () => {
   const dispatch = useDispatch();
-  
+
   // Get cart items and total amount from Redux state
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
-  
+
   // Get user information from the auth slice
   const { userInfo } = useSelector((state) => state.auth);
-  
+
   // Get order state (loading, error) from order slice
   const { loading, error } = useSelector((state) => state.order);
 
@@ -65,7 +66,9 @@ const Checkout = () => {
       .unwrap()
       .then((response) => {
         toast.success('Order submitted successfully!');
-        console.log('Order response:', response);
+
+        // Clear cart after successful order
+        dispatch(clearCart(userInfo._id)); // Clear the cart for the logged-in user
       })
       .catch((err) => {
         toast.error(`Order submission failed: ${err.message}`);

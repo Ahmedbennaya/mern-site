@@ -10,11 +10,25 @@ export const createOrder = createAsyncThunk(
   async (orderData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/orders/create`, orderData);
-      toast.success('Order created successfully');
-      return response.data.order;
+      
+      // Ensure response contains the 'order' data
+      if (response?.data?.order) {
+        toast.success('Order created successfully');
+        return response.data.order;
+      } else {
+        throw new Error('No order data returned from the server.');
+      }
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 'Failed to create order';
-      toast.error(errorMsg);
+      // Log the full error response for debugging
+      console.error('Error creating order:', error);
+      
+      // Handle different cases of error response
+      const errorMsg = error?.response?.data?.message || 'Failed to create order. Please try again later.';
+      
+      // Display a user-friendly error message in the toast
+      toast.error(`Order submission failed: ${errorMsg}`);
+      
+      // Reject with a custom error message for Redux state handling
       return rejectWithValue(errorMsg);
     }
   }
@@ -30,9 +44,7 @@ const initialState = {
 const orderSlice = createSlice({
   name: 'order',
   initialState,
-  reducers: {
-    // You can define additional synchronous reducers here if needed
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Pending case for order creation
@@ -47,7 +59,7 @@ const orderSlice = createSlice({
       })
       // Rejected case for order creation
       .addCase(createOrder.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload; // Set error message
         state.loading = false;
       });
   },

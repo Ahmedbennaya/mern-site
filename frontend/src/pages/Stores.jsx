@@ -22,17 +22,22 @@ const LocateUser = ({ mapRef }) => {
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        const userLatLng = [latitude, longitude];
-        map.setView(userLatLng, 14); // Center the map on the user's location
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const userLatLng = [latitude, longitude];
+          map.setView(userLatLng, 14); // Center the map on the user's location
 
-        // Optionally, add a marker for the user's location
-        const userMarker = L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
+          // Optionally, add a marker for the user's location
+          L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
 
-        // Update mapRef to keep track of map instance
-        mapRef.current = map;
-      });
+          // Update mapRef to keep track of map instance
+          mapRef.current = map;
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
     }
   }, [map, mapRef]);
 
@@ -44,12 +49,12 @@ const Stores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
-  const mapRef = useRef();
+  const mapRef = useRef(null);
 
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/stores'); // Adjust to your backend URL
+        const { data } = await axios.get('http://localhost:5000/api/stores'); 
         setStores(data);
         if (data.length > 0) {
           setSelectedStore(data[0]); // Select the first store as default
@@ -67,10 +72,10 @@ const Stores = () => {
   const handleStoreClick = (store) => {
     setSelectedStore(store);
     if (mapRef.current) {
-      mapRef.current.flyTo([store.latitude, store.longitude], 15); // Smooth transition to store location
+      mapRef.current.flyTo([store.latitude, store.longitude], 15); 
       setTimeout(() => {
-        mapRef.current.invalidateSize(); // Refresh map layout to ensure the view updates
-      }, 500); // Delay to ensure the map transitions first
+        mapRef.current.invalidateSize(); 
+      }, 500); 
     }
   };
 
@@ -120,22 +125,33 @@ const Stores = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  <LocateUser mapRef={mapRef} /> {/* User location tracking */}
+                  <LocateUser mapRef={mapRef} /> 
                   {stores.map((store) => (
                     <Marker 
                       key={store._id} 
                       position={[store.latitude, store.longitude]}
-                      opacity={selectedStore._id === store._id ? 1 : 0.5} // Highlight selected store's marker
+                      opacity={selectedStore._id === store._id ? 1 : 0.5} r
                     >
                       <Popup>
-                        {store.name}<br/>{store.address}<br/>{store.phone}
-                      </Popup>
+  <img src={store.imageUrl}  className="w-full h-auto" />
+  <h3>{store.name}</h3>
+</Popup>
+
                     </Marker>
                   ))}
                 </MapContainer>
               </div>
 
               <div className="p-6 bg-white shadow-lg">
+               
+                {selectedStore.imageUrl && (
+                  <img
+                    src={selectedStore.imageUrl}
+                    alt={selectedStore.name}
+                    className="w-full h-64 object-cover mb-4"
+                  />
+                )}
+
                 <h2 className="text-2xl font-bold mb-2">{selectedStore.name}</h2>
                 <p className="text-gray-700 mb-4">{selectedStore.address}</p>
                 <p className="text-gray-700 mb-4"><strong>Phone:</strong> {selectedStore.phone}</p>

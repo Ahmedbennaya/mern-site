@@ -17,7 +17,7 @@ export const addToCart = createAsyncThunk(
         product,
         quantity
       };
-      toast.success('Item added to cart');
+      toast.success(`${product.name} added to cart`);
       return cartItem;
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error adding to cart';
@@ -33,7 +33,7 @@ export const removeFromCart = createAsyncThunk(
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
       // Normally here, you'd call the API to update the backend
-      toast.success('Item removed from cart');
+      toast.success(`${productId.name} from cart`);
       return productId; // Return the productId to filter it from the cart state
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error removing item from cart';
