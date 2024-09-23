@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import AOS from 'aos'; 
 import 'aos/dist/aos.css'; 
-import video from "../assets/imgs/login.mp4"; 
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -77,7 +76,7 @@ const Home = () => {
               muted
               className="absolute inset-0 w-full h-full object-cover"
             >
-              <source src={video} type="video/mp4" />
+              <source src= "https://res.cloudinary.com/dc1zy9h63/video/upload/v1727056844/login_ckvyiy.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-black opacity-50"></div>

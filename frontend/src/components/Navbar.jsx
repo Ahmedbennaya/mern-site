@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/userSlice';
-import logo from '../assets/logo/LOGONOIR.png';
-import shopping from '../assets/logo/shoping.png';
 import CartSidebar from './CartSidebar';
 import { clearCredentials } from '../redux/features/authSlice';
 import { FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'; // Importing icons
@@ -130,8 +128,8 @@ const Navbar = () => {
       <nav className="bg-white">
         <div className="container mx-auto px-4 lg:px-8 py-4 flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="Bargaoui Tahar Logo" className="h-10" />
+          <Link to="/" className="flex items-center space-x-2 px-4">
+            <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057529/LOGONOIR_vuiuld.png" alt="Bargaoui Tahar Logo" className="h-10" />
           </Link>
 
           {/* Primary Navigation */}
@@ -184,7 +182,7 @@ const Navbar = () => {
 
             {/* Cart Button */}
             <button onClick={toggleCart} className="relative">
-              <img src={shopping} alt="Shopping Cart" className="h-8" />
+              <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057554/shoping_djfcyi.png" alt="Shopping Cart" className="h-8" />
               {cartItemsCount > 0 && (
                 <span className="absolute top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full text-center">
                   {cartItemsCount}

@@ -13,16 +13,22 @@ import uploadRoutes from './Routes/uploadRoutes.js';
 import cartRoutes from './Routes/cartRoutes.js';
 import { errorHandler, notFound } from './Middlewares/errorMiddleware.js';
 dotenv.config();
+
+
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 // CORS configuration
-app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://mern-site-z5gs.onrender.com"] }));
+app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://api.render.com/deploy/srv-cro5j6pu0jms73c70kp0?key=2c7tfN5hx2E"] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.get('/', (req, res) => {
+  console.log('Root route accessed');
+  res.status(200).json({ message: 'Welcome to the API' });
+});
 
 // Routes
 app.use("/api/users", userRoutes);

@@ -27,7 +27,6 @@ const BookConsultation = () => {
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/book-consultation",

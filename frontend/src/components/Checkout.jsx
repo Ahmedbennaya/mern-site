@@ -25,7 +25,7 @@ const Checkout = () => {
 
   const handleOrderSubmit = () => {
     const orderData = {
-      user: 'USER_ID',  // Replace this with the logged-in user ID
+      user: 'USER_ID',  
       orderItems: cartItems.map((item) => ({
         productId: item.product._id,
         quantity: item.quantity,

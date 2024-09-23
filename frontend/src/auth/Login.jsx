@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/userSlice";
-import loginimg from "../assets/imgs/img.jpg"; 
+
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -40,7 +40,7 @@ const Login = () => {
           <div
             className="hidden md:block lg:w-1/2 bg-cover bg-blue-700"
             style={{
-              backgroundImage: `url(${loginimg})`,
+              backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057161/img-BzaXGVBN_trot2k.jpg"})`,
             }}
           ></div>
           <div className="w-full p-8 lg:w-1/2">

@@ -3,7 +3,6 @@ import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
-import curtains from "../assets/imgs/curtain.jpg";
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
@@ -11,9 +10,7 @@ const sharedClasses = {
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
 };
-<div>
-  
-</div>
+
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
     <input
@@ -157,7 +154,7 @@ const CurtainsDrapes = () => {
   const HeroSection = () => (
     <section
       className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-      style={{ backgroundImage: `url(${curtains})` }}
+      style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1727056323/curtain_cda4ov.jpg"})` }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 text-center">
