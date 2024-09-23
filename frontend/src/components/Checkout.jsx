@@ -5,7 +5,14 @@ import { toast } from 'react-hot-toast';
 
 const Checkout = () => {
   const dispatch = useDispatch();
+  
+  // Get cart items and total amount from Redux state
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
+  
+  // Get user information from the auth slice
+  const { userInfo } = useSelector((state) => state.auth);
+  
+  // Get order state (loading, error) from order slice
   const { loading, error } = useSelector((state) => state.order);
 
   const [shippingAddress, setShippingAddress] = useState({
@@ -18,6 +25,7 @@ const Checkout = () => {
 
   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
 
+  // Handle changes in the shipping address form
   const handleShippingChange = (e) => {
     const { name, value } = e.target;
     setShippingAddress((prev) => ({
@@ -26,14 +34,22 @@ const Checkout = () => {
     }));
   };
 
+  // Handle order submission
   const handleOrderSubmit = () => {
     if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode || !shippingAddress.country) {
       toast.error('Please fill in all shipping address fields');
       return;
     }
 
+    // If no user is logged in, show an error
+    if (!userInfo || !userInfo._id) {
+      toast.error('You must be logged in to place an order');
+      return;
+    }
+
+    // Create order object
     const orderData = {
-      user: 'USER_ID', // Replace this with the actual user ID from authentication
+      user: userInfo._id, // Get user ID from auth state
       orderItems: cartItems.map((item) => ({
         productId: item.product._id,
         quantity: item.quantity,
@@ -44,15 +60,16 @@ const Checkout = () => {
       totalAmount
     };
 
+    // Dispatch the createOrder action and handle success/error
     dispatch(createOrder(orderData))
       .unwrap()
       .then((response) => {
         toast.success('Order submitted successfully!');
         console.log('Order response:', response);
       })
-      .catch((error) => {
-        toast.error(`Order submission failed: ${error}`);
-        console.error('Order error:', error);
+      .catch((err) => {
+        toast.error(`Order submission failed: ${err.message}`);
+        console.error('Order error:', err);
       });
   };
 
