@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { purchaseCart } from '../redux/features/cartSlice';
-import axios from 'axios';
+import { createOrder } from '../redux/features/orderSlice';
+import { toast } from 'react-hot-toast';
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
+  const { loading, error } = useSelector((state) => state.order);
+
   const [shippingAddress, setShippingAddress] = useState({
     street: '',
     city: '',
@@ -13,6 +15,7 @@ const Checkout = () => {
     zipCode: '',
     country: ''
   });
+
   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
 
   const handleShippingChange = (e) => {
@@ -24,8 +27,13 @@ const Checkout = () => {
   };
 
   const handleOrderSubmit = () => {
+    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode || !shippingAddress.country) {
+      toast.error('Please fill in all shipping address fields');
+      return;
+    }
+
     const orderData = {
-      user: 'USER_ID',  
+      user: 'USER_ID', // Replace this with the actual user ID from authentication
       orderItems: cartItems.map((item) => ({
         productId: item.product._id,
         quantity: item.quantity,
@@ -36,8 +44,16 @@ const Checkout = () => {
       totalAmount
     };
 
-    // Dispatch purchaseCart thunk
-    dispatch(purchaseCart(orderData));
+    dispatch(createOrder(orderData))
+      .unwrap()
+      .then((response) => {
+        toast.success('Order submitted successfully!');
+        console.log('Order response:', response);
+      })
+      .catch((error) => {
+        toast.error(`Order submission failed: ${error}`);
+        console.error('Order error:', error);
+      });
   };
 
   return (
@@ -120,11 +136,14 @@ const Checkout = () => {
         Total Amount: ${totalAmount.toFixed(2)}
       </div>
 
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
       <button
         onClick={handleOrderSubmit}
         className="w-full px-4 py-2 bg-green-500 text-white rounded-md"
+        disabled={loading}
       >
-        Submit Order
+        {loading ? 'Processing...' : 'Submit Order'}
       </button>
     </div>
   );

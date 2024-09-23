@@ -5,6 +5,7 @@ import storesReducer from "./storesSlice";
 import cartReducer from './features/cartSlice';
 import productsReducer from './features/productsSlice';
 import filterReducer from './features/filterSlice';
+import orderSlice from "./features/orderSlice";
 
 
 const store = configureStore({
@@ -15,7 +16,7 @@ const store = configureStore({
     cart: cartReducer,
     products: productsReducer,
     filters: filterReducer,
-
+order:orderSlice
 
   },
   devTools: true,

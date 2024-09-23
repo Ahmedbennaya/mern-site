@@ -8,19 +8,17 @@ import CartItem from './CartItem';
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();
 
-  // Get user information from the Redux store (authSlice)
-  const { userInfo } = useSelector((state) => state.auth);  // Fetch userInfo from authSlice
+  const { userInfo } = useSelector((state) => state.auth);
   const { cartItems = [], totalAmount } = useSelector((state) => state.cart);
 
-  const userId = userInfo?._id;  // Get userId from userInfo
+  const userId = userInfo?._id;
 
   useEffect(() => {
     if (!userId) {
-      console.error('User ID is missing');  // Log an error if userId is missing
+      console.error('User ID is missing');
     }
   }, [userId]);
 
-  // Update quantity in the cart
   const handleUpdateQuantity = useCallback(
     (id, quantity) => {
       if (!userId) {
@@ -39,7 +37,6 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
     [dispatch, userId]
   );
 
-  // Remove item from cart
   const handleRemoveItem = useCallback(
     (id) => {
       if (!userId) {
@@ -57,7 +54,6 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
     [dispatch, userId]
   );
 
-  // Clear the entire cart
   const handleClearCart = useCallback(() => {
     if (!userId) {
       console.error('User ID is required to clear the cart');
@@ -86,7 +82,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item._id}
+                key={item.product._id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}

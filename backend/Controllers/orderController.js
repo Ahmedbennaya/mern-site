@@ -7,12 +7,10 @@ export const createOrder = async (req, res) => {
   const { user, orderItems, shippingAddress, paymentMethod, totalAmount } = req.body;
 
   try {
-    // Ensure the user field is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(user)) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    // Ensure each item in orderItems has a valid product field
     const validOrderItems = orderItems.map((item) => {
       if (!mongoose.Types.ObjectId.isValid(item.product)) {
         throw new Error(`Invalid product ID for item: ${item.product}`);
@@ -41,7 +39,6 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// Send email function
 const sendOrderConfirmationEmail = async (userId, order) => {
   const user = await User.findById(userId);
   if (!user || !user.email) {
@@ -63,7 +60,7 @@ const sendOrderConfirmationEmail = async (userId, order) => {
     html: `
       <h2>Order Confirmation</h2>
       <p>Order ID: ${order._id}</p>
-      <p>Total: $${order.totalAmount}</p>
+      <p>Total: $${order.totalAmount.toFixed(2)}</p>
     `
   };
 

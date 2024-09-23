@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
-  const { product, quantity } = item; // Access product and quantity
+  const { product, quantity } = item;
 
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleQuantityChange = (e) => {
     const newQuantity = Number(e.target.value);
     if (newQuantity > 0) {
-      onUpdateQuantity(product?._id, newQuantity); // Update quantity if valid
+      onUpdateQuantity(product._id, newQuantity); // Update quantity
     }
   };
 
@@ -18,7 +18,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   };
 
   const confirmRemove = () => {
-    onRemove(product?._id);
+    onRemove(product._id); // Remove item
     setShowConfirmation(false);
   };
 
@@ -29,19 +29,14 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
     <div className="flex items-center justify-between mb-6 p-4 border-b-2">
       <div className="flex flex-col space-y-2">
-        {/* Display product name */}
         <h4 className="font-semibold text-lg">{product?.name || "Unnamed Product"}</h4>
-        
-        {/* Display product price */}
         <p className="text-gray-600">
           Price: <span className="font-medium">${(product?.price ?? 0).toFixed(2)}</span>
         </p>
-        
-        {/* Quantity Input */}
         <div className="flex items-center space-x-2">
-          <label htmlFor={`quantity_${product?._id}`} className="text-sm text-gray-600">Qty:</label>
+          <label htmlFor={`quantity_${product._id}`} className="text-sm text-gray-600">Qty:</label>
           <input
-            id={`quantity_${product?._id}`}
+            id={`quantity_${product._id}`}
             type="number"
             value={quantity}
             min="1"
@@ -62,7 +57,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         </button>
       </div>
 
-      {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg">
