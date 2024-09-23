@@ -10,7 +10,6 @@ export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
-      // Fetch the full product details from the backend to store in the cart
       const { data: product } = await axios.get(`${API_BASE_URL}/api/products/${productId}`);
       const cartItem = {
         userId,
@@ -32,8 +31,7 @@ export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      // Normally here, you'd call the API to update the backend
-      toast.success(`${productId.name} from cart`);
+      // Ideally, you'd call an API to remove the item from the backend
       return productId; // Return the productId to filter it from the cart state
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error removing item from cart';
@@ -102,7 +100,14 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.cartItems = state.cartItems.filter(item => item.product._id !== action.payload);
+        const productId = action.payload;
+        const itemToRemove = state.cartItems.find(item => item.product._id === productId);
+        
+        if (itemToRemove) {
+          toast.success(`${itemToRemove.product.name} removed from cart`);
+        }
+
+        state.cartItems = state.cartItems.filter(item => item.product._id !== productId);
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0

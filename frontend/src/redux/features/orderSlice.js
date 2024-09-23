@@ -1,3 +1,4 @@
+// orderSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -10,9 +11,9 @@ export const createOrder = createAsyncThunk(
   async (orderData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/orders/create`, orderData);
-      
+
       // Ensure response contains the 'order' data
-      if (response?.data?.order) {
+      if (response.data && response.data.order) {
         toast.success('Order created successfully');
         return response.data.order;
       } else {
@@ -21,13 +22,16 @@ export const createOrder = createAsyncThunk(
     } catch (error) {
       // Log the full error response for debugging
       console.error('Error creating order:', error);
-      
+
       // Handle different cases of error response
-      const errorMsg = error?.response?.data?.message || 'Failed to create order. Please try again later.';
-      
+      const errorMsg =
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to create order. Please try again later.';
+
       // Display a user-friendly error message in the toast
       toast.error(`Order submission failed: ${errorMsg}`);
-      
+
       // Reject with a custom error message for Redux state handling
       return rejectWithValue(errorMsg);
     }
@@ -44,7 +48,13 @@ const initialState = {
 const orderSlice = createSlice({
   name: 'order',
   initialState,
-  reducers: {},
+  reducers: {
+    resetOrderState: (state) => {
+      state.order = null;
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Pending case for order creation
@@ -64,5 +74,8 @@ const orderSlice = createSlice({
       });
   },
 });
+
+// Export the action to reset order state if needed
+export const { resetOrderState } = orderSlice.actions;
 
 export default orderSlice.reducer;
