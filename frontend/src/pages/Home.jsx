@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import AOS from 'aos'; 
-import 'aos/dist/aos.css'; 
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState('Blinds & Shades'); 
+  const [category, setCategory] = useState('Blinds & Shades');
   const navigate = useNavigate();
 
   const carouselData = {
@@ -30,7 +30,8 @@ const Home = () => {
     ],
   };
 
-  const carouselItems = carouselData[category]; 
+  const carouselItems = carouselData[category];
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -39,7 +40,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    AOS.init({ duration: 1000 }); 
+    AOS.init({ duration: 1000 });
   }, []);
 
   const settings = {
@@ -50,7 +51,7 @@ const Home = () => {
     slidesToScroll: 1,
     arrows: true,
     autoplay: true,
-    autoplaySpeed: 2000, 
+    autoplaySpeed: 3000,
   };
 
   return (
@@ -67,7 +68,7 @@ const Home = () => {
           {/* Hero Section with Parallax Effect */}
           <section
             className="relative h-screen flex items-center justify-center bg-cover bg-center"
-            style={{ backgroundAttachment: 'fixed' }} 
+            style={{ backgroundAttachment: 'fixed' }}
             data-aos="fade-up"
           >
             <video
@@ -76,13 +77,13 @@ const Home = () => {
               muted
               className="absolute inset-0 w-full h-full object-cover"
             >
-              <source src= "https://res.cloudinary.com/dc1zy9h63/video/upload/v1727056844/login_ckvyiy.mp4" type="video/mp4" />
+              <source src="https://res.cloudinary.com/dc1zy9h63/video/upload/v1727056844/login_ckvyiy.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-black opacity-50"></div>
             <div className="relative z-10 text-white text-center">
-              <h1 className="text-4xl font-bold mb-4" data-aos="fade-down">Discover Premium Curtains</h1>
-              <p className="text-xl mb-6" data-aos="fade-up">Tailored for your home and style</p>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4" data-aos="fade-down">Discover Premium Curtains</h1>
+              <p className="text-xl md:text-2xl mb-6" data-aos="fade-up">Tailored for your home and style</p>
               <button
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                 onClick={() => navigate('/blinds-shades')}
@@ -95,11 +96,11 @@ const Home = () => {
 
           {/* Features Section */}
           <section id="features" className="p-4 bg-white text-left" data-aos="fade-up">
-            <h5 className="text-2xl font-semibold text-gray-800 mb-5 ml-72">
+            <h5 className="text-2xl font-semibold text-gray-800 mb-5 ml-4 md:ml-72">
               <span className='text-red-700'>|</span> Bargaoui Products
             </h5>
-            <p className="text-gray-600 ml-72 italic hover:not-italic tracking-tight">
-              Start decorating your space the way you love with Bargaoui Rideaux Tahar's wide range of blinds, curtains, drapes, shades, wallpapers, folding doors, and more.
+            <p className="text-gray-600 ml-4 md:ml-72 italic hover:not-italic tracking-tight">
+              Start decorating your space with Bargaoui Rideaux Tahar's wide range of blinds, curtains, shades, and more.
             </p>
           </section>
 
@@ -133,9 +134,9 @@ const Home = () => {
 
           {/* Slick Carousel Section */}
           <section className="relative p-8 bg-white text-center" data-aos="zoom-in">
-            <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
               {/* Left Side: Carousel */}
-              <div className="w-2/3">
+              <div className="md:w-2/3 w-full mb-8 md:mb-0">
                 <Slider {...settings}>
                   {carouselItems.map((item, index) => (
                     <div key={index} onClick={() => navigate(item.path)} className="cursor-pointer">
@@ -152,22 +153,22 @@ const Home = () => {
               </div>
 
               {/* Right Side: Dynamic Text Based on Category */}
-              <div className="w-1/3 text-left pl-8">
+              <div className="md:w-1/3 w-full text-left md:pl-8">
                 <h3 className="text-2xl font-semibold mb-4 text-gray-800" data-aos="fade-left">About {category}</h3>
                 <p className="text-gray-600">
                   {category === 'Blinds & Shades' && (
                     <>
-                      Explore our wide selection of blinds and shades that offer privacy, light control, and style.
+                      Explore our wide selection of blinds and shades for privacy, light control, and style.
                     </>
                   )}
                   {category === 'Curtains & Drapes' && (
                     <>
-                      Browse our elegant curtains and drapes to add a touch of luxury to your home.
+                      Browse our elegant curtains and drapes for a touch of luxury in your home.
                     </>
                   )}
                   {category === 'Smart Home' && (
                     <>
-                      Discover smart solutions to enhance your home's comfort, security, and efficiency.
+                      Discover smart home solutions to enhance comfort, security, and efficiency.
                     </>
                   )}
                 </p>
@@ -184,7 +185,7 @@ const Home = () => {
                 Get a free in-home <br /> design consultation
               </h2>
               <p className="text-lg mb-6 font-light text-gray-700">
-                Experience personalized design services at the comfort of your own home.
+                Experience personalized design services at the comfort of your home.
               </p>
               <button
                 className="inline-flex items-center px-6 py-3 bg-black text-white font-semibold rounded-full hover:bg-gray-800 transition duration-300 shadow-lg"
@@ -199,7 +200,7 @@ const Home = () => {
             </div>
 
             {/* Right Section (Image) */}
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 w-full mt-8 md:mt-0">
               <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726688230/agencement_rvnhmz.jpg" alt="Consultation" className="object-cover w-full h-full rounded-lg shadow-lg" />
             </div>
           </section>
@@ -207,17 +208,17 @@ const Home = () => {
           {/* Customer Reviews Section */}
           <section className="bg-gray-50 py-12" data-aos="fade-up">
             <h2 className="text-center text-4xl font-bold text-gray-800 mb-8">What Our Customers Say</h2>
-            <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row md:gap-8">
+            <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row gap-8">
               <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
-                <p className="text-lg text-gray-700 italic">"The quality of the blinds I bought was beyond my expectations. They fit perfectly in my living room!"</p>
+                <p className="text-lg text-gray-700 italic">"The quality of the blinds was beyond my expectations. They fit perfectly in my living room!"</p>
                 <p className="mt-4 text-sm text-gray-500">- Sarah K.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
-                <p className="text-lg text-gray-700 italic">"I loved the in-home consultation. It made choosing the right curtains so easy and stress-free."</p>
+                <p className="text-lg text-gray-700 italic">"The in-home consultation made choosing the right curtains easy and stress-free."</p>
                 <p className="mt-4 text-sm text-gray-500">- John M.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-lg text-gray-700 italic">"The smart home solutions I installed have made my life so much easier. Highly recommend!"</p>
+                <p className="text-lg text-gray-700 italic">"The smart home solutions have made my life so much easier. Highly recommend!"</p>
                 <p className="mt-4 text-sm text-gray-500">- Emily L.</p>
               </div>
             </div>

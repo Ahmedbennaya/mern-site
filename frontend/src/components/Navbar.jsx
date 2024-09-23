@@ -5,6 +5,7 @@ import { logout } from '../redux/userSlice';
 import CartSidebar from './CartSidebar';
 import { clearCredentials } from '../redux/features/authSlice';
 import { FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'; // Importing icons
+import { FaShoppingCart } from 'react-icons/fa'; // Shopping cart icon
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,6 @@ const Navbar = () => {
   
   const { userInfo } = useSelector((state) => state.auth);
   
-  // Safely check if cart exists before accessing length
   const cartItemsCount = useSelector((state) => state.cart?.length || 0);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -33,10 +33,7 @@ const Navbar = () => {
     dispatch(clearCredentials());
   };
 
-  // Effect to trigger re-render when userInfo (profile data) changes
-  useEffect(() => {
-    // Real-time update when profile changes.
-  }, [userInfo]);
+  useEffect(() => {}, [userInfo]);
 
   const navLinks = [
     { name: 'CURTAINS & DRAPES', id: 'curtains-drapes', path: '/curtains-drapes' },
@@ -68,17 +65,16 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+     <header className="sticky top-0 z-50 bg-white shadow-md">
       {/* Top Bar with Promotion and Contact Info */}
       <div className="bg-gray-800 text-white py-2">
-        <div className="container mx-auto flex justify-between items-center">
-          {/* Promotion Text */}
-          <div className="text-center w-full lg:w-auto">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+          <div className="text-center w-full md:w-auto">
             <span className="block text-sm">{promotionText}</span>
           </div>
 
           {/* Contact and Language Selector */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-center md:justify-end space-x-4">
             <div className="flex items-center space-x-3">
               <button onClick={() => window.location.href = 'tel:+21650929292'} className="text-white hover:underline" aria-label="Call us">
                 <FiPhone className="inline-block h-5 w-5" />
@@ -128,33 +124,26 @@ const Navbar = () => {
       <nav className="bg-white">
         <div className="container mx-auto px-4 lg:px-8 py-4 flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 px-4">
-            <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057529/LOGONOIR_vuiuld.png" alt="Bargaoui Tahar Logo" className="h-10" />
+          <Link to="/" className="flex items-center space-x-2">
+            <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057529/LOGONOIR_vuiuld.png" alt="Bargaoui Tahar Logo" className="h-10 w-auto" />
           </Link>
 
           {/* Primary Navigation */}
           <div className="hidden lg:flex space-x-8">
-            {translatedNavLinks[language].map((link) => (
+            {navLinks.map((link) => (
               <Link key={link.id} to={link.path} className="text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
                 {link.name}
               </Link>
             ))}
-
-            {/* Add Admin Link for Admin Users */}
-            {userInfo?.isAdmin && (
-              <Link to="/admin" className="text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
-                Admin
-              </Link>
-            )}
           </div>
 
-          {/* Secondary Navigation */}
-          <div className="hidden lg:flex items-center space-x-4">
+          {/* Cart Button + Secondary Navigation */}
+          <div className="lg:flex hidden items-center space-x-4">
             {userInfo ? (
               <div className="flex items-center gap-2">
-                <h3>{userInfo.LastName ? userInfo.LastName.toUpperCase() : 'User'}</h3>
+                <h3>{userInfo.LastName?.toUpperCase() || 'User'}</h3>
                 <Link to="/profile">
-                  <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 rounded-full object-cover" alt="User Profile" />
+                  <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
                 </Link>
                 <button
                   onClick={logoutHandler}
@@ -180,9 +169,9 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Cart Button */}
+            {/* Cart Icon: Aligned to the right on larger screens */}
             <button onClick={toggleCart} className="relative">
-              <img src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1727057554/shoping_djfcyi.png" alt="Shopping Cart" className="h-8" />
+              <FaShoppingCart className="text-gray-700 w-6 h-6" />
               {cartItemsCount > 0 && (
                 <span className="absolute top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full text-center">
                   {cartItemsCount}
@@ -191,7 +180,7 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
             className="lg:hidden flex items-center text-gray-700 hover:text-gray-900 transition duration-200 ease-in-out"
@@ -205,45 +194,22 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white">
-            <div className="container mx-auto px-4 py-6">
-              {translatedNavLinks[language].map((link) => (
-                <Link key={link.id} to={link.path} className="block text-gray-700 hover:text-gray-900 font-medium mb-2">
+            <div className="container mx-auto px-4 py-6 flex flex-col items-center space-y-3">
+              {navLinks.map((link) => (
+                <Link key={link.id} to={link.path} className="block text-gray-700 hover:text-gray-900 font-medium">
                   {link.name}
                 </Link>
               ))}
-              {userInfo?.isAdmin && (
-                <Link to="/admin" className="block text-gray-700 hover:text-gray-900 font-medium mb-2">
-                  Admin
-                </Link>
-              )}
-              {userInfo ? (
-                <div className="flex flex-col space-y-3">
-                  <Link to="/profile">
-                    <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 rounded-full object-cover" alt="User Profile" />
-                  </Link>
-                  <button
-                    onClick={logoutHandler}
-                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col space-y-3">
-                  <Link
-                    className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 hover:ring-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
-                    to="/signin"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    to="/signup"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
+
+              {/* Centered Cart Icon for Mobile */}
+              <button onClick={toggleCart} className="relative mx-auto mt-4">
+                <FaShoppingCart className="text-gray-700 w-8 h-8" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full text-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         )}
