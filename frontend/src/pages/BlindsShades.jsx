@@ -101,12 +101,14 @@ const BlindsShades = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        // Fetch products based on filters
         const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/blinds-shades', {
-          params: filters,
+          params: { inStock: filters.inStock ? 'true' : 'false' },  // Boolean inStock filter
         });
         setProducts(response.data);
       } catch (error) {
         setError('Failed to load products');
+        console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
@@ -151,22 +153,24 @@ const BlindsShades = () => {
     });
   };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <ClipLoader color="#0000ff" size={50} />
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return <p className="text-center mt-10 text-red-600">{error}</p>;
+  }
 
   return (
     <div className="font-sans bg-gray-50 text-gray-900">
       {/* Hero Section */}
       <section
         className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-        style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770948/RS_AUTO_AF02006_LIV_MODEL_03_zkllcm.webp"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `url("https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770948/RS_AUTO_AF02006_LIV_MODEL_03_zkllcm.webp")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 text-center">
