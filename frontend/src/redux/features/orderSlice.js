@@ -1,5 +1,3 @@
-// Order slice file
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -11,7 +9,6 @@ export const createOrder = createAsyncThunk(
   'order/createOrder',
   async (orderData, { rejectWithValue }) => {
     try {
-      // Corrected URL with proper template literals
       const response = await axios.post(`${API_BASE_URL}/api/orders/create`, orderData);
 
       // Ensure response contains the 'order' data
@@ -23,7 +20,7 @@ export const createOrder = createAsyncThunk(
       }
     } catch (error) {
       // Log the full error response for debugging
-      console.error('Error creating order:', error.response ? error.response.data : error.message);
+      console.error('Error creating order:', error);
 
       // Handle different cases of error response
       const errorMsg =
@@ -59,16 +56,19 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Pending case for order creation
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+      // Fulfilled case for order creation
       .addCase(createOrder.fulfilled, (state, action) => {
-        state.order = action.payload;
+        state.order = action.payload; // Set the order data from the fulfilled action
         state.loading = false;
       })
+      // Rejected case for order creation
       .addCase(createOrder.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload; // Set error message
         state.loading = false;
       });
   },
