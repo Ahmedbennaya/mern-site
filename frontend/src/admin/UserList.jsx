@@ -21,8 +21,8 @@ const UserList = () => {
           Are you sure you want to delete this user?
           <button
             onClick={() => {
-              dispatch(deleteUser(id));  // Dispatch the deleteUser action
-              toast.dismiss(t.id);  // Close the confirmation toast
+              dispatch(deleteUser(id)); 
+              toast.dismiss(t.id);  
             }}
             style={{
               marginLeft: '10px',
