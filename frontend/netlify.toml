@@ -1,0 +1,11 @@
+[build]
+  base = "frontend"
+  publish = "dist"
+  command = "npm run build"
+
+[functions]
+  directory = "netlify/functions"
+
+[dev]
+  command = "npm run dev"  # Command to run your local dev server
+  port = 3000              # Port for local development (change if needed)
