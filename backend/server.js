@@ -21,7 +21,14 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // CORS configuration
-app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://mern-site-z5gs.onrender.com"] }));
+app.use(cors({
+  credentials: true,
+  origin: [
+    "http://localhost:3000",
+    "https://mern-site-z5gs.onrender.com",
+    "https://main--bargaoui.netlify.app" // Add the new origin here
+  ]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
