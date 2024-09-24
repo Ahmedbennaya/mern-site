@@ -3,6 +3,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { FiChevronDown } from 'react-icons/fi'; // Import Chevron Icon for Sidebar Toggle
 
 // Fix for default marker icon issue with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -15,6 +16,8 @@ L.Icon.Default.mergeOptions({
 const mapContainerStyle = {
   width: '100%',
   height: '100%',
+  flexGrow: 1, // This ensures the map grows and shrinks with its container
+  position: 'relative', // Helps to make it responsive within a parent container
 };
 
 const LocateUser = ({ mapRef }) => {
@@ -28,10 +31,9 @@ const LocateUser = ({ mapRef }) => {
           const userLatLng = [latitude, longitude];
           map.setView(userLatLng, 14); // Center the map on the user's location
 
-          // Optionally, add a marker for the user's location
+          // Add a marker for the user's location
           L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
 
-          // Update mapRef to keep track of map instance
           mapRef.current = map;
         },
         (error) => {
@@ -49,6 +51,7 @@ const Stores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -57,7 +60,7 @@ const Stores = () => {
         const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/stores'); 
         setStores(data);
         if (data.length > 0) {
-          setSelectedStore(data[0]); // Select the first store as default
+          setSelectedStore(data[0]);
         }
         setLoading(false);
       } catch (err) {
@@ -65,17 +68,23 @@ const Stores = () => {
         setLoading(false);
       }
     };
-
     fetchStores();
   }, []);
 
   const handleStoreClick = (store) => {
     setSelectedStore(store);
     if (mapRef.current) {
-      mapRef.current.flyTo([store.latitude, store.longitude], 15); 
+      mapRef.current.flyTo([store.latitude, store.longitude], 15);
       setTimeout(() => {
-        mapRef.current.invalidateSize(); 
-      }, 500); 
+        mapRef.current.invalidateSize();
+      }, 500);
+    }
+  };
+
+  const handleMapInteraction = () => {
+    if (mapRef.current) {
+      mapRef.current.scrollWheelZoom.enable(); // Enable scroll zoom on map interaction
+      mapRef.current.dragging.enable(); // Enable dragging on map interaction
     }
   };
 
@@ -88,83 +97,94 @@ const Stores = () => {
   }
 
   if (error) return <p>Error: {error}</p>;
-
   if (!stores.length) return <p>No stores available.</p>;
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex flex-1">
-        <aside className="w-1/4 bg-gray-100 p-8 overflow-y-auto">
+    <div className="flex flex-col lg:flex-row h-screen">
+      {/* Sidebar */}
+      <aside className={`bg-gray-100 p-4 lg:p-8 lg:w-1/4 overflow-y-auto ${isSidebarOpen ? 'block' : 'hidden'} lg:block`}>
+        <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold mb-6">Our Stores</h2>
-          <ul className="space-y-4 text-lg">
-            {stores.map((store) => (
-              <li
-                key={store._id}
-                onClick={() => handleStoreClick(store)}
-                className={`cursor-pointer hover:text-blue-500 transition ${
-                  selectedStore && selectedStore._id === store._id ? 'font-bold text-blue-700' : ''
-                }`}
-              >
-                {store.name}
-              </li>
-            ))}
-          </ul>
-        </aside>
-
-        <div className="flex-1 flex flex-col">
-          {selectedStore && (
-            <>
-              <div className="flex-1">
-                <MapContainer
-                  style={mapContainerStyle}
-                  center={[selectedStore.latitude || 0, selectedStore.longitude || 0]}
-                  zoom={15}
-                  whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-                  <LocateUser mapRef={mapRef} /> 
-                  {stores.map((store) => (
-                    <Marker 
-                      key={store._id} 
-                      position={[store.latitude, store.longitude]}
-                      opacity={selectedStore._id === store._id ? 1 : 0.5} r
-                    >
-                      <Popup>
-  <img src={store.imageUrl}  className="w-full h-auto" />
-  <h3>{store.name}</h3>
-</Popup>
-
-                    </Marker>
-                  ))}
-                </MapContainer>
-              </div>
-
-              <div className="p-6 bg-white shadow-lg">
-               
-                {selectedStore.imageUrl && (
-                  <img
-                    src={selectedStore.imageUrl}
-                    alt={selectedStore.name}
-                    className="w-full h-64 object-cover mb-4"
-                  />
-                )}
-
-                <h2 className="text-2xl font-bold mb-2">{selectedStore.name}</h2>
-                <p className="text-gray-700 mb-4">{selectedStore.address}</p>
-                <p className="text-gray-700 mb-4"><strong>Phone:</strong> {selectedStore.phone}</p>
-                <div className="mb-4">
-                  <strong>Opening Hours:</strong>
-                  {selectedStore.hours && selectedStore.hours.map((hour, index) => (
-                    <p key={index} className="text-gray-600">{hour}</p>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+          {/* Chevron to toggle sidebar visibility on mobile */}
+          <button
+            className="lg:hidden p-2"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <FiChevronDown className={`transform ${isSidebarOpen ? 'rotate-180' : ''}`} />
+          </button>
         </div>
+        <ul className="space-y-4 text-lg">
+          {stores.map((store) => (
+            <li
+              key={store._id}
+              onClick={() => handleStoreClick(store)}
+              className={`cursor-pointer hover:text-blue-500 transition ${
+                selectedStore && selectedStore._id === store._id ? 'font-bold text-blue-700' : ''
+              }`}
+            >
+              {store.name}
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      {/* Map & Store Details */}
+      <div className="flex-1 flex flex-col">
+        {selectedStore && (
+          <>
+            {/* Map Section */}
+            <div className="relative h-[40vh] lg:h-full" onClick={handleMapInteraction}> {/* Map height adjusts for mobile */}
+              <MapContainer
+                style={mapContainerStyle}
+                center={[selectedStore.latitude || 0, selectedStore.longitude || 0]}
+                zoom={15}
+                whenCreated={(mapInstance) => { 
+                  mapRef.current = mapInstance;
+                  mapInstance.scrollWheelZoom.disable(); // Disable scroll zoom by default
+                  mapInstance.dragging.disable(); // Disable dragging by default
+                }}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <LocateUser mapRef={mapRef} /> 
+                {stores.map((store) => (
+                  <Marker 
+                    key={store._id} 
+                    position={[store.latitude, store.longitude]}
+                    opacity={selectedStore._id === store._id ? 1 : 0.5}
+                  >
+                    <Popup>
+                      <img src={store.imageUrl} className="w-full h-auto"  /> {/* Ensure img is responsive */}
+                      <h3>{store.name}</h3>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+            </div>
+
+            {/* Store Details */}
+            <div className="p-4 lg:p-6 bg-white shadow-lg">
+              {selectedStore.imageUrl && (
+                <img
+                  src={selectedStore.imageUrl}
+                  alt={selectedStore.name}
+                  className="w-full h-64 object-cover mb-4 lg:h-80"
+                />
+              )}
+              <h2 className="text-2xl font-bold mb-2">{selectedStore.name}</h2>
+              <p className="text-gray-700 mb-4">{selectedStore.address}</p>
+              <p className="text-gray-700 mb-4"><strong>Phone:</strong> {selectedStore.phone}</p>
+              <div className="mb-4">
+                <strong>Opening Hours:</strong>
+                {selectedStore.hours && selectedStore.hours.map((hour, index) => (
+                  <p key={index} className="text-gray-600">{hour}</p>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
