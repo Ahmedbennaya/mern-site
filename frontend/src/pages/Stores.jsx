@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import './leaflet-custom.css'; // Import custom Leaflet CSS
 import L from 'leaflet';
-import { FiChevronDown } from 'react-icons/fi'; // Import Chevron Icon for Sidebar Toggle
+import { FiChevronDown } from 'react-icons/fi'; 
 
 // Fix for default marker icon issue with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,8 +17,8 @@ L.Icon.Default.mergeOptions({
 const mapContainerStyle = {
   width: '100%',
   height: '100%',
-  flexGrow: 1, // This ensures the map grows and shrinks with its container
-  position: 'relative', // Helps to make it responsive within a parent container
+  flexGrow: 1, 
+  position: 'relative',
 };
 
 const LocateUser = ({ mapRef }) => {
@@ -29,7 +30,7 @@ const LocateUser = ({ mapRef }) => {
         (position) => {
           const { latitude, longitude } = position.coords;
           const userLatLng = [latitude, longitude];
-          map.setView(userLatLng, 14); // Center the map on the user's location
+          map.setView(userLatLng, 14); 
 
           // Add a marker for the user's location
           L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
@@ -51,7 +52,7 @@ const Stores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -83,8 +84,8 @@ const Stores = () => {
 
   const handleMapInteraction = () => {
     if (mapRef.current) {
-      mapRef.current.scrollWheelZoom.enable(); // Enable scroll zoom on map interaction
-      mapRef.current.dragging.enable(); // Enable dragging on map interaction
+      mapRef.current.scrollWheelZoom.enable();
+      mapRef.current.dragging.enable();
     }
   };
 
@@ -101,11 +102,9 @@ const Stores = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen">
-      {/* Sidebar */}
       <aside className={`bg-gray-100 p-4 lg:p-8 lg:w-1/4 overflow-y-auto ${isSidebarOpen ? 'block' : 'hidden'} lg:block`}>
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold mb-6">Our Stores</h2>
-          {/* Chevron to toggle sidebar visibility on mobile */}
           <button
             className="lg:hidden p-2"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -128,20 +127,18 @@ const Stores = () => {
         </ul>
       </aside>
 
-      {/* Map & Store Details */}
       <div className="flex-1 flex flex-col">
         {selectedStore && (
           <>
-            {/* Map Section */}
-            <div className="relative h-[40vh] lg:h-full" onClick={handleMapInteraction}> {/* Map height adjusts for mobile */}
+            <div className="relative h-[40vh] lg:h-full" onClick={handleMapInteraction}>
               <MapContainer
                 style={mapContainerStyle}
                 center={[selectedStore.latitude || 0, selectedStore.longitude || 0]}
                 zoom={15}
                 whenCreated={(mapInstance) => { 
                   mapRef.current = mapInstance;
-                  mapInstance.scrollWheelZoom.disable(); // Disable scroll zoom by default
-                  mapInstance.dragging.disable(); // Disable dragging by default
+                  mapInstance.scrollWheelZoom.disable(); 
+                  mapInstance.dragging.disable(); 
                 }}
               >
                 <TileLayer
@@ -156,7 +153,7 @@ const Stores = () => {
                     opacity={selectedStore._id === store._id ? 1 : 0.5}
                   >
                     <Popup>
-                      <img src={store.imageUrl} className="w-full h-auto"  /> {/* Ensure img is responsive */}
+                      <img src={store.imageUrl} className="w-full h-auto" />
                       <h3>{store.name}</h3>
                     </Popup>
                   </Marker>
@@ -164,7 +161,6 @@ const Stores = () => {
               </MapContainer>
             </div>
 
-            {/* Store Details */}
             <div className="p-4 lg:p-6 bg-white shadow-lg">
               {selectedStore.imageUrl && (
                 <img
