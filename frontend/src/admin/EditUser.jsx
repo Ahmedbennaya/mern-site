@@ -14,7 +14,7 @@ const EditUser = () => {
     const fetchUser = async () => {
       try {
         // Ensure the correct API URL for getting a single user
-        const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`);
+        const { data } = await axios.get(`https://mern-site-z5gs.onrender.com/api/users/${userId}`);
         setUser(data);  // Populate form with user data
         setLoading(false);  // End loading
       } catch (error) {
@@ -43,7 +43,7 @@ const EditUser = () => {
     e.preventDefault();  // Prevent default form submission
     try {
       // Call the API to update user details
-      await axios.put(`http://localhost:5000/api/users/${userId}`, user);
+      await axios.put(`https://mern-site-z5gs.onrender.com/api/users/${userId}`, user);
       // On success, redirect to admin users page
       navigate('/admin/users');
     } catch (error) {

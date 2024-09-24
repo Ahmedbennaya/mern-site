@@ -18,7 +18,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/users/reset-password/${token}`, {
+      const response = await fetch(`https://mern-site-z5gs.onrender.com/api/users/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

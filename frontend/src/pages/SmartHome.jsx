@@ -104,7 +104,7 @@ const SmartHome = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/products/category/smart-home', {
+        const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/smart-home', {
           params: filters,
         });
         setProducts(response.data);

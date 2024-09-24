@@ -54,7 +54,7 @@ const Stores = () => {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/stores'); 
+        const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/stores'); 
         setStores(data);
         if (data.length > 0) {
           setSelectedStore(data[0]); // Select the first store as default

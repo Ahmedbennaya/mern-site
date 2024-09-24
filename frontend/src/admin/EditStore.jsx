@@ -19,7 +19,7 @@ const EditStore = () => {
   useEffect(() => {
     const fetchStore = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/stores/${storeId}`);
+        const { data } = await axios.get(`https://mern-site-z5gs.onrender.com/api/stores/${storeId}`);
         setStore(data);
         setLoading(false);
       } catch (error) {

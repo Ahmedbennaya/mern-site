@@ -7,7 +7,7 @@ export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (filters, { rejectWithValue }) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products', { params: filters });
+      const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products', { params: filters });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
@@ -20,7 +20,7 @@ export const fetchProductById = createAsyncThunk(
   'products/fetchProductById',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/products/${productId}`);
+      const response = await axios.get(`https://mern-site-z5gs.onrender.com/api/products/${productId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
@@ -44,7 +44,7 @@ export const createProduct = createAsyncThunk(
       const encodedCategory = encodeURIComponent(category);
 
       // Post to the category-specific endpoint
-      const response = await axios.post(`http://localhost:5000/api/products/category/${encodedCategory}`, productData);
+      const response = await axios.post(`https://mern-site-z5gs.onrender.com/api/products/category/${encodedCategory}`, productData);
       return response.data;
     } catch (error) {
       // Log the error details for debugging
@@ -69,7 +69,7 @@ export const updateProduct = createAsyncThunk(
       const productData = { name, description, price, imageUrl };
 
       // Put to the product-specific endpoint
-      const response = await axios.put(`http://localhost:5000/api/products/${id}`, productData);
+      const response = await axios.put(`https://mern-site-z5gs.onrender.com/api/products/${id}`, productData);
       return response.data;
     } catch (error) {
       // Log the error details for debugging
@@ -86,7 +86,7 @@ export const deleteProduct = createAsyncThunk(
   'products/deleteProduct',
   async (productId, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${productId}`);
+      await axios.delete(`https://mern-site-z5gs.onrender.com/api/products/${productId}`);
       return productId;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);

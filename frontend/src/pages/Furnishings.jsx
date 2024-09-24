@@ -104,7 +104,7 @@ const Furnishings = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/products/category/furnishings', {
+        const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/furnishings', {
           params: filters,
         });
         setProducts(response.data);

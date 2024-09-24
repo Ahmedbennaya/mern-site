@@ -68,7 +68,7 @@ const Profile = () => {
     // Update user profile
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/users/update",
+        "https://mern-site-z5gs.onrender.com/api/users/update",
         { ...user, profileImage: photoUrl },
         {
           headers: {

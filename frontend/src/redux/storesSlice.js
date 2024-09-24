@@ -7,7 +7,7 @@ export const fetchStores = createAsyncThunk(
   'stores/fetchStores',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/stores');
+      const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/stores');
       return data;
     } catch (error) {
       const errorMessage = error.response?.data || 'An error occurred';
@@ -22,7 +22,7 @@ export const deleteStore = createAsyncThunk(
   'stores/deleteStore',
   async (storeId, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:5000/api/stores/${storeId}`);
+      await axios.delete(`https://mern-site-z5gs.onrender.com/api/stores/${storeId}`);
       toast.success('Store deleted successfully');
       return storeId;
     } catch (error) {

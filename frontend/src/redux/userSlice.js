@@ -11,7 +11,7 @@ export const signin = createAsyncThunk(
   'user/signin',
   async (user, { dispatch, rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/login', user);
+      const { data } = await axios.post('https://mern-site-z5gs.onrender.com/api/users/login', user);
       dispatch(setCredentials(data)); 
       toast.success('Logged In');
       return data;
@@ -27,7 +27,7 @@ export const signUp = createAsyncThunk(
   'user/signup',
   async ({ user, navigate }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/registerUser', user);
+      const { data } = await axios.post('https://mern-site-z5gs.onrender.com/api/users/registerUser', user);
       toast.success('Account created successfully');
       navigate('/signin');
       return data;
@@ -43,7 +43,7 @@ export const logout = createAsyncThunk(
   'user/logout',
   async (navigate, { dispatch, rejectWithValue }) => {
     try {
-      await axios.post('http://localhost:5000/api/users/logout');
+      await axios.post('https://mern-site-z5gs.onrender.com/api/users/logout');
       dispatch(clearCredentials());
       toast.success('Logged out successfully');
       navigate('/');
@@ -59,7 +59,7 @@ export const requestPasswordReset = createAsyncThunk(
   'user/requestPasswordReset',
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
+      const { data } = await axios.post('https://mern-site-z5gs.onrender.com/api/users/forgot-password', { email });
       toast.success('Password reset link sent to your email.');
       return data;
     } catch (error) {
@@ -74,7 +74,7 @@ export const resetPassword = createAsyncThunk(
   'user/resetPassword',
   async ({ token, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`http://localhost:5000/api/users/reset-password/${token}`, { password });
+      const { data } = await axios.post(`https://mern-site-z5gs.onrender.com/api/users/reset-password/${token}`, { password });
       toast.success('Password has been reset successfully.');
       return data;
     } catch (error) {
@@ -97,7 +97,7 @@ export const updateUser = createAsyncThunk(
       }
 
       const { data } = await axios.put(
-        'http://localhost:5000/api/users/update',
+        'https://mern-site-z5gs.onrender.com/api/users/update',
         updatedUserData,
         {
           headers: {
@@ -121,7 +121,7 @@ export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users');
+      const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/users');
       return data;
     } catch (error) {
       toast.error('Failed to fetch users');
@@ -135,7 +135,7 @@ export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`);
+      await axios.delete(`https://mern-site-z5gs.onrender.com/api/users/${userId}`);
       toast.success('User deleted successfully');
       return userId;
     } catch (error) {

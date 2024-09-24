@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://mern-site-z5gs.onrender.com';
 
 // Add to Cart
 export const addToCart = createAsyncThunk(
