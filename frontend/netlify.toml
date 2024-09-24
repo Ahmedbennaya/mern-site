@@ -1,0 +1,26 @@
+# netlify.toml
+
+[build]
+  # Command to build the project
+  command = "npm run build"
+
+  # Output directory where the build files are published
+  publish = "dist"
+
+[[headers]]
+  # Apply headers to all JavaScript files
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "text/javascript"
+
+[[headers]]
+  # Optionally, set cache control for JS files
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  # Optionally, disable MIME-type sniffing for security
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
