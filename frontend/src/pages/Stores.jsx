@@ -17,7 +17,7 @@ L.Icon.Default.mergeOptions({
 const mapContainerStyle = {
   width: '100%',
   height: '100%',
-  flexGrow: 1, 
+  flexGrow: 1,
   position: 'relative',
 };
 
@@ -30,7 +30,7 @@ const LocateUser = ({ mapRef }) => {
         (position) => {
           const { latitude, longitude } = position.coords;
           const userLatLng = [latitude, longitude];
-          map.setView(userLatLng, 14); 
+          map.setView(userLatLng, 14);
 
           // Add a marker for the user's location
           L.marker(userLatLng).addTo(map).bindPopup("You are here").openPopup();
@@ -58,7 +58,7 @@ const Stores = () => {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/stores'); 
+        const { data } = await axios.get('https://mern-site-z5gs.onrender.com/api/stores');
         setStores(data);
         if (data.length > 0) {
           setSelectedStore(data[0]);
@@ -102,15 +102,16 @@ const Stores = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen">
+      <button
+        className="p-2 lg:hidden fixed top-4 right-4 bg-gray-200 rounded-full z-50"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <FiChevronDown className={`transform ${isSidebarOpen ? 'rotate-180' : ''}`} />
+      </button>
+
       <aside className={`bg-gray-100 p-4 lg:p-8 lg:w-1/4 overflow-y-auto ${isSidebarOpen ? 'block' : 'hidden'} lg:block`}>
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold mb-6">Our Stores</h2>
-          <button
-            className="lg:hidden p-2"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <FiChevronDown className={`transform ${isSidebarOpen ? 'rotate-180' : ''}`} />
-          </button>
         </div>
         <ul className="space-y-4 text-lg">
           {stores.map((store) => (
@@ -137,18 +138,18 @@ const Stores = () => {
                 zoom={15}
                 whenCreated={(mapInstance) => { 
                   mapRef.current = mapInstance;
-                  mapInstance.scrollWheelZoom.disable(); 
-                  mapInstance.dragging.disable(); 
+                  mapInstance.scrollWheelZoom.disable();
+                  mapInstance.dragging.disable();
                 }}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <LocateUser mapRef={mapRef} /> 
+                <LocateUser mapRef={mapRef} />
                 {stores.map((store) => (
-                  <Marker 
-                    key={store._id} 
+                  <Marker
+                    key={store._id}
                     position={[store.latitude, store.longitude]}
                     opacity={selectedStore._id === store._id ? 1 : 0.5}
                   >
