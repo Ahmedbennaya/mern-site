@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/userSlice';
 import CartSidebar from './CartSidebar';
 import { clearCredentials } from '../redux/features/authSlice';
-import { FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'; // Importing icons
-import { FaShoppingCart } from 'react-icons/fa'; // Shopping cart icon
+import { FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'; 
+import { FaShoppingCart } from 'react-icons/fa'; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -143,6 +143,16 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+
+            {/* Admin Panel - Conditional Rendering */}
+            {userInfo && userInfo.isAdmin && (
+              <Link
+                to="/admin"
+                className="text-red-700 hover:text-red-900 font-bold transition duration-200 ease-in-out"
+              >
+                Admin Panel
+              </Link>
+            )}
           </div>
 
           {/* Cart Button + Secondary Navigation */}

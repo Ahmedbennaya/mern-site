@@ -25,8 +25,9 @@ import ProductList from './admin/ProductList';
 import UserList from './admin/UserList';
 import CreateProduct from './admin/CreateProduct';
 import StoreList from './admin/StoreList';
-import EditUser from './admin/EditUser';  // <-- Import EditUser
-import EditStore from './admin/EditStore';  // <-- Import EditStore
+import EditUser from './admin/EditUser';
+import EditStore from './admin/EditStore';
+import AdminOrders from './admin/AdminOrders';  // <-- Import AdminOrders component
 
 // Import the BookConsultation component
 import BookConsultation from './components/BookConsultation'; 
@@ -58,9 +59,12 @@ const router = createBrowserRouter(
       <Route path="/admin/products/create" element={<CreateProduct />} />
       <Route path="/admin/products/edit/:id" element={<EditProduct />} />
       <Route path="/admin/users" element={<UserList />} />
-      <Route path="/admin/users/edit/:userId" element={<EditUser />} />  {/* <-- New route for EditUser */}
+      <Route path="/admin/users/edit/:userId" element={<EditUser />} />
       <Route path="/admin/stores" element={<StoreList />} />
-      <Route path="/admin/stores/edit/:storeId" element={<EditStore />} />  {/* <-- New route for EditStore */}
+      <Route path="/admin/stores/edit/:storeId" element={<EditStore />} />
+
+      {/* Add the new route for Admin Orders */}
+      <Route path="/admin/orders" element={<AdminOrders />} />  {/* <-- New route for Admin Orders */}
     </Route>
   )
 );

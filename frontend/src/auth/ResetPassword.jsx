@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 const ResetPassword = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { token } = useParams(); // Token from URL
+  const { token } = useParams();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,7 +25,7 @@ const ResetPassword = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ firstName, lastName, password }),
       });
 
       if (!response.ok) throw new Error('Failed to reset password');
@@ -40,6 +42,26 @@ const ResetPassword = () => {
       <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
         <h2 className="text-xl text-gray-700 text-center mb-6">Enter New Password</h2>
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+            <input
+              type="text"
+              onChange={(e) => setFirstName(e.target.value)}
+              value={firstName}
+              required
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
+            <input
+              type="text"
+              onChange={(e) => setLastName(e.target.value)}
+              value={lastName}
+              required
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">New Password</label>
             <input
@@ -91,7 +113,7 @@ const ResetPassword = () => {
           </div>
           <button
             type="submit"
-            className={`bg-blue-700 text-white py-2 px-4 rounded w-full hover:bg-blue-600`}
+            className="bg-blue-700 text-white py-2 px-4 rounded w-full hover:bg-blue-600"
           >
             Reset Password
           </button>
