@@ -24,6 +24,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   credentials: true,
   origin: [
+    "http://localhost:3000",
     "https://mern-site-z5gs.onrender.com",
     "https://main--bargaoui.netlify.app" 
   ]
