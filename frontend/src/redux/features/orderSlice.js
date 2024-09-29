@@ -1,9 +1,8 @@
-// Import necessary modules and dependencies
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const API_BASE_URL = 'http://localhttp://localhost:5000/';
+const API_BASE_URL = 'https://mern-site-z5gs.onrender.com';
 
 // Async thunk for creating an order
 export const createOrder = createAsyncThunk(

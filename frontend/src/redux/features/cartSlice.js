@@ -1,11 +1,10 @@
-// cartSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = 'https://mern-site-z5gs.onrender.com';
 
-// Add to Cart
+// Add to Cart Thunk
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
@@ -14,7 +13,7 @@ export const addToCart = createAsyncThunk(
       const cartItem = {
         userId,
         product,
-        quantity
+        quantity,
       };
       toast.success(`${product.name} added to cart`);
       return cartItem;
@@ -26,13 +25,14 @@ export const addToCart = createAsyncThunk(
   }
 );
 
-// Remove from Cart
+// Remove from Cart Thunk
 export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
       // Ideally, you'd call an API to remove the item from the backend
-      return productId; // Return the productId to filter it from the cart state
+      toast.success('Item removed from cart');
+      return productId;
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error removing item from cart';
       toast.error(errorMsg);
@@ -41,12 +41,12 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
-// Clear Cart
+// Clear Cart Thunk
 export const clearCart = createAsyncThunk(
   'cart/clearCart',
   async (userId, { rejectWithValue }) => {
     try {
-      // Normally here, you'd call the API to update the backend
+      // Normally, you'd call an API to clear the cart in the backend
       toast.success('Cart cleared');
       return { cartItems: [], totalAmount: 0 };
     } catch (error) {
@@ -71,6 +71,7 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Add to Cart
       .addCase(addToCart.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -80,9 +81,9 @@ const cartSlice = createSlice({
         const existingItem = state.cartItems.find(item => item.product._id === newItem.product._id);
 
         if (existingItem) {
-          existingItem.quantity += newItem.quantity; // Update quantity if item already exists
+          existingItem.quantity += newItem.quantity;
         } else {
-          state.cartItems.push(newItem); // Add new item to the cart
+          state.cartItems.push(newItem);
         }
 
         state.totalAmount = state.cartItems.reduce(
@@ -95,18 +96,14 @@ const cartSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
+
+      // Remove from Cart
       .addCase(removeFromCart.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         const productId = action.payload;
-        const itemToRemove = state.cartItems.find(item => item.product._id === productId);
-        
-        if (itemToRemove) {
-          toast.success(`${itemToRemove.product.name} removed from cart`);
-        }
-
         state.cartItems = state.cartItems.filter(item => item.product._id !== productId);
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
@@ -118,6 +115,8 @@ const cartSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
+
+      // Clear Cart
       .addCase(clearCart.pending, (state) => {
         state.loading = true;
         state.error = null;

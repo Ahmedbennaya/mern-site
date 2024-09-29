@@ -8,9 +8,24 @@ import sendEmail from "../Utils/sendEmail.js";
 const bookConsultation = asyncHandler(async (req, res) => {
   const { name, email, phone, message } = req.body;
 
+  // Check if all fields are provided
   if (!name || !email || !phone || !message) {
     res.status(400);
     throw new Error("All fields are required.");
+  }
+
+  // Optional: Basic validation for email and phone format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10,15}$/;
+
+  if (!emailRegex.test(email)) {
+    res.status(400);
+    throw new Error("Invalid email format.");
+  }
+
+  if (!phoneRegex.test(phone)) {
+    res.status(400);
+    throw new Error("Invalid phone number.");
   }
 
   // Create a new consultation entry in the database
@@ -24,11 +39,12 @@ const bookConsultation = asyncHandler(async (req, res) => {
   // Save consultation to the database
   await consultation.save();
 
-  // Send email to the user with the consultation details
-  await sendEmail({
-    email: consultation.email, 
-    subject: 'Consultation Request Received',
-    message: `Dear ${consultation.name},
+  // Try to send the email
+  try {
+    await sendEmail({
+      email: consultation.email, 
+      subject: 'Consultation Request Received',
+      message: `Dear ${consultation.name},
 
 Thank you for reaching out to us! We have received your consultation request and our team will contact you soon.
 
@@ -42,11 +58,18 @@ We will get back to you shortly.
 
 Best regards,
 [Bargaoui rideux Tahar]
-    `, 
-  });
+      `, 
+    });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500);
+    throw new Error('Consultation saved, but failed to send confirmation email.');
+  }
 
+  // Respond with success
   res.status(201).json({
     message: "Consultation booked successfully.",
+    consultationId: consultation._id,
   });
 });
 

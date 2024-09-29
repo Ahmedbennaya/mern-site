@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 import User from "../Model/UserModel.js";
 
+// Authentication middleware
 const authenticate = expressAsyncHandler(async (req, res, next) => {
-  let token;
-  token = req.cookies.jwt;
+  let token = req.cookies.jwt;
 
   if (token) {
     try {
@@ -13,14 +13,15 @@ const authenticate = expressAsyncHandler(async (req, res, next) => {
       next();
     } catch (error) {
       res.status(401);
-      throw new Error("Not authorized , invalid token");
+      throw new Error("Not authorized, invalid token");
     }
   } else {
     res.status(401);
-    throw new Error("Not authorized , expired token");
+    throw new Error("Not authorized, expired token");
   }
 });
 
+// Admin authorization middleware
 const authorizeAdmin = expressAsyncHandler(async (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();

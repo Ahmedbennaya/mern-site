@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema(
     LastName: { type: String, required: true },
     profileImage: {
       type: String,
-      default: "https://res.cloudinary.com/dc1zy9h63/image/upload/v1726679186/icon-5359553_640_kkdoli.webp",
+      default: "https://res.cloudinary.com/dc1zy9h63/image/upload/v1726415737/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws_eqk1sd.jpg",
     },
     isAdmin: { type: Boolean, required: true, default: false },
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },

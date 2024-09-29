@@ -13,59 +13,51 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
 
   const userId = userInfo?._id;
 
+  // Check for valid userId
   useEffect(() => {
     if (!userId) {
       console.error('User ID is missing');
     }
   }, [userId]);
 
+  // Handle updating the quantity of items in the cart
   const handleUpdateQuantity = useCallback(
     (id, quantity) => {
       if (!userId) {
         console.error('User ID is required to add to cart');
         return;
       }
-
-      dispatch(
-        addToCart({
-          userId,
-          productId: id,
-          quantity,
-        })
-      );
+      dispatch(addToCart({ userId, productId: id, quantity }));
     },
     [dispatch, userId]
   );
 
+  // Handle removing items from the cart
   const handleRemoveItem = useCallback(
     (id) => {
       if (!userId) {
         console.error('User ID is required to remove from cart');
         return;
       }
-
-      dispatch(
-        removeFromCart({
-          userId,
-          productId: id,
-        })
-      );
+      dispatch(removeFromCart({ userId, productId: id }));
     },
     [dispatch, userId]
   );
 
+  // Handle clearing the cart
   const handleClearCart = useCallback(() => {
     if (!userId) {
       console.error('User ID is required to clear the cart');
       return;
     }
-
     dispatch(clearCart(userId));
   }, [dispatch, userId]);
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      className={`fixed inset-0 z-50 flex transition-transform duration-300 ${
+        isCartOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
     >
       <div className="w-80 bg-white p-6 shadow-lg relative h-full">
         <button
