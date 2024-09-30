@@ -4,12 +4,29 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
 
+// Shared classes for styling
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
   button: 'px-4 py-2 rounded-lg font-semibold transition duration-300',
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
+  modal: 'fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75',
 };
+
+// Modal component for image popup
+const ImageModal = ({ imageUrl, title, onClose }) => (
+  <div className={sharedClasses.modal} onClick={onClose}>
+    <div className="relative">
+      <img src={imageUrl} alt={title} className="max-w-full max-h-screen" />
+      <button
+        className="absolute top-2 right-2 bg-white text-black px-4 py-2 rounded-lg"
+        onClick={onClose}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+);
 
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
@@ -26,8 +43,6 @@ const FilterCheckbox = ({ label, checked, onChange }) => (
 const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
     <h2 className="text-2xl font-semibold mb-4 text-gray-900">Filter Products</h2>
-    
-    {/* Availability Filter */}
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Availability</h3>
       <FilterCheckbox
@@ -36,8 +51,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
         onChange={() => handleFilterChange({ target: { name: 'inStock', value: !filters.inStock } })}
       />
     </div>
-
-    {/* Category Filter */}
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Product Category</h3>
       <FilterCheckbox
@@ -46,8 +59,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
         onChange={() => handleFilterChange({ target: { name: 'category', value: 'Curtains & Drapes' } })}
       />
     </div>
-
-    {/* Clear All Button */}
     <button
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full mt-4`}
       onClick={handleClearFilters}
@@ -57,20 +68,37 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => (
-  <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
-    <img src={imageUrl} alt={title} className="w-full h-56 object-cover rounded-lg mb-4" />
-    <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
-    <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {price.toFixed(2)}</h4>
-    <p className="text-gray-600 mb-4">{description}</p>
-    <button
-      onClick={onAddToCart}
-      className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
-    >
-      Add to Cart
-    </button>
-  </div>
-);
+const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  return (
+    <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
+      <div className="relative w-full h-64 overflow-hidden rounded-lg mb-4 cursor-pointer" onClick={openModal}>
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+        />
+      </div>
+      <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
+      <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {price.toFixed(2)}</h4>
+      <p className="text-gray-600 mb-4">{description}</p>
+      <button
+        onClick={onAddToCart}
+        className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
+      >
+        Add to Cart
+      </button>
+
+      {isModalOpen && (
+        <ImageModal imageUrl={imageUrl} title={title} onClose={closeModal} />
+      )}
+    </div>
+  );
+};
 
 const ProductGallery = ({ products, handleAddToCart }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -192,9 +220,7 @@ const CurtainsDrapes = () => {
         </div>
       </div>
     </div>
-    
   );
-  
 };
 
 export default CurtainsDrapes;

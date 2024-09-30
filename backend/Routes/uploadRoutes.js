@@ -1,14 +1,10 @@
 import express from 'express';
-import { upload } from '../config/cloudinaryConfig.js'; 
+import { uploadImage } from '../Controllers/uploadController.js';
+import { upload } from '../config/cloudinaryConfig.js'; // Cloudinary configuration
 
 const router = express.Router();
 
-router.post('/upload', upload.single('profile_picture'), (req, res) => {
-  if (req.file) {
-    res.json({ imageUrl: req.file.path });
-  } else {
-    res.status(400).send('File upload failed');
-  }
-});
+// POST route for uploading images
+router.post('/', upload.single('image'), uploadImage);
 
 export default router;

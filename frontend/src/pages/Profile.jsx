@@ -16,9 +16,9 @@ const Profile = () => {
     confirmPassword: "",
     profileImage: ""
   });
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null); // To store the selected image file
 
-  // Update user state when userInfo changes
+  // Load user info from state into the form
   useEffect(() => {
     if (userInfo) {
       setUser({
@@ -33,60 +33,60 @@ const Profile = () => {
     }
   }, [userInfo]);
 
+  // Handle input changes for form fields
   const changeHandler = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  // Handle form submission
   const updateHandler = async (e) => {
     e.preventDefault();
 
-    // Validate password match
     if (user.password !== user.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
 
-    // Handle image upload if a new file is selected
-    let photoUrl = userInfo?.profileImage || "";
+    let photoUrl = userInfo?.profileImage || ""; // Use existing image if no new one is uploaded
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "dc1zy9h63");
+      formData.append("upload_preset", "ahmed"); // Replace with your Cloudinary unsigned preset
 
       try {
         const { data } = await axios.post(
-          "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload",
-          formData,
+          "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload", // Replace with your Cloudinary details
+          formData
         );
-        photoUrl = data.url;  
+        photoUrl = data.secure_url; // Use the secure Cloudinary URL
       } catch (error) {
         toast.error("Image upload failed");
         return;
       }
     }
 
-    // Update user profile
     try {
       const response = await axios.put(
-        "https://mern-site-z5gs.onrender.com/api/users/update",
+        "https://mern-site-z5gs.onrender.com/api/users/update", // Backend API for updating user
         { ...user, profileImage: photoUrl },
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`, // Send token for authentication
           },
         }
       );
 
-      dispatch(updateUser({ ...user, profileImage: photoUrl }));  
+      dispatch(updateUser({ ...user, profileImage: photoUrl })); // Update Redux store with new user data
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Failed to update profile:", error.response || error.message);
-      handleErrorResponse(error);  // Handle the error response
+      handleErrorResponse(error);
     }
   };
 
+  // Handle errors during the profile update
   const handleErrorResponse = (error) => {
-    if (error.response?.status === 401) {  
+    if (error.response?.status === 401) {
       toast.error("Unauthorized: Please log in again.");
     } else if (error.response?.status === 500) {
       toast.error("Server error: Please try again later.");
@@ -131,7 +131,7 @@ const Profile = () => {
               <input
                 id="file"
                 type="file"
-                onChange={(e) => setFile(e.target.files[0])}
+                onChange={(e) => setFile(e.target.files[0])} // Store the selected file
                 className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
               />
             </div>

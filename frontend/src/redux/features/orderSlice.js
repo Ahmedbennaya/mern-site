@@ -31,9 +31,14 @@ export const fetchOrders = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/orders`);
-      return response.data.orders;  // Assuming backend returns an array of orders
+      if (response.data && Array.isArray(response.data.orders)) {
+        return response.data.orders;
+      } else {
+        throw new Error('Invalid response data from server');
+      }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message;
+      toast.error(`Failed to fetch orders: ${errorMsg}`);
       return rejectWithValue(errorMsg);
     }
   }
@@ -45,8 +50,12 @@ export const confirmOrder = createAsyncThunk(
   async (orderId, { rejectWithValue }) => {
     try {
       const response = await axios.put(`${API_BASE_URL}/api/orders/${orderId}/confirm`);
-      toast.success('Order confirmed successfully');
-      return response.data.order;
+      if (response.data && response.data.order) {
+        toast.success('Order confirmed successfully');
+        return response.data.order;
+      } else {
+        throw new Error('No order confirmation data returned from the server.');
+      }
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message;
       toast.error(`Order confirmation failed: ${errorMsg}`);
@@ -59,8 +68,8 @@ export const confirmOrder = createAsyncThunk(
 const initialState = {
   orders: [],       // Store multiple orders (for admin)
   order: null,      // Store a single order (for the user)
-  loading: false,
-  error: null,
+  loading: false,   // Track loading state for async actions
+  error: null,      // Store any errors during API calls
 };
 
 // Order slice combining user and admin functionality
@@ -83,7 +92,7 @@ const orderSlice = createSlice({
         state.error = null;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
-        state.order = action.payload; // Set the order data
+        state.order = action.payload; // Set the created order data
         state.loading = false;
       })
       .addCase(createOrder.rejected, (state, action) => {
@@ -127,5 +136,5 @@ const orderSlice = createSlice({
 // Export the action to reset order state if needed
 export const { resetOrderState } = orderSlice.actions;
 
-// Export the order reducer
+// Export the order reducer to be used in store configuration
 export default orderSlice.reducer;

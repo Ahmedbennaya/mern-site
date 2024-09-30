@@ -153,7 +153,7 @@ const Checkout = () => {
       </div>
 
       <div className="text-lg font-semibold mb-4">
-        Total Amount: ${totalAmount.toFixed(2)}
+        Total Amount: DT:{totalAmount.toFixed(2)}
       </div>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}

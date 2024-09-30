@@ -3,19 +3,22 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config(); // Load environment variables
 
+// Cloudinary configuration
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Cloudinary storage configuration for Multer
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
-    folder: 'mern_app_uploads',
-    allowedFormats: ['jpg', 'png', 'jpeg'],
+    folder: 'mern_app_uploads', // Your desired folder in Cloudinary
+    allowed_formats: ['jpg', 'png', 'jpeg'], // Allowed file types
+    upload_preset: 'ahmed', // Add your unsigned preset here
   },
 });
 

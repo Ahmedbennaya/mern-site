@@ -2,11 +2,6 @@ import Cart from '../Model/CartModel.js';
 import Product from '../Model/ProductModel.js';
 import Order from '../Model/orderModel.js';
 
-/**
- * @desc Purchase Items and Remove from Stock
- * @route POST /api/cart/purchase
- * @access Private
- */
 export const purchaseItems = async (req, res) => {
   const { userId, shippingAddress, paymentMethod } = req.body;
 
@@ -51,11 +46,6 @@ export const purchaseItems = async (req, res) => {
   }
 };
 
-/**
- * @desc Get Cart for a User
- * @route GET /api/cart/:userId
- * @access Private
- */
 export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.params.userId }).populate('cartItems.product');
@@ -69,11 +59,6 @@ export const getCart = async (req, res) => {
   }
 };
 
-/**
- * @desc Add to Cart
- * @route POST /api/cart
- * @access Private
- */
 export const addToCart = async (req, res) => {
   const { userId, productId, quantity } = req.body;
 
@@ -109,11 +94,6 @@ export const addToCart = async (req, res) => {
   }
 };
 
-/**
- * @desc Remove from Cart
- * @route DELETE /api/cart/:userId/:productId
- * @access Private
- */
 export const removeFromCart = async (req, res) => {
   const { userId, productId } = req.params;
 
@@ -132,11 +112,6 @@ export const removeFromCart = async (req, res) => {
   }
 };
 
-/**
- * @desc Clear Cart
- * @route DELETE /api/cart/:userId
- * @access Private
- */
 export const clearCart = async (req, res) => {
   try {
     const cart = await Cart.findOneAndDelete({ user: req.params.userId });
