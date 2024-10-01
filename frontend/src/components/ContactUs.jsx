@@ -72,7 +72,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               className="w-full p-2 border border-gray-300 rounded"
-              placeholder="+216 50144070"
+              placeholder="(+216) Your number"
             />
           </div>
 
