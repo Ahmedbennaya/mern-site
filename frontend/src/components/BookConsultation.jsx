@@ -27,9 +27,10 @@ const BookConsultation = () => {
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
+
     try {
       const response = await axios.post(
-        "https://mern-site-z5gs.onrender.com/api/book-consultation",
+        "http://localhost:5000/api/book-consultation",
         {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,

@@ -1,6 +1,12 @@
 import asyncHandler from "express-async-handler";
-import Consultation from "../Model/consultationModel.js"; 
+import Consultation from "../Model/consultationModel.js";
 import sendEmail from "../Utils/sendEmail.js";
+
+// Helper function to validate email
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 // @desc Book a consultation
 // @route POST /api/book-consultation
@@ -8,43 +14,45 @@ import sendEmail from "../Utils/sendEmail.js";
 const bookConsultation = asyncHandler(async (req, res) => {
   const { name, email, phone, message } = req.body;
 
-  // Check if all fields are provided
+  // Check if all required fields are provided
   if (!name || !email || !phone || !message) {
-    res.status(400);
-    throw new Error("All fields are required.");
+    res.status(400).json({ message: "All fields are required." });
+    return;
   }
 
-  // Optional: Basic validation for email and phone format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^[0-9]{10,15}$/;
-
-  if (!emailRegex.test(email)) {
-    res.status(400);
-    throw new Error("Invalid email format.");
+  // Validate email
+  if (!validateEmail(email)) {
+    res.status(400).json({ message: "Invalid email format." });
+    return;
   }
 
+  // New regex to allow various phone number formats
+  const phoneRegex = /^\+?[0-9\s\-()]{10,20}$/;
+
+  // Validate phone number
   if (!phoneRegex.test(phone)) {
-    res.status(400);
-    throw new Error("Invalid phone number.");
+    res.status(400).json({ message: "Invalid phone number format. Please ensure it includes only numbers, spaces, dashes, parentheses, and optionally starts with a '+'." });
+    return;
   }
 
-  // Create a new consultation entry in the database
-  const consultation = new Consultation({
-    name,
-    email,
-    phone,
-    message,
-  });
-
-  // Save consultation to the database
-  await consultation.save();
-
-  // Try to send the email
   try {
-    await sendEmail({
-      email: consultation.email, 
-      subject: 'Consultation Request Received',
-      message: `Dear ${consultation.name},
+    // Create a new consultation entry in the database
+    const consultation = new Consultation({
+      name,
+      email,
+      phone,
+      message,
+    });
+
+    // Save consultation to the database
+    await consultation.save();
+
+    // Send confirmation email
+    try {
+      await sendEmail({
+        email: consultation.email, 
+        subject: 'Consultation Request Received',
+        message: `Dear ${consultation.name},
 
 Thank you for reaching out to us! We have received your consultation request and our team will contact you soon.
 
@@ -58,19 +66,27 @@ We will get back to you shortly.
 
 Best regards,
 [Bargaoui rideux Tahar]
-      `, 
-    });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500);
-    throw new Error('Consultation saved, but failed to send confirmation email.');
-  }
+        `, 
+      });
+    } catch (emailError) {
+      console.error('Email error:', emailError.message || emailError);
+      res.status(500).json({ 
+        message: "Consultation saved, but failed to send confirmation email.",
+        consultationId: consultation._id
+      });
+      return;
+    }
 
-  // Respond with success
-  res.status(201).json({
-    message: "Consultation booked successfully.",
-    consultationId: consultation._id,
-  });
+    // Respond with success
+    res.status(201).json({
+      message: "Consultation booked successfully.",
+      consultationId: consultation._id,
+    });
+
+  } catch (dbError) {
+    console.error('Database error:', dbError.message || dbError);
+    res.status(500).json({ message: "Failed to book consultation. Please try again later." });
+  }
 });
 
 export { bookConsultation };

@@ -56,7 +56,7 @@ const Footer = () => {
                     links={[
                         { text: "Find Your Store", url: "/stores" },
                         { text: "Order Tracking", url: "/order-tracking" },
-                        { text: "Contact Us", url: "/contact-us" },
+                        { text: "Contact Us", url: "/contact" },
                         { text: "FAQs", url: "/faqs" },
                         { text: "Returns & Refunds", url: "/returns-refunds" }
                     ]} 
@@ -72,12 +72,7 @@ const Footer = () => {
                         <span className="text-gray-400">Support Services:<br/> bargaoui_rideaux@yahoo.fr</span>
                     </div>
 
-                    {/* Payment Icons */}
-                    <div className={flexSpaceClasses}>
-                        <img aria-hidden="true" alt="visa" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
-                        <img aria-hidden="true" alt="mastercard" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
-                        <img aria-hidden="true" alt="amex" src="https://openui.fly.dev/openui/24x24.svg?text=💳" />
-                    </div>
+                   
                 </div>
             </div>
 

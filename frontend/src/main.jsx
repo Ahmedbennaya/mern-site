@@ -31,7 +31,7 @@ import AdminOrders from './admin/AdminOrders';  // <-- Import AdminOrders compon
 
 // Import the BookConsultation component
 import BookConsultation from './components/BookConsultation'; 
-
+import ContactUs from './components/ContactUs';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -52,6 +52,7 @@ const router = createBrowserRouter(
       
       {/* New route for the Book Consultation form */}
       <Route path="book-consultation" element={<BookConsultation />} />
+      <Route path="contact" element={<ContactUs />} />
 
       {/* Admin routes */}
       <Route path="/admin" element={<AdminDashboard />} />

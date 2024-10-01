@@ -7,6 +7,7 @@ import cartReducer from './features/cartSlice';
 import productsReducer from './features/productsSlice';
 import filterReducer from './features/filterSlice';
 import orderReducer from './features/orderSlice';
+import contactReducer from './features/contactSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,8 @@ const store = configureStore({
     products: productsReducer,
     filters: filterReducer,
     order: orderReducer,
+    contact: contactReducer,
+
   },
   devTools: true,
 });
