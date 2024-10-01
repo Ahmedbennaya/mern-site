@@ -6,7 +6,7 @@ export const submitContactForm = createAsyncThunk(
   'contact/submitContactForm',
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/contact', formData, {
+      const response = await axios.post('https://mern-site-z5gs.onrender.com/api/contact', formData, {
         headers: { 'Content-Type': 'application/json' },
       });
       return response.data.message;
