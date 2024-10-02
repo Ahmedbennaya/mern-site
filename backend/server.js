@@ -46,12 +46,12 @@ app.get('/', (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/consultations", consultationRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/v1/emails', emailRoutes);
-app.use('/api/cart', cartRoutes);
-app.use("/api/uploads", uploadRoutes);  
-app.use('/api/contact', contactRoutes);  // Register the contact form route
+app.use("/api", consultationRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/v1/emails", emailRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
@@ -60,5 +60,4 @@ app.use(errorHandler);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-
 });

@@ -30,7 +30,6 @@ export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      // Ideally, you'd call an API to remove the item from the backend
       toast.success('Item removed from cart');
       return productId;
     } catch (error) {
@@ -46,7 +45,6 @@ export const clearCart = createAsyncThunk(
   'cart/clearCart',
   async (userId, { rejectWithValue }) => {
     try {
-      // Normally, you'd call an API to clear the cart in the backend
       toast.success('Cart cleared');
       return { cartItems: [], totalAmount: 0 };
     } catch (error) {
@@ -81,11 +79,14 @@ const cartSlice = createSlice({
         const existingItem = state.cartItems.find(item => item.product._id === newItem.product._id);
 
         if (existingItem) {
-          existingItem.quantity += newItem.quantity;
+          // Update the quantity of the existing item by adding the new quantity
+          existingItem.quantity = existingItem.quantity + newItem.quantity;
         } else {
+          // If the item is not in the cart, add it as a new entry
           state.cartItems.push(newItem);
         }
 
+        // Recalculate the total amount in the cart
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0

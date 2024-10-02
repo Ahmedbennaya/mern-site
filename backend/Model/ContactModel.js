@@ -14,7 +14,7 @@ const contactFormSchema = mongoose.Schema(
     phone: {
       type: String,
       required: true,
-      match: /^\+216\s?[0-9]{8}$/, // Tunisian phone number validation
+      match: /^\+?[1-9]\d{1,14}$/, // General phone number validation for international use
     },
     subject: {
       type: String,
@@ -31,5 +31,4 @@ const contactFormSchema = mongoose.Schema(
 );
 
 const ContactForm = mongoose.model('ContactForm', contactFormSchema);
-
 export default ContactForm;

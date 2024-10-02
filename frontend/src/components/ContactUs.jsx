@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitContactForm } from '../redux/features/contactSlice';
+import ReCAPTCHA from 'react-google-recaptcha'; // Import reCAPTCHA component
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const ContactUs = () => {
     message: '',
   });
 
+  const [recaptchaToken, setRecaptchaToken] = useState(null); // reCAPTCHA token
   const dispatch = useDispatch();
   const { loading, successMessage, errorMessage } = useSelector((state) => state.contact);
 
@@ -19,16 +21,27 @@ const ContactUs = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Capture reCAPTCHA token on success
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(submitContactForm(formData)); // Dispatch form data to Redux
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    });
+
+    if (!recaptchaToken) {
+      alert('Please complete the reCAPTCHA.');
+      return;
+    }
+
+    // Add the reCAPTCHA token to the form data
+    const submissionData = {
+      ...formData,
+      recaptchaToken,
+    };
+
+    // Dispatch form data to Redux
+    dispatch(submitContactForm(submissionData));
   };
 
   return (
@@ -72,7 +85,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               className="w-full p-2 border border-gray-300 rounded"
-              placeholder="(+216) Your number"
+              placeholder="Your phone number"
             />
           </div>
 
@@ -98,6 +111,12 @@ const ContactUs = () => {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* reCAPTCHA widget */}
+          <ReCAPTCHA
+            sitekey="6Ldc-1UqAAAAAOZdWFyGcolXctfpPEDdaBI-ujPL" // Your reCAPTCHA site key
+            onChange={handleRecaptchaChange}
+          />
 
           <button
             type="submit"
