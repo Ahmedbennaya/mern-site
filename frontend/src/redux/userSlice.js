@@ -1,4 +1,3 @@
-// /src/redux/userSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -91,7 +90,6 @@ export const updateUser = createAsyncThunk(
     try {
       const { auth } = getState();
       const token = auth.userInfo?.token;
-
       if (!token) {
         throw new Error('No token found. Please log in.');
       }

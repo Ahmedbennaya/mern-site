@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/userSlice";
-
+import ReCAPTCHA from "react-google-recaptcha";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -10,6 +11,8 @@ const Login = () => {
     password: "", 
   });
   const { loggedInUser } = useSelector((state) => state.user);
+  const [recaptchaToken, setRecaptchaToken] = useState(null); // Store reCAPTCHA token
+  const [loading, setLoading] = useState(false); // Loading state for the form
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -20,7 +23,16 @@ const Login = () => {
 
   const signInHandler = (e) => {
     e.preventDefault();
-    dispatch(signin(user));
+
+    // Verify that reCAPTCHA is completed
+    if (!recaptchaToken) {
+      toast.error("Please complete the reCAPTCHA.");
+      return;
+    }
+
+    // Dispatch the login action
+    setLoading(true);
+    dispatch(signin(user)).then(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -32,6 +44,11 @@ const Login = () => {
       }
     }
   }, [loggedInUser, navigate]);
+
+  // Handle reCAPTCHA token change
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -69,6 +86,7 @@ const Login = () => {
                   className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
                   type="password"
                   name="password" 
+                  required
                 />
                 <Link
                   to="/forgot-password"
@@ -77,12 +95,20 @@ const Login = () => {
                   Forget Password?
                 </Link>
               </div>
+
+              {/* reCAPTCHA */}
+              <ReCAPTCHA
+                sitekey="6Ldc-1UqAAAAAOZdWFyGcolXctfpPEDdaBI-ujPL" // Replace with your site key
+                onChange={handleRecaptchaChange}
+              />
+
               <div className="mt-8">
                 <button
-                  type="submit" 
+                  type="submit"
+                  disabled={loading || !recaptchaToken} // Disable button when loading or reCAPTCHA not completed
                   className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600"
                 >
-                  Login
+                  {loading ? "Logging in..." : "Login"}
                 </button>
               </div>
             </form>

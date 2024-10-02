@@ -13,6 +13,7 @@ import uploadRoutes from './Routes/uploadRoutes.js';
 import cartRoutes from './Routes/cartRoutes.js';
 import { errorHandler, notFound } from './Middlewares/errorMiddleware.js';
 import contactRoutes from './Routes/contactRoutes.js';
+import preferenceRoutes from './Routes/preferenceRoutes.js';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use("/api/v1/emails", emailRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/contact", contactRoutes);
+app.use('/api/preferences', preferenceRoutes);  // Use the preference routes
 
 // Error Handling Middleware
 app.use(notFound);
