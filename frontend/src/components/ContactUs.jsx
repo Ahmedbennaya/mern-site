@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitContactForm } from '../redux/features/contactSlice';
 import ReCAPTCHA from 'react-google-recaptcha'; // Import reCAPTCHA component
+import { toast } from 'react-hot-toast'; // Import toast and Toaster
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ const ContactUs = () => {
     e.preventDefault();
 
     if (!recaptchaToken) {
-      alert('Please complete the reCAPTCHA.');
+      toast.error('Please complete the reCAPTCHA.'); // Display error toast
       return;
     }
 
@@ -44,12 +45,20 @@ const ContactUs = () => {
     dispatch(submitContactForm(submissionData));
   };
 
+  // Add an effect to listen for changes in success or error messages
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [successMessage, errorMessage]); // Dependencies for when to show toast
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white w-full max-w-md p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-4">Contact Us</h2>
-        {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
-        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -1,57 +1,70 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import ReCAPTCHA from 'react-google-recaptcha';
+import toast from 'react-hot-toast';
 
 const BookConsultation = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    zipCode: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    zipCode: '',
     textConsent: false,
   });
+
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     });
+  };
+
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!recaptchaToken) {
+      toast.error('Please complete the reCAPTCHA.');
+      return;
+    }
+
     setLoading(true);
-    setSuccessMessage("");
-    setErrorMessage("");
 
     try {
       const response = await axios.post(
-        "https://mern-site-z5gs.onrender.com/api/book-consultation",
+        'https://mern-site-z5gs.onrender.com/api/book-consultation',
         {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           phone: formData.phone,
           message: `Zip Code: ${formData.zipCode}`,
+          recaptchaToken,
         },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { 'Content-Type': 'application/json' } }
       );
-      setLoading(false);
-      setSuccessMessage(response.data.message);
+
+      toast.success(response.data.message);
       setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        zipCode: "",
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        zipCode: '',
         textConsent: false,
       });
+      setRecaptchaToken(null);
     } catch (error) {
+      toast.error(error.response?.data?.message || 'Error occurred.');
+    } finally {
       setLoading(false);
-      setErrorMessage(error.response?.data?.message || "Error occurred.");
     }
   };
 
@@ -61,15 +74,11 @@ const BookConsultation = () => {
         <h2 className="text-2xl font-bold text-center mb-4">
           We do it all for you: design, measure & install.
         </h2>
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name *
-              </label>
+              <label className="block text-sm font-medium text-gray-700">First Name *</label>
               <input
                 type="text"
                 name="firstName"
@@ -80,9 +89,7 @@ const BookConsultation = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name *
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Last Name *</label>
               <input
                 type="text"
                 name="lastName"
@@ -95,9 +102,7 @@ const BookConsultation = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email *
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Email *</label>
             <input
               type="email"
               name="email"
@@ -110,9 +115,7 @@ const BookConsultation = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Phone Number *
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Phone Number *</label>
               <input
                 type="text"
                 name="phone"
@@ -123,9 +126,7 @@ const BookConsultation = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Zip Code *
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Zip Code *</label>
               <input
                 type="text"
                 name="zipCode"
@@ -146,34 +147,23 @@ const BookConsultation = () => {
               className="h-4 w-4 border-gray-300"
             />
             <label className="text-sm text-gray-700">
-              You may text me to assist in scheduling my appointment. I
-              understand I may opt-out at any time.
+              You may text me to assist in scheduling my appointment. I understand I may opt-out at any time.
             </label>
           </div>
+
+          <ReCAPTCHA sitekey="6Ldc-1UqAAAAAOZdWFyGcolXctfpPEDdaBI-ujPL" onChange={handleRecaptchaChange} />
 
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-teal-700 hover:bg-teal-800 text-white py-3 rounded mt-4"
           >
-            {loading ? "Booking..." : "BOOK FREE CONSULTATION"}
+            {loading ? 'Booking...' : 'BOOK FREE CONSULTATION'}
           </button>
         </form>
 
         <div className="text-center mt-4 text-gray-500">
-          or call <span className="font-semibold text-black">(216)50929292</span>
-        </div>
-
-        <div className="mt-6 text-center text-gray-500 text-sm">
-          <p>
-            Your information with Stoneside is secure. We will never sell or
-            share your information.
-          </p>
-        </div>
-
-        <div className="mt-6 text-center text-gray-500 text-sm">
-          <p>As seen in</p>
-          <p className="font-semibold text-black">Better Homes & Gardens</p>
+          or call <span className="font-semibold text-black">(+216)50929292</span>
         </div>
       </div>
     </div>
