@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Consultation from "../Model/consultationModel.js"; 
-import sendEmail from "../utils/sendEmail.js";
+import sendEmail from "../Utils/sendEmail.js";
 
 // @desc Book a consultation
 // @route POST /api/book-consultation
@@ -42,7 +42,7 @@ We will get back to you shortly.
 
 Best regards,
 [Your Company Name]
-    `, // Replace [Your Company Name] with your actual company name
+    `, 
   });
 
   res.status(201).json({
