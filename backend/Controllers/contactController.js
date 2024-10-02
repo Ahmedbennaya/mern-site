@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import axios from 'axios';
 import User from '../Model/UserModel.js';
 import ContactForm from '../Model/ContactModel.js';
-import sendEmail from '../utils/sendEmail.js';
+import sendEmail from '../Utils/sendEmail.js';
 
 // Helper function to validate email format
 const validateEmail = (email) => {
