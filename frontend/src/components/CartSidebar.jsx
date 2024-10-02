@@ -1,3 +1,4 @@
+// CartSidebar.js
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -7,16 +8,15 @@ import CartItem from './CartItem';
 
 const CartSidebar = ({ isCartOpen, toggleCart }) => {
   const dispatch = useDispatch();
-
   const { userInfo } = useSelector((state) => state.auth);
-  const { cartItems = [], totalAmount } = useSelector((state) => state.cart);
+  const { cartItems = [], totalAmount = 0 } = useSelector((state) => state.cart);
 
   const userId = userInfo?._id;
 
-  // Check for valid userId
+  // Log an error if userId is not available
   useEffect(() => {
     if (!userId) {
-      console.error('User ID is missing');
+      console.error('User ID is missing. Ensure the user is authenticated.');
     }
   }, [userId]);
 
@@ -27,7 +27,9 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
         console.error('User ID is required to add to cart');
         return;
       }
-      dispatch(addToCart({ userId, productId: id, quantity }));
+      if (quantity > 0) {
+        dispatch(addToCart({ userId, productId: id, quantity }));
+      }
     },
     [dispatch, userId]
   );
@@ -74,7 +76,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
           <div>
             {cartItems.map((item) => (
               <CartItem
-                key={item.product._id}
+                key={item.product?._id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}

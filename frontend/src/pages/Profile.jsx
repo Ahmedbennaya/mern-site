@@ -58,7 +58,7 @@ const Profile = () => {
           "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload", // Replace with your Cloudinary details
           formData
         );
-        photoUrl = data.secure_url; // Use the secure Cloudinary URL
+        photoUrl = data.secure_url;
       } catch (error) {
         toast.error("Image upload failed");
         return;

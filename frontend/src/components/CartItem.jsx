@@ -1,9 +1,9 @@
+// CartItem.js
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const { product, quantity } = item;
-
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleQuantityChange = (e) => {
@@ -29,7 +29,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
     <div className="flex items-center justify-between mb-6 p-4 border-b-2">
       <div className="flex flex-col space-y-2">
-        <h4 className="font-semibold text-lg">{product?.name || "Unnamed Product"}</h4>
+        <h4 className="font-semibold text-lg">{product?.name || 'Unnamed Product'}</h4>
         <p className="text-gray-600">
           Price: <span className="font-medium">${(product?.price ?? 0).toFixed(2)}</span>
         </p>
@@ -60,7 +60,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       {showConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg">
-            <p className="mb-4">Are you sure you want to remove <strong>{product?.name || "this item"}</strong> from the cart?</p>
+            <p className="mb-4">Are you sure you want to remove <strong>{product?.name || 'this item'}</strong> from the cart?</p>
             <div className="flex justify-end space-x-2">
               <button
                 onClick={cancelRemove}

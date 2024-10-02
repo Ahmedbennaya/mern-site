@@ -27,7 +27,8 @@ app.use(cors({
   credentials: true,
   origin: [
     "https://mern-site-z5gs.onrender.com",
-    "https://main--bargaoui.netlify.app"
+    "https://main--bargaoui.netlify.app",
+    "http://localhost:3000"
   ]
 }));
 
@@ -37,9 +38,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Root route
-app.get('/', (req, res) => {
-  console.log('Root route accessed');
-  res.status(200).json({ message: 'Welcome to the API' });
+app.get('/test-cors', (req, res) => {
+  res.json({ message: 'CORS is working!' });
 });
 
 // API Routes
@@ -60,4 +60,5 @@ app.use(errorHandler);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+
 });
