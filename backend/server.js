@@ -38,8 +38,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Root route
-app.get('/test-cors', (req, res) => {
-  res.json({ message: 'CORS is working!' });
+app.get('/', (req, res) => {
+  res.send('Welcome to the MERN eCommerce API');
 });
 
 // API Routes
