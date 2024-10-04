@@ -11,7 +11,7 @@ export const savePreferences = createAsyncThunk(
 
     // Save preferences to backend only if userId exists
     if (userId) {
-      await axios.post('/api/preferences/savePreferences', { userId, preference });
+      await axios.post('https://mern-site-z5gs.onrender.com/api/preferences/savePreferences', { userId, preference });
     }
 
     // Also save preferences to localStorage
