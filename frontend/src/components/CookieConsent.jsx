@@ -1,48 +1,39 @@
 // CookieConsent.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';  // Import useSelector to access Redux store
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { savePreferences, loadPreferences } from '../redux/features/preferenceSlice'; // Import the Redux actions
 
 const CookieConsent = () => {
+  const dispatch = useDispatch();
+  const { preferences, loading, error } = useSelector((state) => state.preference);
   const [isVisible, setIsVisible] = useState(true);  // Track banner visibility
-  const [cookiesAccepted, setCookiesAccepted] = useState(null);  // Track cookie preferences
-  
-  // Get user info from Redux store
-  const userInfo = useSelector((state) => state.auth.userInfo);
 
+  // Effect to load preferences from Redux store and localStorage on component mount
   useEffect(() => {
-    const storedPreference = localStorage.getItem('cookiePreference');  // Check if preferences are saved
-    if (storedPreference) {
-      setIsVisible(false);  // Hide banner if preferences exist
-      setCookiesAccepted(JSON.parse(storedPreference));  // Set preference state
+    dispatch(loadPreferences());
+  }, [dispatch]);
+
+  // Effect to hide the banner if preferences already exist
+  useEffect(() => {
+    // Check if preferences are already set and banner should be hidden
+    if (preferences && preferences.thirdParty !== undefined && isVisible) {
+      setIsVisible(false);
     }
-  }, []);
+  }, [preferences, isVisible]);  // Depend on preferences and isVisible to avoid infinite loop
 
-  // Function to save preferences locally and send them to the backend
-  const savePreferences = async (preference) => {
-    localStorage.setItem('cookiePreference', JSON.stringify(preference));
-    setCookiesAccepted(preference);
-    setIsVisible(false);
-
-    // Send preferences to the backend API
-    try {
-      await axios.post('/api/preferences/savePreferences', {
-        userId: userInfo ? userInfo.id : null,  // Use user ID from Redux store
-        preference,
-      });
-    } catch (error) {
-      console.error('Error saving preferences to backend:', error);  // Handle error gracefully
-    }
-  };
-
+  // Handle acceptance of all cookies
   const handleAcceptAll = () => {
-    savePreferences({ thirdParty: true });
+    dispatch(savePreferences({ thirdParty: true }));
+    setIsVisible(false);  // Hide the banner after accepting
   };
 
+  // Handle rejection of third-party cookies
   const handleRejectThirdParty = () => {
-    savePreferences({ thirdParty: false });
+    dispatch(savePreferences({ thirdParty: false }));
+    setIsVisible(false);  // Hide the banner after rejecting
   };
 
+  // Prevent the banner from rendering if it's not visible
   if (!isVisible) return null;
 
   return (
@@ -87,6 +78,8 @@ const CookieConsent = () => {
         >
           Reject Third-Party Cookies
         </button>
+        {loading && <p>Saving preferences...</p>}
+        {error && <p>{error}</p>}
       </div>
     </div>
   );

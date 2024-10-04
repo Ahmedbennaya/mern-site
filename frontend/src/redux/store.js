@@ -1,4 +1,3 @@
-// src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
 import authReducer from './features/authSlice';
@@ -8,7 +7,7 @@ import productsReducer from './features/productsSlice';
 import filterReducer from './features/filterSlice';
 import orderReducer from './features/orderSlice';
 import contactReducer from './features/contactSlice';
-
+import preferenceReducer  from './features/preferenceSlice';
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -19,7 +18,7 @@ const store = configureStore({
     filters: filterReducer,
     order: orderReducer,
     contact: contactReducer,
-
+    preference:preferenceReducer
   },
   devTools: true,
 });

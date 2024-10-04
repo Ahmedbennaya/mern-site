@@ -133,7 +133,7 @@ const Register = () => {
 
               {/* reCAPTCHA */}
               <ReCAPTCHA
-                sitekey="6Ldc-1UqAAAAAOZdWFyGcolXctfpPEDdaBI-ujPL" // Replace with your site key
+                sitekey="6Ldc-1UqAAAAAOZdWFyGcolXctfpPEDdaBI-ujPL" 
                 onChange={handleRecaptchaChange}
               />
 
