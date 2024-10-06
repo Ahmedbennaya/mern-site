@@ -27,12 +27,10 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   credentials: true,
   origin: [
-    "https://mern-site-z5gs.onrender.com",  // Allow your backend domain
-    "http://localhost:3000",                // Allow localhost (for local development)
-    "https://bargaoui.netlify.app"          // Allow your front-end domain on Netlify
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow these HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow custom headers if necessary
+    "https://mern-site-z5gs.onrender.com",
+    "https://main--bargaoui.netlify.app",
+    "http://localhost:3000"
+  ]
 }));
 
 // Middleware
@@ -56,7 +54,6 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/contact", contactRoutes);
 app.use('/api/preferences', preferenceRoutes); 
-
 // Error Handling Middleware
 app.use(notFound);
 app.use(errorHandler);
