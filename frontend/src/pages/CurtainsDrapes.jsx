@@ -186,7 +186,7 @@ const CurtainsDrapes = () => {
         }
 
         // Make the API call with the constructed params
-        const response = await axios.get('http://localhost:5000/api/products/category/curtains-drapes', {
+        const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/curtains-drapes', {
           params,
         });
 
