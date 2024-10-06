@@ -14,7 +14,7 @@ import {
   addSmartHomeProduct,
   getSmartHome,
   searchProducts  // Import the search function
-} from '../controllers/productController.js';
+} from '../Controllers/productController.js';
 
 import { authenticate, authorizeAdmin } from '../Middlewares/authMiddleware.js';
 
