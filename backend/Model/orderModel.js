@@ -26,7 +26,7 @@ const orderSchema = mongoose.Schema(
     },
     paymentMethod: { type: String, required: true },
     totalAmount: { type: Number, required: true },
-    isConfirmed: { type: Boolean, default: false }, // Added field to track confirmation status
+    isConfirmed: { type: Boolean, default: false }, 
   },
   { timestamps: true }
 );

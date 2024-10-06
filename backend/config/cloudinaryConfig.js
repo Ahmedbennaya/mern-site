@@ -14,14 +14,14 @@ cloudinary.v2.config({
 
 // Cloudinary storage configuration for Multer
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary.v2,
+  cloudinary: cloudinary.v2, // Using v2 for Cloudinary instance
   params: {
     folder: 'mern_app_uploads', // Your desired folder in Cloudinary
     allowed_formats: ['jpg', 'png', 'jpeg'], // Allowed file types
-    upload_preset: 'ahmed', // Add your unsigned preset here
+    upload_preset: 'ahmed', // Optional: Add your unsigned preset here
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage }); // Multer instance with Cloudinary storage
 
-export { upload };
+export { cloudinary, upload }; // Export both cloudinary and upload

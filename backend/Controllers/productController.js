@@ -1,4 +1,5 @@
 import Product from "../Model/ProductModel.js";
+import expressAsyncHandler from "express-async-handler";
 
 // @desc Get all products
 // @route GET /api/products
@@ -34,12 +35,10 @@ export const createProduct = async (req, res) => {
   try {
     const { name, description, price, imageUrl, category, dimensions, inStock, subcategory, colors } = req.body;
 
-    // Validate required fields
     if (!name || !description || !price || !imageUrl || !category || !dimensions || !dimensions.width || !dimensions.height || inStock === undefined) {
       return res.status(400).json({ message: 'All required fields must be provided.' });
     }
 
-    // Create a new product
     const newProduct = new Product({
       name,
       description,
@@ -52,13 +51,9 @@ export const createProduct = async (req, res) => {
       colors,
     });
 
-    // Save the product to the database
     const savedProduct = await newProduct.save();
-
-    // Respond with the saved product
     res.status(201).json(savedProduct);
   } catch (error) {
-    console.error('Error creating product:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -242,3 +237,56 @@ export const addSmartHomeProduct = async (req, res) => {
     res.status(500).json({ message: 'Error adding Smart Home product' });
   }
 };
+
+// @desc Search products by category, subcategory, and filters
+// @route GET /api/products/search
+// @access Public
+export const searchProducts = expressAsyncHandler(async (req, res) => {
+  const { category, subcategory, minPrice, maxPrice, colors, minWidth, maxWidth, minHeight, maxHeight } = req.query;
+
+  try {
+    let filter = {};
+
+    // Filter by category and subcategory
+    if (category) {
+      filter.catagory = category;
+    }
+
+    if (subcategory) {
+      filter.subcategory = { $regex: subcategory, $options: "i" }; // Case-insensitive search
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Filter by dimensions (width and height)
+    if (minWidth || maxWidth) {
+      filter["dimensions.width"] = {};
+      if (minWidth) filter["dimensions.width"].$gte = parseFloat(minWidth);
+      if (maxWidth) filter["dimensions.width"].$lte = parseFloat(maxWidth);
+    }
+
+    if (minHeight || maxHeight) {
+      filter["dimensions.height"] = {};
+      if (minHeight) filter["dimensions.height"].$gte = parseFloat(minHeight);
+      if (maxHeight) filter["dimensions.height"].$lte = parseFloat(maxHeight);
+    }
+
+    // Filter by available colors
+    if (colors) {
+      const colorArray = colors.split(",");
+      filter.colors = { $in: colorArray }; // Match any of the colors provided
+    }
+
+    // Execute search query
+    const products = await Product.find(filter).populate("catagory");
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching products", error });
+  }
+});

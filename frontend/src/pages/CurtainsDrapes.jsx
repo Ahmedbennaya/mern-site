@@ -4,7 +4,6 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
 
-// Shared classes for styling
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
   button: 'px-4 py-2 rounded-lg font-semibold transition duration-300',
@@ -13,7 +12,6 @@ const sharedClasses = {
   modal: 'fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75',
 };
 
-// Modal component for image popup
 const ImageModal = ({ imageUrl, title, onClose }) => (
   <div className={sharedClasses.modal} onClick={onClose}>
     <div className="relative">
@@ -43,6 +41,7 @@ const FilterCheckbox = ({ label, checked, onChange }) => (
 const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
     <h2 className="text-2xl font-semibold mb-4 text-gray-900">Filter Products</h2>
+
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Availability</h3>
       <FilterCheckbox
@@ -51,14 +50,48 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
         onChange={() => handleFilterChange({ target: { name: 'inStock', value: !filters.inStock } })}
       />
     </div>
+
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Product Category</h3>
-      <FilterCheckbox
-        label="Curtains & Drapes"
-        checked={filters.category.includes('Curtains & Drapes')}
-        onChange={() => handleFilterChange({ target: { name: 'category', value: 'Curtains & Drapes' } })}
-      />
+      <div className="flex flex-col space-y-2"> {/* Flex column layout */}
+        <FilterCheckbox
+          label="Curtains & Drapes"
+          checked={filters.category.includes('Curtains & Drapes')}
+          onChange={() => handleFilterChange({ target: { name: 'category', value: 'Curtains & Drapes' } })}
+        />
+        <FilterCheckbox
+          label="Blackout Curtains"
+          checked={filters.subcategory.includes('Blackout Curtains')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'Blackout Curtains' } })}
+        />
+        <FilterCheckbox
+          label="TulleEnfant"
+          checked={filters.subcategory.includes('TulleEnfant')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'TulleEnfant' } })}
+        />
+        <FilterCheckbox
+          label="Orgonza"
+          checked={filters.subcategory.includes('Orgonza')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'Orgonza' } })}
+        />
+        <FilterCheckbox
+          label="Tafta"
+          checked={filters.subcategory.includes('Tafta')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'Tafta' } })}
+        />
+        <FilterCheckbox
+          label="Lin"
+          checked={filters.subcategory.includes('Lin')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'Lin' } })}
+        />
+        <FilterCheckbox
+          label="Velour"
+          checked={filters.subcategory.includes('Velour')}
+          onChange={() => handleFilterChange({ target: { name: 'subcategory', value: 'Velour' } })}
+        />
+      </div>
     </div>
+
     <button
       className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full mt-4`}
       onClick={handleClearFilters}
@@ -67,6 +100,7 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
     </button>
   </div>
 );
+
 
 const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,6 +154,8 @@ const CurtainsDrapes = () => {
   const [filters, setFilters] = useState({
     inStock: true,
     category: [],
+    subcategory: [],
+    search: '',  // Add search filter
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -130,9 +166,30 @@ const CurtainsDrapes = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/curtains-drapes', {
-          params: filters,
+        // Build query parameters using URLSearchParams for proper encoding
+        const params = new URLSearchParams();
+
+        if (filters.inStock) {
+          params.append('inStock', 'true');
+        }
+
+        if (filters.category.length > 0) {
+          params.append('category', filters.category.join(','));  // Assuming API supports comma-separated values
+        }
+
+        if (filters.subcategory.length > 0) {
+          params.append('subcategory', filters.subcategory.join(','));  // Assuming API supports comma-separated values
+        }
+
+        if (filters.search) {
+          params.append('search', filters.search);  // Add search term if available
+        }
+
+        // Make the API call with the constructed params
+        const response = await axios.get('http://localhost:5000/api/products/category/curtains-drapes', {
+          params,
         });
+
         setProducts(response.data);
       } catch (error) {
         setError('Failed to load products');
@@ -176,7 +233,16 @@ const CurtainsDrapes = () => {
     setFilters({
       inStock: false,
       category: [],
+      subcategory: [],
+      search: '',  // Clear search as well
     });
+  };
+
+  const handleSearchChange = (e) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      search: e.target.value,
+    }));
   };
 
   const HeroSection = () => (
@@ -208,6 +274,13 @@ const CurtainsDrapes = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="md:flex gap-8">
           <div className="md:w-1/4">
+            <input
+              type="text"
+              placeholder="Search Products"
+              value={filters.search}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300"
+            />
             <FilterSection
               filters={filters}
               handleFilterChange={handleFilterChange}

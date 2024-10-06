@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect } from "react";
 import CookieConsent from "./components/CookieConsent"; // Import the CookieConsent component
 import { Toaster } from "react-hot-toast";  // Import Toaster for notifications
@@ -34,7 +33,6 @@ const App = () => {
 
       {/* Include Toaster for showing notifications */}
       <Toaster position="top-right" />
-
       {/* Cookie Consent Banner */}
       <CookieConsent />
 

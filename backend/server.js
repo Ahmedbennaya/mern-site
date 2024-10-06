@@ -53,8 +53,7 @@ app.use("/api/v1/emails", emailRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/contact", contactRoutes);
-app.use('/api/preferences', preferenceRoutes);  // Use the preference routes
-
+app.use('/api/preferences', preferenceRoutes); 
 // Error Handling Middleware
 app.use(notFound);
 app.use(errorHandler);

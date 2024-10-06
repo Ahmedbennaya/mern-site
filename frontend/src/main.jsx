@@ -27,11 +27,12 @@ import CreateProduct from './admin/CreateProduct';
 import StoreList from './admin/StoreList';
 import EditUser from './admin/EditUser';
 import EditStore from './admin/EditStore';
-import AdminOrders from './admin/AdminOrders';  // <-- Import AdminOrders component
-
-// Import the BookConsultation component
+import AdminOrders from './admin/AdminOrders';  
 import BookConsultation from './components/BookConsultation'; 
 import ContactUs from './components/ContactUs';
+import OurStory from './components/OurStory';
+import AdminRoute from './admin/AdminRoute';  // AdminRoute component for protected admin routes
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -49,23 +50,26 @@ const router = createBrowserRouter(
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
       <Route path="checkout" element={<Checkout />} />
-      
+
       {/* New route for the Book Consultation form */}
       <Route path="book-consultation" element={<BookConsultation />} />
       <Route path="contact" element={<ContactUs />} />
+      <Route path="our-story" element={<OurStory />} />
 
-      {/* Admin routes */}
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/products" element={<ProductList />} />
-      <Route path="/admin/products/create" element={<CreateProduct />} />
-      <Route path="/admin/products/edit/:id" element={<EditProduct />} />
-      <Route path="/admin/users" element={<UserList />} />
-      <Route path="/admin/users/edit/:userId" element={<EditUser />} />
-      <Route path="/admin/stores" element={<StoreList />} />
-      <Route path="/admin/stores/edit/:storeId" element={<EditStore />} />
 
-      {/* Add the new route for Admin Orders */}
-      <Route path="/admin/orders" element={<AdminOrders />} />  {/* <-- New route for Admin Orders */}
+      {/* Admin Routes - Protected */}
+      <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>}>
+        <Route index element={<ProductList />} />  {/* Default admin dashboard */}
+        <Route path="products" element={<ProductList />} />
+        <Route path="products/create" element={<CreateProduct />} />
+        <Route path="products/edit/:id" element={<EditProduct />} />
+        <Route path="users" element={<UserList />} />
+        <Route path="users/edit/:userId" element={<EditUser />} />
+        <Route path="stores" element={<StoreList />} />
+        <Route path="stores/edit/:storeId" element={<EditStore />} />
+        <Route path="orders" element={<AdminOrders />} />
+        
+      </Route>
     </Route>
   )
 );

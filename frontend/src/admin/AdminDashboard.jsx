@@ -1,5 +1,6 @@
+// src/components/AdminDashboard.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
 const AdminDashboard = () => {
   return (
@@ -43,6 +44,9 @@ const AdminDashboard = () => {
           </Link>
         </li>
       </ul>
+
+      {/* Render nested routes here */}
+      <Outlet />
     </div>
   );
 };

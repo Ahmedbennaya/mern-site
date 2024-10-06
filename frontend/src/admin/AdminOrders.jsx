@@ -1,20 +1,21 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, confirmOrder } from '../redux/features/orderSlice';
+import { format } from 'date-fns';
 
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.order);
-  const { userInfo } = useSelector((state) => state.auth); // Check if user is an admin
+  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
-      dispatch(fetchOrders());
+      dispatch(fetchOrders());  // Fetch orders when component mounts
     }
   }, [dispatch, userInfo]);
 
   const handleConfirm = (orderId) => {
-    dispatch(confirmOrder(orderId)); // Dispatch confirmation action
+    dispatch(confirmOrder(orderId));  // Dispatch order confirmation
   };
 
   if (loading) return <p className="text-center text-gray-500">Loading orders...</p>;
@@ -23,13 +24,14 @@ const AdminOrders = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-700 mb-6 text-center">Admin Order Management</h1>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
           <thead className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
             <tr>
               <th className="py-3 px-6 text-left">Order ID</th>
               <th className="py-3 px-6 text-left">Customer</th>
+              <th className="py-3 px-6 text-left">Date Placed</th>
               <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-right">Total</th>
               <th className="py-3 px-6 text-center">Actions</th>
@@ -42,7 +44,11 @@ const AdminOrders = () => {
                   <span className="font-medium">{order._id}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
-                  <span>{order.user?.FirstName || 'Unknown Customer'}</span>
+                  {/* Display the user's FirstName and LastName */}
+                  <span>{`${order.user?._id || ''} ${order.user?.LastName || ''}`}</span>
+                </td>
+                <td className="py-3 px-6 text-left">
+                  <span>{format(new Date(order.createdAt), 'PP')}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
                   <span className={`py-1 px-3 rounded-full text-xs ${order.isConfirmed ? 'bg-green-200 text-green-600' : 'bg-yellow-200 text-yellow-600'}`}>
@@ -50,7 +56,7 @@ const AdminOrders = () => {
                   </span>
                 </td>
                 <td className="py-3 px-6 text-right">
-                  <span className="font-semibold">${(order.totalAmount ?? 0).toFixed(2)}</span> {/* Fix applied here */}
+                  <span className="font-semibold">DT:{(order.totalAmount ?? 0).toFixed(2)}</span>
                 </td>
                 <td className="py-3 px-6 text-center">
                   {!order.isConfirmed && (

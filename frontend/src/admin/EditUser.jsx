@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const EditUser = () => {
-  const { userId } = useParams();  
-  const navigate = useNavigate(); 
+  const { userId } = useParams();  // Get the userId from the URL
+  const navigate = useNavigate();  // For navigation after updating
   const [user, setUser] = useState({ name: '', email: '', role: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ const EditUser = () => {
     const fetchUser = async () => {
       try {
         // Ensure the correct API URL for getting a single user
-        const { data } = await axios.get(`https://mern-site-z5gs.onrender.com/api/users/${userId}`);
+        const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`);
         setUser(data);  // Populate form with user data
         setLoading(false);  // End loading
       } catch (error) {
@@ -28,13 +28,13 @@ const EditUser = () => {
       }
     };
     fetchUser();
-  }, [userId]);  
+  }, [userId]);  // Re-run the effect when userId changes
 
   // Handle form input changes
   const handleChange = (e) => {
     setUser({
       ...user,
-      [e.target.name]: e.target.value,  
+      [e.target.name]: e.target.value,  // Update the corresponding field
     });
   };
 
@@ -43,7 +43,7 @@ const EditUser = () => {
     e.preventDefault();  // Prevent default form submission
     try {
       // Call the API to update user details
-      await axios.put(`https://mern-site-z5gs.onrender.com/api/users/${userId}`, user);
+      await axios.put(`http://localhost:5000/api/users/${userId}`, user);
       // On success, redirect to admin users page
       navigate('/admin/users');
     } catch (error) {

@@ -1,4 +1,3 @@
-// CartItem.js
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -18,7 +17,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   };
 
   const confirmRemove = () => {
-    onRemove(product._id); // Remove item
+    onRemove(product._id); 
     setShowConfirmation(false);
   };
 

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Order from '../Model/orderModel.js';
 import User from '../Model/UserModel.js';
 import nodemailer from 'nodemailer';
+import asyncHandler from 'express-async-handler';
 
 // Controller to create an order and send a confirmation email
 export const createOrder = async (req, res) => {
@@ -54,15 +55,17 @@ export const createOrder = async (req, res) => {
 };
 
 // Controller to fetch all orders (for admin)
-export const getAllOrders = async (req, res) => {
+export const getAllOrders = asyncHandler(async (req, res) => {
   try {
-    const orders = await Order.find().populate('user', 'name email'); // Optionally populate user details
+    // Populate 'FirstName' and 'LastName' from the user model
+    const orders = await Order.find().populate('user', 'FirstName LastName');
+    
     res.status(200).json({ orders });
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
   }
-};
+});
 
 // Controller to confirm an order
 export const confirmOrder = async (req, res) => {

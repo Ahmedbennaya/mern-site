@@ -159,7 +159,7 @@ const Navbar = () => {
           <div className="lg:flex hidden items-center space-x-4">
             {userInfo ? (
               <div className="flex items-center gap-2">
-                <h3>{userInfo.LastName?.toUpperCase() || 'User'}</h3>
+                <h3>{userInfo.FirstName?.toUpperCase() || 'User'}</h3>
                 <Link to="/profile">
                   <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
                 </Link>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, deleteUser } from '../redux/userSlice';  // Import actions
+import { fetchUsers, deleteUser } from '../redux/userSlice';  
 import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';  // Import toast
 
