@@ -32,10 +32,13 @@ import BookConsultation from './components/BookConsultation';
 import ContactUs from './components/ContactUs';
 import OurStory from './components/OurStory';
 import AdminRoute from './admin/AdminRoute';  // AdminRoute component for protected admin routes
+import SEO from './components/SEO';  // SEO component for dynamic metadata
 
+// BrowserRouter for handling routes and SEO per language
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      {/* Public Routes */}
       <Route index element={<Home />} />
       <Route path="signup" element={<Register />} />
       <Route path="signin" element={<Login />} />
@@ -50,12 +53,16 @@ const router = createBrowserRouter(
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
       <Route path="checkout" element={<Checkout />} />
+      
+      {/* SEO for Multilingual Routes */}
+      <Route path="en/store" element={<><SEO lang="en" /><Stores /></>} />
+      <Route path="fr/store" element={<><SEO lang="fr" /><Stores /></>} />
+      <Route path="ar/store" element={<><SEO lang="ar" /><Stores /></>} />
 
       {/* New route for the Book Consultation form */}
       <Route path="book-consultation" element={<BookConsultation />} />
       <Route path="contact" element={<ContactUs />} />
       <Route path="our-story" element={<OurStory />} />
-
 
       {/* Admin Routes - Protected */}
       <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>}>
@@ -68,7 +75,6 @@ const router = createBrowserRouter(
         <Route path="stores" element={<StoreList />} />
         <Route path="stores/edit/:storeId" element={<EditStore />} />
         <Route path="orders" element={<AdminOrders />} />
-        
       </Route>
     </Route>
   )
