@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Async action to fetch user info from the server
+// Async action to fetch user information
 export const fetchUserInfo = createAsyncThunk('auth/fetchUserInfo', async () => {
-  const response = await axios.get('/api/user/profile'); // Fetch user info from backend
-  return response.data; // Backend should return user details including isAdmin
+  const response = await axios.get('/api/user/profile');
+  return response.data;
 });
 
 const initialState = {
@@ -15,6 +15,7 @@ const initialState = {
   error: null,
 };
 
+// Redux slice for authentication
 const authSlice = createSlice({
   name: 'auth',
   initialState,

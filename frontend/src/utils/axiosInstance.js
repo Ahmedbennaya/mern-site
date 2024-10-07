@@ -1,19 +1,14 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'https://mern-site-z5gs.onrender.com';
-
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
+  baseURL: 'https://mern-site-z5gs.onrender.com',
+  withCredentials: true, // Send cookies with every request
 });
 
-// Add an interceptor to include auth token for protected routes
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+  const userInfo = JSON.parse(localStorage.getItem('userInfo')); // Adjust as necessary
+  if (userInfo && userInfo.token) {
+    config.headers.Authorization = `Bearer ${userInfo.token}`;
   }
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
-
-export default axiosInstance;

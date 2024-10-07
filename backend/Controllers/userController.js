@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import JWT from 'jsonwebtoken'; 
 import User from '../Model/UserModel.js';
-import sendEmail from '../Utils/generateToken.js';
+import sendEmail from '../Utils/sendEmail.js';
 import generateToken from '../Utils/generateToken.js';
 
 // @desc    Register a new user  
@@ -60,7 +60,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     res.cookie("jwt", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "development",
       sameSite: "strict",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
@@ -85,7 +85,7 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "development",
     sameSite: "strict",
     expires: new Date(0),
   });

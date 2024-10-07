@@ -205,6 +205,32 @@ const Home = () => {
             </div>
           </section>
 
+          <section className="p-8 bg-white text-center">
+  <div className="relative max-w-4xl mx-auto">
+    {/* Clickable Image with Hover Text */}
+    <div className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer">
+      <img
+        src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745978/the-shade-store-showroom-product-displays-25-off-sitewide-women-in-showroom-d-hp-content-block-2024-florida-950x400-1_a7xmjr.jpg"
+        alt="Showroom"
+        className="object-cover w-full h-full transition-transform duration-300 transform group-hover:scale-105"
+        onClick={() => navigate('/stores')}
+      />
+      <div
+        className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center"
+        onClick={() => navigate('/stores')}
+      >
+        <h2 className="text-3xl font-bold text-white drop-shadow-md">7 Showrooms</h2>
+        <p className="text-lg text-white mt-2">Explore our showrooms near you</p>
+        <button
+          className="mt-4 bg-white text-black font-semibold py-2 px-6 rounded-lg transition-colors duration-300 hover:bg-gray-200"
+        >
+          View More
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
           {/* Customer Reviews Section */}
           <section className="bg-gray-50 py-12" data-aos="fade-up">
             <h2 className="text-center text-4xl font-bold text-gray-800 mb-8">What Our Customers Say</h2>
@@ -223,31 +249,8 @@ const Home = () => {
               </div>
             </div>
           </section>
-
-          {/* Image Section with Navigation */}
-          <section className="p-8 bg-white text-center">
-            <div className="relative max-w-4xl mx-auto md:w-1/2">
-              {/* Clickable Image with Hover Text */}
-              <div className="relative group">
-                <img
-                  src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745978/the-shade-store-showroom-product-displays-25-off-sitewide-women-in-showroom-d-hp-content-block-2024-florida-950x400-1_a7xmjr.jpg"
-                  alt="Showroom"
-                  className="object-cover w-full h-full rounded-lg shadow-lg cursor-pointer"
-                  onClick={() => navigate('/stores')}
-                />
-                <div
-                  className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
-                  onClick={() => navigate('/stores')}
-                >
-                  <div className="text-white text-center p-5">
-                    <h2 className="text-2xl font-semibold">7 Showrooms Nationwide</h2>
-                    <p className="text-lg mt-2">VIEW MORE SHOWROOMS IN YOUR AREA</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
         </>
+        
       )}
     </div>
   );

@@ -2,12 +2,18 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
+// Axios instance with `withCredentials` to send the JWT cookie automatically
+const axiosInstance = axios.create({
+  baseURL: 'https://mern-site-z5gs.onrender.com',
+  withCredentials: true, // Send cookies with every request
+});
+
 // Fetch all products
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (filters, { rejectWithValue }) => {
     try {
-      const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products', { params: filters });
+      const response = await axiosInstance.get('/api/products', { params: filters });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
@@ -20,7 +26,7 @@ export const fetchProductById = createAsyncThunk(
   'products/fetchProductById',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`https://mern-site-z5gs.onrender.com/api/products/${productId}`);
+      const response = await axiosInstance.get(`/api/products/${productId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
@@ -28,29 +34,22 @@ export const fetchProductById = createAsyncThunk(
   }
 );
 
-// Create new product with category in the URL
+// Create a new product with category in the URL
 export const createProduct = createAsyncThunk(
   'products/createProduct',
   async ({ category, name, description, price, imageUrl, dimensions, inStock, subcategory, colors }, { rejectWithValue }) => {
     try {
-      // Ensure all required fields are present
       if (!category || !name || !description || !price || !imageUrl || !dimensions || !dimensions.width || !dimensions.height || inStock === undefined) {
         throw new Error('All required fields must be provided.');
       }
 
       const productData = { name, description, price, imageUrl, category, dimensions, inStock, subcategory, colors };
-
-      // URL encode the category to handle special characters and spaces
       const encodedCategory = encodeURIComponent(category);
 
-      // Post to the category-specific endpoint
-      const response = await axios.post(`https://mern-site-z5gs.onrender.com/api/products/category/${encodedCategory}`, productData);
+      const response = await axiosInstance.post(`/api/products/category/${encodedCategory}`, productData);
       return response.data;
     } catch (error) {
-      // Log the error details for debugging
       console.error('Error creating product:', error.response ? error.response.data : error.message);
-      
-      // Return a detailed error message
       return rejectWithValue(error.response ? error.response.data : { message: error.message });
     }
   }
@@ -61,21 +60,16 @@ export const updateProduct = createAsyncThunk(
   'products/updateProduct',
   async ({ id, name, description, price, imageUrl }, { rejectWithValue }) => {
     try {
-      // Ensure all required fields are present
       if (!id || !name || !price) {
         throw new Error('Product ID, name, and price are required.');
       }
 
       const productData = { name, description, price, imageUrl };
 
-      // Put to the product-specific endpoint
-      const response = await axios.put(`https://mern-site-z5gs.onrender.com/api/products/${id}`, productData);
+      const response = await axiosInstance.put(`/api/products/${id}`, productData);
       return response.data;
     } catch (error) {
-      // Log the error details for debugging
       console.error('Error updating product:', error.response ? error.response.data : error.message);
-      
-      // Return a detailed error message
       return rejectWithValue(error.response ? error.response.data : { message: error.message });
     }
   }
@@ -86,7 +80,7 @@ export const deleteProduct = createAsyncThunk(
   'products/deleteProduct',
   async (productId, { rejectWithValue }) => {
     try {
-      await axios.delete(`https://mern-site-z5gs.onrender.com/api/products/${productId}`);
+      await axiosInstance.delete(`/api/products/${productId}`);
       return productId;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
@@ -106,7 +100,6 @@ const productsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handle fetchProducts
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -122,7 +115,6 @@ const productsSlice = createSlice({
         toast.error(`Error fetching products: ${action.payload}`);
       })
 
-      // Handle fetchProductById
       .addCase(fetchProductById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -139,14 +131,13 @@ const productsSlice = createSlice({
         toast.error(`Error fetching product: ${action.payload}`);
       })
 
-      // Handle createProduct
       .addCase(createProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.products.push(action.payload); // Add the new product to the state
+        state.products.push(action.payload);
         toast.success('Product created successfully');
       })
       .addCase(createProduct.rejected, (state, action) => {
@@ -155,7 +146,6 @@ const productsSlice = createSlice({
         toast.error(`Error creating product: ${action.payload}`);
       })
 
-      // Handle updateProduct
       .addCase(updateProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -164,7 +154,7 @@ const productsSlice = createSlice({
         state.loading = false;
         const index = state.products.findIndex(p => p._id === action.payload._id);
         if (index !== -1) {
-          state.products[index] = action.payload; 
+          state.products[index] = action.payload;
         }
         toast.success('Product updated successfully');
       })
@@ -174,7 +164,6 @@ const productsSlice = createSlice({
         toast.error(`Error updating product: ${action.payload}`);
       })
 
-      // Handle deleteProduct
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
