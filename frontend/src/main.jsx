@@ -31,7 +31,7 @@ import AdminOrders from './admin/AdminOrders';
 import BookConsultation from './components/BookConsultation'; 
 import ContactUs from './components/ContactUs';
 import OurStory from './components/OurStory';
-import AdminRoute from './admin/AdminRoute';  // AdminRoute component for protected admin routes
+import ProductPage from './pages/ProductPage'; // Import the ProductPage component
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -50,6 +50,7 @@ const router = createBrowserRouter(
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
       <Route path="checkout" element={<Checkout />} />
+      <Route path="product/:id" element={<ProductPage />} /> {/* Dynamic route for product details */}
 
       {/* New route for the Book Consultation form */}
       <Route path="book-consultation" element={<BookConsultation />} />

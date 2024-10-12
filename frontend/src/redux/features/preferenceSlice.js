@@ -6,9 +6,9 @@ export const savePreferences = createAsyncThunk(
   'preference/savePreferences',
   async (preference, { getState }) => {
     const { auth } = getState(); // Assuming you have auth state
-    const userId = auth.userInfo ? auth.userInfo.id : null;
+    const userId = auth.userInfo ? auth.userInfo._id : null; // Use _id from MongoDB
 
-    // Save preferences to backend only if userId exists
+    // Save preferences to backend only if userId (_id) exists
     if (userId) {
       await axios.post('https://mern-site-z5gs.onrender.com/api/preferences/savePreferences', { userId, preference });
     }

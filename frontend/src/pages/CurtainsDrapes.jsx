@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';  // Added to enable navigation to details page
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
@@ -102,7 +103,7 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
 );
 
 
-const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => {
+const ProductCard = ({ product, onAddToCart }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -112,23 +113,34 @@ const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => {
     <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
       <div className="relative w-full h-64 overflow-hidden rounded-lg mb-4 cursor-pointer" onClick={openModal}>
         <img
-          src={imageUrl}
-          alt={title}
+          src={product.imageUrl}
+          alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
         />
       </div>
-      <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
-      <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {price.toFixed(2)}</h4>
-      <p className="text-gray-600 mb-4">{description}</p>
-      <button
-        onClick={onAddToCart}
-        className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
-      >
-        Add to Cart
-      </button>
+      <h3 className="text-2xl font-bold mb-2 text-gray-900">{product.name}</h3>
+      <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {product.price.toFixed(2)}</h4>
+      <p className="text-gray-600 mb-4">{product.description}</p>
+      
+      <div className="flex justify-between items-center">
+        <button
+          onClick={onAddToCart}
+          className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-1/2 mr-2`}
+        >
+          Add to Cart
+        </button>
+
+        {/* Details Button */}
+        <Link
+          to={`/product/${product._id}`}  // Link to the product details page
+          className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-1/2 text-center`}
+        >
+          Details
+        </Link>
+      </div>
 
       {isModalOpen && (
-        <ImageModal imageUrl={imageUrl} title={title} onClose={closeModal} />
+        <ImageModal imageUrl={product.imageUrl} title={product.name} onClose={closeModal} />
       )}
     </div>
   );
@@ -139,10 +151,7 @@ const ProductGallery = ({ products, handleAddToCart }) => (
     {products.map((product) => (
       <ProductCard
         key={product._id}
-        title={product.name}
-        imageUrl={product.imageUrl}
-        price={product.price}
-        description={product.description}
+        product={product}  // Pass product object to ProductCard
         onAddToCart={() => handleAddToCart(product)}
       />
     ))}

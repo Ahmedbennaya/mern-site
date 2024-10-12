@@ -1,4 +1,3 @@
-// CartSidebar.js
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';

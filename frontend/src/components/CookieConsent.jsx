@@ -7,15 +7,17 @@ const CookieConsent = () => {
   const { preferences, loading, error } = useSelector((state) => state.preference);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Load preferences when the component mounts
   useEffect(() => {
     dispatch(loadPreferences());
   }, [dispatch]);
 
+  // Hide the banner if preferences are already set
   useEffect(() => {
-    if (preferences && preferences.thirdParty !== undefined && isVisible) {
+    if (preferences && preferences.thirdParty !== undefined) {
       setIsVisible(false);
     }
-  }, [preferences, isVisible]);
+  }, [preferences]);
 
   const handleAcceptAll = () => {
     dispatch(savePreferences({ thirdParty: true }));
@@ -27,6 +29,7 @@ const CookieConsent = () => {
     setIsVisible(false);
   };
 
+  // If the banner is not visible, don't render anything
   if (!isVisible) return null;
 
   return (

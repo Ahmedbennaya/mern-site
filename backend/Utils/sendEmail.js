@@ -1,7 +1,5 @@
-// File: sendEmail.js
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
