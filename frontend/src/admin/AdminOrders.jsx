@@ -32,6 +32,7 @@ const AdminOrders = () => {
               <th className="py-3 px-6 text-left">Order ID</th>
               <th className="py-3 px-6 text-left">Customer</th>
               <th className="py-3 px-6 text-left">Date Placed</th>
+              <th className="py-3 px-6 text-left">Products</th> {/* New column for product names */}
               <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-right">Total</th>
               <th className="py-3 px-6 text-center">Actions</th>
@@ -44,11 +45,24 @@ const AdminOrders = () => {
                   <span className="font-medium">{order._id}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
-                  {/* Display the user's FirstName and LastName */}
-                  <span>{`${order.user?._id || ''} ${order.user?.LastName || ''}`}</span>
+                  <span>{`${order.user?.FirstName || ''} ${order.user?.LastName || ''}`}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
                   <span>{format(new Date(order.createdAt), 'PP')}</span>
+                </td>
+                <td className="py-3 px-6 text-left">
+                  {/* Safe check for products array */}
+                  {order.products?.length ? (
+                    <ul>
+                      {order.products.map((order) => (
+                        <li key={order._id} className="text-sm text-gray-800">
+                          {product.name}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>No products</span>  // Fallback in case products array is empty or undefined
+                  )}
                 </td>
                 <td className="py-3 px-6 text-left">
                   <span className={`py-1 px-3 rounded-full text-xs ${order.isConfirmed ? 'bg-green-200 text-green-600' : 'bg-yellow-200 text-yellow-600'}`}>

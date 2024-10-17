@@ -4,7 +4,7 @@ import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 const ProductPage = () => {
-  const { id } = useParams();  // Get product ID from URL params
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [images, setImages] = useState({});
   const [activeImg, setActiveImage] = useState('');
@@ -24,7 +24,7 @@ const ProductPage = () => {
           img3: response.data.imageUrl3,
           img4: response.data.imageUrl4,
         });
-        setActiveImage(response.data.imageUrl);  // Set default image
+        setActiveImage(response.data.imageUrl);  
         setLoading(false);
       } catch (error) {
         setError('Failed to load product details');
@@ -35,7 +35,7 @@ const ProductPage = () => {
   }, [id]);
 
   const handleAmountChange = (change) => {
-    setAmount((prev) => Math.max(1, prev + change));  // Ensure amount doesn't go below 1
+    setAmount((prev) => Math.max(1, prev + change));
   };
 
   if (loading) {
@@ -51,55 +51,68 @@ const ProductPage = () => {
   }
 
   return (
-    <div className='flex flex-col justify-between lg:flex-row gap-16 lg:items-start p-6 lg:p-12'>
-      {/* IMAGES */}
-      <div className='flex flex-col gap-6 lg:w-2/4'>
-        <img
-          src={activeImg}
-          alt={product.name}
-          className='w-full h-full aspect-square object-cover rounded-xl transition-transform duration-300 ease-in-out'
-        />
-        <div className='flex gap-4 justify-center'>
-          {Object.values(images).map((imageUrl, index) => (
-            <img
-              key={index}
-              src={imageUrl}
-              alt={`Product ${index + 1}`}
-              className={`w-24 h-24 rounded-md cursor-pointer transition-transform duration-200 ${activeImg === imageUrl ? 'scale-110 border-2 border-violet-800' : ''}`}
-              onClick={() => setActiveImage(imageUrl)}
-            />
-          ))}
+    <div className="container mx-auto px-4 py-10">
+      <div className="flex flex-col lg:flex-row gap-16 items-start justify-center">
+        {/* IMAGES */}
+        <div className="lg:w-1/2 flex flex-col gap-6">
+          <img
+            src={activeImg}
+            alt={product.name}
+            className="w-full h-full aspect-square object-cover rounded-xl transition-transform duration-500 ease-in-out shadow-xl"
+          />
+          <div className="flex gap-4 justify-center mt-4">
+            {Object.values(images).map((imageUrl, index) => (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={`Product ${index + 1}`}
+                className={`w-20 h-20 rounded-full border-2 border-transparent cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 hover:border-violet-800 ${
+                  activeImg === imageUrl ? 'scale-110 border-violet-800' : ''
+                }`}
+                onClick={() => setActiveImage(imageUrl)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* ABOUT */}
-      <div className='flex flex-col gap-4 lg:w-2/4'>
-        <span className='text-violet-600 font-semibold uppercase'>Exclusive Collection</span>
-        <h1 className='text-4xl font-bold text-gray-900'>{product.name}</h1>
-        <p className='text-gray-700'>{product.description}</p>
-        <h6 className='text-3xl font-semibold text-gray-900'>${product.price}</h6>
+        {/* PRODUCT DETAILS */}
+        <div className="lg:w-1/2 flex flex-col gap-4">
+          <span className="text-lg font-semibold text-gray-600 uppercase tracking-wide">
+            Exclusive Collection
+          </span>
+          <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight">
+            {product.name}
+          </h1>
+          <p className="text-xl text-gray-700 leading-relaxed">
+            {product.description}
+          </p>
+          <h2 className="text-4xl font-bold text-gray-900 my-4">DT: {product.price}</h2>
 
-        {/* QUANTITY SELECTOR */}
-        <div className='flex items-center gap-8 mt-4'>
-          <div className='flex items-center'>
-            <button
-              className='bg-gray-300 px-4 py-2 rounded-l-lg text-violet-800 font-semibold'
-              onClick={() => handleAmountChange(-1)}
-            >
-              -
-            </button>
-            <span className='px-6 py-3 text-xl font-semibold'>{amount}</span>
-            <button
-              className='bg-gray-300 px-4 py-2 rounded-r-lg text-violet-800 font-semibold'
-              onClick={() => handleAmountChange(1)}
-            >
-              +
+          {/* QUANTITY SELECTOR */}
+          <div className="flex items-center gap-8">
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <button
+                className="bg-gray-200 text-gray-600 px-4 py-2 text-xl font-semibold focus:outline-none hover:bg-gray-300 transition-all"
+                onClick={() => handleAmountChange(-1)}
+              >
+                -
+              </button>
+              <span className="px-6 py-2 text-2xl font-semibold text-gray-900">
+                {amount}
+              </span>
+              <button
+                className="bg-gray-200 text-gray-600 px-4 py-2 text-xl font-semibold focus:outline-none hover:bg-gray-300 transition-all"
+                onClick={() => handleAmountChange(1)}
+              >
+                +
+              </button>
+            </div>
+
+            {/* ADD TO CART */}
+            <button className="bg-violet-800 text-white font-bold py-3 px-16 rounded-lg shadow-lg hover:bg-violet-900 transition-transform duration-300 transform hover:scale-105">
+              Add to Cart
             </button>
           </div>
-
-          <button className='bg-violet-800 text-white font-semibold py-3 px-16 rounded-lg h-full hover:bg-violet-900'>
-            Add to Cart
-          </button>
         </div>
       </div>
     </div>

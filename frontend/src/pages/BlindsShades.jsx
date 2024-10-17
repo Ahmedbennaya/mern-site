@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
@@ -9,7 +10,22 @@ const sharedClasses = {
   button: 'px-4 py-2 rounded-lg font-semibold transition duration-300',
   primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
   formCheckbox: 'h-4 w-4 text-blue-600 border-gray-300 rounded',
+  modal: 'fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75',
 };
+
+const ImageModal = ({ imageUrl, title, onClose }) => (
+  <div className={sharedClasses.modal} onClick={onClose}>
+    <div className="relative">
+      <img src={imageUrl} alt={title} className="max-w-full max-h-screen" />
+      <button
+        className="absolute top-2 right-2 bg-white text-black px-4 py-2 rounded-lg"
+        onClick={onClose}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+);
 
 const FilterCheckbox = ({ label, checked, onChange }) => (
   <label className="inline-flex items-center space-x-2 mt-2">
@@ -38,13 +54,18 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
 
     <div className="mb-6">
       <h3 className="font-medium text-lg text-gray-700">Product Category</h3>
-      <FilterCheckbox
-        label="Blinds & Shades"
-        checked={filters.category.includes('Blinds & Shades')}
-        onChange={() =>
-          handleFilterChange({ target: { name: 'category', value: 'Blinds & Shades' } })
-        }
-      />
+      <div className="flex flex-col space-y-2">
+        <FilterCheckbox
+          label="Blinds"
+          checked={filters.category.includes('Blinds')}
+          onChange={() => handleFilterChange({ target: { name: 'category', value: 'Blinds' } })}
+        />
+        <FilterCheckbox
+          label="Shades"
+          checked={filters.category.includes('Shades')}
+          onChange={() => handleFilterChange({ target: { name: 'category', value: 'Shades' } })}
+        />
+      </div>
     </div>
 
     <button
@@ -56,30 +77,54 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-const ProductCard = ({ title, imageUrl, price, description, onAddToCart }) => (
-  <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
-    <img src={imageUrl} alt={title} className="w-full h-56 object-cover rounded-lg mb-4" />
-    <h3 className="text-2xl font-bold mb-2 text-gray-900">{title}</h3>
-    <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {price.toFixed(2)}</h4>
-    <p className="text-gray-600 mb-4">{description}</p>
-    <button
-      onClick={onAddToCart}
-      className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-full`}
-    >
-      Add to Cart
-    </button>
-  </div>
-);
+const ProductCard = ({ product, onAddToCart }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  return (
+    <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
+      <div className="relative w-full aspect-w-16 aspect-h-9 overflow-hidden rounded-lg mb-4 cursor-pointer" onClick={openModal}>
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+        />
+      </div>
+      <h3 className="text-2xl font-bold mb-2 text-gray-900">{product.name}</h3>
+      <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {product.price.toFixed(2)}</h4>
+      <p className="text-gray-600 mb-4">{product.description}</p>
+      
+      <div className="flex justify-between items-center">
+        <button
+          onClick={onAddToCart}
+          className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-1/2 mr-2`}
+        >
+          Add to Cart
+        </button>
+
+        <Link
+          to={`/product/${product._id}`}
+          className={`${sharedClasses.primaryButton} ${sharedClasses.button} w-1/2 text-center`}
+        >
+          Details
+        </Link>
+      </div>
+
+      {isModalOpen && (
+        <ImageModal imageUrl={product.imageUrl} title={product.name} onClose={closeModal} />
+      )}
+    </div>
+  );
+};
 
 const ProductGallery = ({ products, handleAddToCart }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {products.map((product) => (
       <ProductCard
-        key={product._id}  
-        title={product.name}
-        imageUrl={product.imageUrl}
-        price={product.price}
-        description={product.description}
+        key={product._id}
+        product={product}
         onAddToCart={() => handleAddToCart(product)}
       />
     ))}
@@ -89,26 +134,45 @@ const ProductGallery = ({ products, handleAddToCart }) => (
 const BlindsShades = () => {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
-    inStock: false,
+    inStock: true,
     category: [],
+    subcategory: [],
+    search: '',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.auth.userInfo);  
+  const userInfo = useSelector((state) => state.auth.userInfo);
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // Fetch products based on filters
+        const params = new URLSearchParams();
+
+        if (filters.inStock) {
+          params.append('inStock', 'true');
+        }
+
+        if (filters.category.length > 0) {
+          params.append('category', filters.category.join(','));
+        }
+
+        if (filters.subcategory.length > 0) {
+          params.append('subcategory', filters.subcategory.join(','));
+        }
+
+        if (filters.search) {
+          params.append('search', filters.search);
+        }
+
         const response = await axios.get('https://mern-site-z5gs.onrender.com/api/products/category/blinds-shades', {
-          params: { inStock: filters.inStock ? 'true' : 'false' },  // Boolean inStock filter
+          params,
         });
+
         setProducts(response.data);
       } catch (error) {
         setError('Failed to load products');
-        console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
@@ -128,7 +192,6 @@ const BlindsShades = () => {
       return;
     }
 
-    // Dispatch action to add product to cart
     dispatch(addToCart({ userId: userInfo._id, productId: product._id, quantity: 1 }));
   };
 
@@ -150,38 +213,54 @@ const BlindsShades = () => {
     setFilters({
       inStock: false,
       category: [],
+      subcategory: [],
+      search: '',
     });
   };
 
-  if (loading) {
+  const handleSearchChange = (e) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      search: e.target.value,
+    }));
+  };
+
+  const HeroSection = () => (
+    <section
+      className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
+      style={{ backgroundImage: `url(${"https://res.cloudinary.com/dc1zy9h63/image/upload/v1727056323/blinds_shades.jpg"})` }}
+    >
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative z-10 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold">Blinds & Shades</h1>
+        <p className="mt-4 text-lg sm:text-xl">Discover our range of stylish blinds and shades.</p>
+      </div>
+    </section>
+  );
+
+  if (loading)
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <ClipLoader color="#0000ff" size={50} />
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return <p className="text-center mt-10 text-red-600">{error}</p>;
-  }
 
   return (
     <div className="font-sans bg-gray-50 text-gray-900">
-      {/* Hero Section */}
-      <section
-        className="relative w-full h-[600px] bg-cover bg-center text-white flex items-center justify-center p-6"
-        style={{ backgroundImage: `url("https://res.cloudinary.com/dc1zy9h63/image/upload/v1726770948/RS_AUTO_AF02006_LIV_MODEL_03_zkllcm.webp")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-      >
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center">
-          <h1 className="text-5xl font-bold">BlindsShades</h1>
-          <p className="mt-4 text-lg">Enhance your home with smart technology.</p>
-        </div>
-      </section>
-
+      <HeroSection />
       <div className="container mx-auto px-4 py-8">
         <div className="md:flex gap-8">
           <div className="md:w-1/4">
+            <input
+              type="text"
+              placeholder="Search Products"
+              value={filters.search}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300"
+            />
             <FilterSection
               filters={filters}
               handleFilterChange={handleFilterChange}

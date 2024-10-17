@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import ReCAPTCHA from 'react-google-recaptcha';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCredentials } from '../redux/features/authSlice'; // Import your auth slice actions
 
 const BookConsultation = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +17,9 @@ const BookConsultation = () => {
 
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth); // Select userInfo from auth slice
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,6 +35,12 @@ const BookConsultation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is authenticated
+    if (!userInfo) {
+      toast.error('Please log in to book a consultation.');
+      return;
+    }
 
     if (!recaptchaToken) {
       toast.error('Please complete the reCAPTCHA.');
@@ -51,7 +62,17 @@ const BookConsultation = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      toast.success(response.data.message);
+      // Show success toast with a professional UI
+      toast.success(`Thank you, ${formData.firstName}, for booking a consultation!`, {
+        duration: 5000,
+        style: {
+          borderRadius: '10px',
+          background: '#4caf50',
+          color: '#fff',
+        },
+      });
+
+      // Reset the form
       setFormData({
         firstName: '',
         lastName: '',
@@ -62,7 +83,13 @@ const BookConsultation = () => {
       });
       setRecaptchaToken(null);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error occurred.');
+      toast.error(error.response?.data?.message || 'Error occurred.', {
+        style: {
+          borderRadius: '10px',
+          background: '#f44336',
+          color: '#fff',
+        },
+      });
     } finally {
       setLoading(false);
     }
@@ -70,6 +97,9 @@ const BookConsultation = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      {/* Toaster to render toast notifications */}
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="bg-white w-full max-w-md p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-4">
           We do it all for you: design, measure & install.

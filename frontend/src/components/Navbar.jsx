@@ -19,7 +19,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   
   const { userInfo } = useSelector((state) => state.auth);
-  const cartItemsCount = useSelector((state) => state.cart?.length || 0);
+  
+  // Updated cartItemsCount to count total quantity of items in the cart
+  const cartItemsCount = useSelector((state) => 
+    state.cart.cartItems.reduce((total, item) => total + item.quantity, 0)
+  );
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleLangDropdown = () => setShowLangDropdown(!showLangDropdown);
@@ -95,9 +99,7 @@ const Navbar = () => {
               >
                 {language === 'EN' ? 'English' : language === 'FR' ? 'Français' : 'عربي'}
                 <FiChevronDown
-                  className={`ml-1 transition-transform duration-200 ${
-                    showLangDropdown ? 'transform rotate-180' : ''
-                  }`}
+                  className={`ml-1 transition-transform duration-200 ${showLangDropdown ? 'transform rotate-180' : ''}`}
                 />
               </button>
 
@@ -146,10 +148,7 @@ const Navbar = () => {
 
             {/* Admin Panel - Conditional Rendering */}
             {userInfo && userInfo.isAdmin && (
-              <Link
-                to="/admin"
-                className="text-red-700 hover:text-red-900 font-bold transition duration-200 ease-in-out"
-              >
+              <Link to="/admin" className="text-red-700 hover:text-red-900 font-bold transition duration-200 ease-in-out">
                 Admin Panel
               </Link>
             )}
@@ -187,6 +186,7 @@ const Navbar = () => {
               </div>
             )}
 
+            {/* Cart Button with Item Count */}
             <button onClick={toggleCart} className="relative">
               <FaShoppingCart className="text-gray-700 w-6 h-6" />
               {cartItemsCount > 0 && (

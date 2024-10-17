@@ -41,7 +41,8 @@ Here are the details you submitted:
 We will get back to you shortly.
 
 Best regards,
-[Your Company Name]
+Bargaoui-rideaux-Tahar
+
     `, 
   });
 

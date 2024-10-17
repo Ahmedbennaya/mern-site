@@ -154,7 +154,7 @@ const Home = () => {
 
               {/* Right Side: Dynamic Text Based on Category */}
               <div className="md:w-1/3 w-full text-left md:pl-8">
-                <h3 className="text-2xl font-semibold mb-4 text-gray-800" data-aos="fade-left">About {category}</h3>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-800" data-aos="fade-left"> {category}</h3>
                 <p className="text-gray-600">
                   {category === 'Blinds & Shades' && (
                     <>

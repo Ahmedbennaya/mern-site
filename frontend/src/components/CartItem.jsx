@@ -30,7 +30,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       <div className="flex flex-col space-y-2">
         <h4 className="font-semibold text-lg">{product?.name || 'Unnamed Product'}</h4>
         <p className="text-gray-600">
-          Price: <span className="font-medium">${(product?.price ?? 0).toFixed(2)}</span>
+          Price: <span className="font-medium"> {(product?.price ?? 0).toFixed(2)} DT</span>
         </p>
         <div className="flex items-center space-x-2">
           <label htmlFor={`quantity_${product._id}`} className="text-sm text-gray-600">Qty:</label>

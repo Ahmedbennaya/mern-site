@@ -12,14 +12,12 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
 
   const userId = userInfo?._id;
 
-  // Log an error if userId is not available
   useEffect(() => {
     if (!userId) {
       console.error('User ID is missing. Ensure the user is authenticated.');
     }
   }, [userId]);
 
-  // Handle updating the quantity of items in the cart
   const handleUpdateQuantity = useCallback(
     (id, quantity) => {
       if (!userId) {
@@ -33,7 +31,6 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
     [dispatch, userId]
   );
 
-  // Handle removing items from the cart
   const handleRemoveItem = useCallback(
     (id) => {
       if (!userId) {
@@ -45,7 +42,6 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
     [dispatch, userId]
   );
 
-  // Handle clearing the cart
   const handleClearCart = useCallback(() => {
     if (!userId) {
       console.error('User ID is required to clear the cart');
@@ -82,7 +78,7 @@ const CartSidebar = ({ isCartOpen, toggleCart }) => {
               />
             ))}
             <div className="mt-6">
-              <h3 className="text-xl font-semibold">Total: ${totalAmount.toFixed(2)}</h3>
+              <h3 className="text-xl font-semibold">Total: {totalAmount.toFixed(2)} DT</h3>
               <button
                 onClick={handleClearCart}
                 className="w-full bg-red-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-red-600 transition duration-200"
