@@ -69,7 +69,6 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Add to Cart
       .addCase(addToCart.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -79,14 +78,11 @@ const cartSlice = createSlice({
         const existingItem = state.cartItems.find(item => item.product._id === newItem.product._id);
 
         if (existingItem) {
-          // Update the quantity of the existing item by adding the new quantity
-          existingItem.quantity = existingItem.quantity + newItem.quantity;
+          existingItem.quantity += newItem.quantity;
         } else {
-          // If the item is not in the cart, add it as a new entry
           state.cartItems.push(newItem);
         }
 
-        // Recalculate the total amount in the cart
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0
@@ -98,7 +94,6 @@ const cartSlice = createSlice({
         state.loading = false;
       })
 
-      // Remove from Cart
       .addCase(removeFromCart.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -117,7 +112,6 @@ const cartSlice = createSlice({
         state.loading = false;
       })
 
-      // Clear Cart
       .addCase(clearCart.pending, (state) => {
         state.loading = true;
         state.error = null;

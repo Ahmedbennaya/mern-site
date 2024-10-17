@@ -1,10 +1,10 @@
-import React, { StrictMode } from 'react';  // Import StrictMode
-import ReactDOM from 'react-dom/client';   // Use createRoot for React 18
+import React, { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Provider } from 'react-redux';   // Import Redux provider
-import store from './redux/store';        // Import the Redux store
-import App from './App';                  // Main App component
-import Home from './pages/Home';           // Example pages
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import App from './App';
+import Home from './pages/Home';
 import Register from './auth/Register';
 import Login from './auth/Login';
 import ForgotPassword from './auth/ForgotPassword';
@@ -30,8 +30,11 @@ import AdminOrders from './admin/AdminOrders';
 import BookConsultation from './components/BookConsultation';
 import ContactUs from './components/ContactUs';
 import OurStory from './components/OurStory';
-import ProductPage from './pages/ProductPage';  // Import ProductPage component
-import './index.css';  // Import global styles
+import ProductPage from './pages/ProductPage';
+import './index.css';
+
+// Import the AdminRoute component
+import AdminRoute from './admin/AdminRoute';
 
 // Create the router with your routes
 const router = createBrowserRouter(
@@ -51,16 +54,16 @@ const router = createBrowserRouter(
       <Route path="franchise" element={<Franchise />} />
       <Route path="profile" element={<Profile />} />
       <Route path="checkout" element={<Checkout />} />
-      <Route path="product/:id" element={<ProductPage />} /> {/* Dynamic route for product details */}
+      <Route path="product/:id" element={<ProductPage />} />
 
-      {/* New route for the Book Consultation form */}
+      {/* Public routes */}
       <Route path="book-consultation" element={<BookConsultation />} />
       <Route path="contact" element={<ContactUs />} />
       <Route path="our-story" element={<OurStory />} />
 
-      {/* Admin Routes - Nested under "/admin" */}
-      <Route path="admin" element={<AdminDashboard />}>
-        <Route index element={<ProductList />} />  {/* Default admin dashboard */}
+      {/* Admin Routes - Protected by AdminRoute */}
+      <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>}>
+        <Route index element={<ProductList />} />
         <Route path="products" element={<ProductList />} />
         <Route path="products/create" element={<CreateProduct />} />
         <Route path="products/edit/:id" element={<EditProduct />} />
@@ -75,12 +78,12 @@ const router = createBrowserRouter(
 );
 
 // Create root element and render the app with StrictMode
-const root = ReactDOM.createRoot(document.getElementById("root"));  // Ensure the root element exists in HTML
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <StrictMode>   {/* StrictMode wraps the entire application */}
-    <Provider store={store}>    {/* Redux provider to pass down the store */}
-      <RouterProvider router={router} />  {/* Router provider for navigation */}
+  <StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
     </Provider>
   </StrictMode>
 );

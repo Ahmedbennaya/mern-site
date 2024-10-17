@@ -1,3 +1,4 @@
+// redux/features/productsSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -5,7 +6,7 @@ import { toast } from 'react-hot-toast';
 // Axios instance with `withCredentials` to send the JWT cookie automatically
 const axiosInstance = axios.create({
   baseURL: 'https://mern-site-z5gs.onrender.com',
-  withCredentials: true, // Send cookies with every request
+  withCredentials: true,
 });
 
 // Fetch all products
@@ -34,22 +35,22 @@ export const fetchProductById = createAsyncThunk(
   }
 );
 
-// Create a new product with category in the URL
+// Create a new product
 export const createProduct = createAsyncThunk(
   'products/createProduct',
-  async ({ category, name, description, price, imageUrl, dimensions, inStock, subcategory, colors }, { rejectWithValue }) => {
+  async ({ category, name, description, price, imageUrl, imageUrl2, imageUrl3, imageUrl4, dimensions, inStock, subcategory, colors }, { rejectWithValue }) => {
     try {
-      if (!category || !name || !description || !price || !imageUrl || !dimensions || !dimensions.width || !dimensions.height || inStock === undefined) {
+      // Validate required fields
+      if (!category || !name || !description || !price || !imageUrl || !imageUrl2 || !imageUrl3 || !imageUrl4 || !dimensions || !dimensions.width || !dimensions.height || inStock === undefined) {
         throw new Error('All required fields must be provided.');
       }
 
-      const productData = { name, description, price, imageUrl, category, dimensions, inStock, subcategory, colors };
+      const productData = { name, description, price, imageUrl, imageUrl2, imageUrl3, imageUrl4, category, dimensions, inStock, subcategory, colors };
       const encodedCategory = encodeURIComponent(category);
 
       const response = await axiosInstance.post(`/api/products/category/${encodedCategory}`, productData);
       return response.data;
     } catch (error) {
-      console.error('Error creating product:', error.response ? error.response.data : error.message);
       return rejectWithValue(error.response ? error.response.data : { message: error.message });
     }
   }
@@ -69,7 +70,6 @@ export const updateProduct = createAsyncThunk(
       const response = await axiosInstance.put(`/api/products/${id}`, productData);
       return response.data;
     } catch (error) {
-      console.error('Error updating product:', error.response ? error.response.data : error.message);
       return rejectWithValue(error.response ? error.response.data : { message: error.message });
     }
   }

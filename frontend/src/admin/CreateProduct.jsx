@@ -1,3 +1,4 @@
+// components/CreateProduct.js
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProduct } from '../redux/features/productsSlice';
@@ -8,6 +9,9 @@ const CreateProduct = () => {
     description: '',
     price: '',
     imageUrl: '',
+    imageUrl2: '',
+    imageUrl3: '',
+    imageUrl4: '',
     category: '',
     width: '',
     height: '',
@@ -29,22 +33,27 @@ const CreateProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.category || !formData.width || !formData.height) {
-      alert("Please fill out all required fields");
+
+    const dimensions = {
+      width: Number(formData.width),
+      height: Number(formData.height),
+    };
+
+    if (!formData.name || !formData.price || !formData.category || !dimensions.width || !dimensions.height || !formData.imageUrl || !formData.imageUrl2 || !formData.imageUrl3 || !formData.imageUrl4) {
+      alert('Please fill out all required fields');
       return;
     }
 
-    // Dispatch the thunk with the correctly structured data
     dispatch(createProduct({
       category: formData.category,
       name: formData.name,
       description: formData.description,
       price: formData.price,
       imageUrl: formData.imageUrl,
-      dimensions: {
-        width: formData.width,
-        height: formData.height,
-      },
+      imageUrl2: formData.imageUrl2,
+      imageUrl3: formData.imageUrl3,
+      imageUrl4: formData.imageUrl4,
+      dimensions,
       inStock: formData.inStock,
       subcategory: formData.subcategory.split(',').map(item => item.trim()),
       colors: formData.colors.split(',').map(item => item.trim()),
@@ -55,7 +64,6 @@ const CreateProduct = () => {
     <div className="max-w-2xl mx-auto bg-white p-8 shadow-lg rounded-lg mt-8">
       <h1 className="text-2xl font-semibold text-gray-700 mb-6">Create Product</h1>
 
-      {/* Check if error is an object or a string and display appropriately */}
       {error && (
         <p className="text-red-500 mb-4">
           Error: {typeof error === 'object' && error.message ? error.message : String(error)}
@@ -67,7 +75,7 @@ const CreateProduct = () => {
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
           <input
             name="name"
-            placeholder="Name"
+            placeholder="Product Name"
             onChange={handleChange}
             value={formData.name}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -78,7 +86,7 @@ const CreateProduct = () => {
           <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
           <input
             name="description"
-            placeholder="Description"
+            placeholder="Product Description"
             onChange={handleChange}
             value={formData.description}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -89,7 +97,7 @@ const CreateProduct = () => {
           <input
             name="price"
             type="number"
-            placeholder="Price (DT)"
+            placeholder="Product Price"
             onChange={handleChange}
             value={formData.price}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -97,20 +105,54 @@ const CreateProduct = () => {
           />
         </div>
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">Image URL</label>
+          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">Main Image URL</label>
           <input
             name="imageUrl"
-            placeholder="Image URL"
+            placeholder="Main Image URL"
             onChange={handleChange}
             value={formData.imageUrl}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="imageUrl2" className="block text-sm font-medium text-gray-700">Image URL 2</label>
+          <input
+            name="imageUrl2"
+            placeholder="Image URL 2"
+            onChange={handleChange}
+            value={formData.imageUrl2}
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="imageUrl3" className="block text-sm font-medium text-gray-700">Image URL 3</label>
+          <input
+            name="imageUrl3"
+            placeholder="Image URL 3"
+            onChange={handleChange}
+            value={formData.imageUrl3}
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="imageUrl4" className="block text-sm font-medium text-gray-700">Image URL 4</label>
+          <input
+            name="imageUrl4"
+            placeholder="Image URL 4"
+            onChange={handleChange}
+            value={formData.imageUrl4}
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
+            required
           />
         </div>
         <div>
           <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
           <input
             name="category"
-            placeholder="Category"
+            placeholder="Product Category"
             onChange={handleChange}
             value={formData.category}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -122,7 +164,7 @@ const CreateProduct = () => {
           <input
             name="width"
             type="number"
-            placeholder="Width"
+            placeholder="Product Width"
             onChange={handleChange}
             value={formData.width}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
@@ -134,7 +176,7 @@ const CreateProduct = () => {
           <input
             name="height"
             type="number"
-            placeholder="Height"
+            placeholder="Product Height"
             onChange={handleChange}
             value={formData.height}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"

@@ -2,6 +2,7 @@ export const uploadImage = (req, res) => {
     try {
       // The uploaded file's information will be available in `req.file`
       const file = req.file;
+      console.log(req.file)
       if (!file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }

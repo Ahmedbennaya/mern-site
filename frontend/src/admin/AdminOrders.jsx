@@ -31,8 +31,9 @@ const AdminOrders = () => {
             <tr>
               <th className="py-3 px-6 text-left">Order ID</th>
               <th className="py-3 px-6 text-left">Customer</th>
+              <th className="py-3 px-6 text-left">Phone</th> {/* New column for phone number */}
               <th className="py-3 px-6 text-left">Date Placed</th>
-              <th className="py-3 px-6 text-left">Products</th> {/* New column for product names */}
+              <th className="py-3 px-6 text-left">Products</th>
               <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-right">Total</th>
               <th className="py-3 px-6 text-center">Actions</th>
@@ -47,16 +48,19 @@ const AdminOrders = () => {
                 <td className="py-3 px-6 text-left">
                   <span>{`${order.user?.FirstName || ''} ${order.user?.LastName || ''}`}</span>
                 </td>
+                <td className="py-3 px-6 text-left"> {/* Display phone number from shippingAddress */}
+                  <span>{order.phone || 'N/A'}</span>
+                </td>
                 <td className="py-3 px-6 text-left">
                   <span>{format(new Date(order.createdAt), 'PP')}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
                   {/* Safe check for products array */}
-                  {order.products?.length ? (
+                  {order.orderItems?.length ? (
                     <ul>
-                      {order.products.map((order) => (
-                        <li key={order._id} className="text-sm text-gray-800">
-                          {product.name}
+                      {order.orderItems.map((item) => (
+                        <li key={item.product._id} className="text-sm text-gray-800">
+                          {item.product.name}
                         </li>
                       ))}
                     </ul>

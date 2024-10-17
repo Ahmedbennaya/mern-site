@@ -17,6 +17,7 @@ const Profile = () => {
     profileImage: ""
   });
   const [file, setFile] = useState(null); // To store the selected image file
+  const [loading, setLoading] = useState(false); // Loading state for updates
 
   // Load user info from state into the form
   useEffect(() => {
@@ -41,9 +42,12 @@ const Profile = () => {
   // Handle form submission
   const updateHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
+    // Password validation
     if (user.password !== user.confirmPassword) {
       toast.error("Passwords do not match");
+      setLoading(false);
       return;
     }
 
@@ -51,24 +55,39 @@ const Profile = () => {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "ahmed"); // Replace with your Cloudinary unsigned preset
+      formData.append("upload_preset", "ahmed"); // Use your Cloudinary unsigned preset
 
       try {
         const { data } = await axios.post(
           "https://api.cloudinary.com/v1_1/dc1zy9h63/image/upload", // Replace with your Cloudinary details
-          formData
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
-        photoUrl = data.secure_url;
+        photoUrl = data.secure_url; // Update photo URL
       } catch (error) {
         toast.error("Image upload failed");
+        setLoading(false);
         return;
       }
     }
 
+    // Prepare user data, excluding password if it's not being changed
+    const userData = { 
+      ...user, 
+      profileImage: photoUrl,
+    };
+    if (!user.password) {
+      delete userData.password; // Don't send password if it's empty
+    }
+    
     try {
       const response = await axios.put(
         "https://mern-site-z5gs.onrender.com/api/users/update", // Backend API for updating user
-        { ...user, profileImage: photoUrl },
+        userData,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token for authentication
@@ -81,6 +100,8 @@ const Profile = () => {
     } catch (error) {
       console.error("Failed to update profile:", error.response || error.message);
       handleErrorResponse(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,7 +143,7 @@ const Profile = () => {
         <div className="space-y-6">
           <div className="flex items-center">
             <img
-              src={user.profileImage || "https://via.placeholder.com/150"}
+              src={user.profileImage || "https://res.cloudinary.com/dc1zy9h63/image/upload/v1726415737/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws_eqk1sd.jpg"}
               alt="User avatar"
               className="w-24 h-24 rounded-full border-2 border-indigo-300"
             />
@@ -221,9 +242,10 @@ const Profile = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={loading}
+              className={`py-2 px-4 ${loading ? "bg-gray-400" : "bg-indigo-600"} text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
             >
-              Update Profile
+              {loading ? "Updating..." : "Update Profile"}
             </button>
           </div>
         </div>

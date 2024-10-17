@@ -23,6 +23,16 @@ const orderSchema = mongoose.Schema(
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
+      phone: {
+        type: String,
+        required: true, // Make phone number required
+        validate: {
+          validator: function(v) {
+            return /\d{10,15}/.test(v); // Validate that the phone number is between 10 and 15 digits
+          },
+          message: props => `${props.value} is not a valid phone number!`
+        }
+      },
     },
     paymentMethod: { type: String, required: true },
     totalAmount: { type: Number, required: true },

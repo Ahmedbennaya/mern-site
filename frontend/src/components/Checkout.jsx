@@ -15,12 +15,14 @@ const Checkout = () => {
   // Get order state (loading, error) from order slice
   const { loading, error } = useSelector((state) => state.order);
 
+  // Updated shipping address state to include phone number
   const [shippingAddress, setShippingAddress] = useState({
     street: '',
     city: '',
     state: '',
     zipCode: '',
-    country: ''
+    country: '',
+    phone: ''  // Added phone field
   });
 
   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
@@ -59,7 +61,8 @@ const Checkout = () => {
         address: shippingAddress.street,
         city: shippingAddress.city,
         postalCode: shippingAddress.zipCode,
-        country: shippingAddress.country
+        country: shippingAddress.country,
+        phone: shippingAddress.phone  // Include phone number in order data
       },
       paymentMethod,
       totalAmount
@@ -132,6 +135,18 @@ const Checkout = () => {
           name="country"
           placeholder="Enter country"
           value={shippingAddress.country}
+          onChange={handleShippingChange}
+          className="w-full px-3 py-2 border rounded-md"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Phone:</label>
+        <input
+          type="text"
+          name="phone"
+          placeholder="Enter phone number"
+          value={shippingAddress.phone}  // Added phone input field
           onChange={handleShippingChange}
           className="w-full px-3 py-2 border rounded-md"
         />

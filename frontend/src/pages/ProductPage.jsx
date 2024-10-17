@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/features/cartSlice'; // Import addToCart action
 import ClipLoader from 'react-spinners/ClipLoader';
 
 const ProductPage = () => {
@@ -11,7 +13,10 @@ const ProductPage = () => {
   const [amount, setAmount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth); // Assuming user info is in the auth slice
 
+  // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -24,20 +29,32 @@ const ProductPage = () => {
           img3: response.data.imageUrl3,
           img4: response.data.imageUrl4,
         });
-        setActiveImage(response.data.imageUrl);  
-        setLoading(false);
+        setActiveImage(response.data.imageUrl);
       } catch (error) {
-        setError('Failed to load product details');
+        setError('Failed to load product details. Please try again.');
+      } finally {
         setLoading(false);
       }
     };
     fetchProduct();
   }, [id]);
 
+  // Handle quantity change
   const handleAmountChange = (change) => {
     setAmount((prev) => Math.max(1, prev + change));
   };
 
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (!userInfo) {
+      alert('Please log in to add items to your cart.');
+      return;
+    }
+    // Dispatch the addToCart action
+    dispatch(addToCart({ userId: userInfo._id, productId: product._id, quantity: amount }));
+  };
+
+  // Loading spinner while product details are fetched
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -46,6 +63,7 @@ const ProductPage = () => {
     );
   }
 
+  // Show error if product details couldn't be loaded
   if (error) {
     return <p className="text-center text-red-600 mt-10">{error}</p>;
   }
@@ -109,7 +127,10 @@ const ProductPage = () => {
             </div>
 
             {/* ADD TO CART */}
-            <button className="bg-violet-800 text-white font-bold py-3 px-16 rounded-lg shadow-lg hover:bg-violet-900 transition-transform duration-300 transform hover:scale-105">
+            <button
+              className="bg-violet-800 text-white font-bold py-3 px-16 rounded-lg shadow-lg hover:bg-violet-900 transition-transform duration-300 transform hover:scale-105"
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>

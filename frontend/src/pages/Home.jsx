@@ -55,9 +55,9 @@ const Home = () => {
   };
 
   return (
-    <div className="relative overflow-hidden bg-gray-50">
+    <div className="relative overflow-hidden bg-white">
       {loading ? (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white">
+        <div className="flex items-center justify-center min-h-screen bg-white">
           <div className="text-center">
             <ClipLoader color="#0000ff" size={50} />
             <p className="mt-4 text-blue-600 text-lg" aria-live="polite">Loading, please wait...</p>
@@ -67,7 +67,7 @@ const Home = () => {
         <>
           {/* Hero Section with Parallax Effect */}
           <section
-            className="relative h-screen flex items-center justify-center bg-cover bg-center"
+            className="relative h-screen flex items-center justify-center bg-cover bg-center bg-white"
             style={{ backgroundAttachment: 'fixed' }}
             data-aos="fade-up"
           >
@@ -176,8 +176,54 @@ const Home = () => {
             </div>
           </section>
 
+          {/* Instagram-style New Plants Section */}
+<section className="container mx-auto px-4 mt-12 bg-white" data-aos="fade-up">
+  <h2 className="text-2xl font-bold mb-6">New Plants</h2>
+  <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2">
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Bird's Nest Fern" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1729167719/Snapinsta.app_166841440_288889239262337_3816664965631122455_n_1080_shisys.jpg" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+     
+      </div>
+    </div>
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Hoya Obovata" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1728548645/Plan_de_travail_2_f40a2v.png" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+
+      </div>
+    </div>
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Monstera Deliciosa" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1728548645/Plan_de_travail_1_myhnxo.png" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+   
+      </div>
+    </div>
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Zamioculcas Zamiifolia" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1729167554/Snapinsta.app_260489055_312813233997546_3962508741415414694_n_1080_iuqr5e.jpg" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+ 
+      </div>
+    </div>
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Bird of Paradise" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1729167556/Snapinsta.app_259718490_431808181689158_164928793077677220_n_1080_hrakgb.jpg" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+
+      </div>
+    </div>
+    <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
+      <img aria-hidden="true" alt="Calathea Beauty Star" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1729167557/Snapinsta.app_259883577_111827747992732_4238635259253138411_n_1080_rkhqhq.jpg" className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
+   
+      </div>
+    </div>
+  </div>
+  <div className="mt-6 text-center">
+    <a href="/curtains-drapes" className="bg-primary text-primary-foreground hover:bg-primary/80 py-2 px-4 rounded-lg">Shop Now</a>
+  </div>
+</section>
+
           {/* Consultation Section */}
-          <section className="flex flex-col md:flex-row items-center bg-gray-100 text-gray-900 p-10 relative" data-aos="fade-up">
+          <section className="flex flex-col md:flex-row items-center bg-white text-gray-900 p-10 relative" data-aos="fade-up">
             {/* Left Section (Text) */}
             <div className="md:w-1/2 text-center md:text-left p-8">
               <p className="text-sm uppercase tracking-widest text-gray-600 mb-2">Let's bring our showroom to you!</p>
@@ -205,52 +251,25 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="p-8 bg-white text-center">
-  <div className="relative max-w-4xl mx-auto">
-    {/* Clickable Image with Hover Text */}
-    <div className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer">
-      <img
-        src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1726745978/the-shade-store-showroom-product-displays-25-off-sitewide-women-in-showroom-d-hp-content-block-2024-florida-950x400-1_a7xmjr.jpg"
-        alt="Showroom"
-        className="object-cover w-full h-full transition-transform duration-300 transform group-hover:scale-105"
-        onClick={() => navigate('/stores')}
-      />
-      <div
-        className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center"
-        onClick={() => navigate('/stores')}
-      >
-        <h2 className="text-3xl font-bold text-white drop-shadow-md">7 Showrooms</h2>
-        <p className="text-lg text-white mt-2">Explore our showrooms near you</p>
-        <button
-          className="mt-4 bg-white text-black font-semibold py-2 px-6 rounded-lg transition-colors duration-300 hover:bg-gray-200"
-        >
-          View More
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
           {/* Customer Reviews Section */}
-          <section className="bg-gray-50 py-12" data-aos="fade-up">
+          <section className="bg-white py-12" data-aos="fade-up">
             <h2 className="text-center text-4xl font-bold text-gray-800 mb-8">What Our Customers Say</h2>
             <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row gap-8">
               <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
                 <p className="text-lg text-gray-700 italic">"The quality of the blinds was beyond my expectations. They fit perfectly in my living room!"</p>
-                <p className="mt-4 text-sm text-gray-500">- Sarah K.</p>
+                <p className="mt-4 text-sm text-gray-500">- Jawaher </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0">
                 <p className="text-lg text-gray-700 italic">"The in-home consultation made choosing the right curtains easy and stress-free."</p>
-                <p className="mt-4 text-sm text-gray-500">- John M.</p>
+                <p className="mt-4 text-sm text-gray-500">- Sara </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <p className="text-lg text-gray-700 italic">"The smart home solutions have made my life so much easier. Highly recommend!"</p>
-                <p className="mt-4 text-sm text-gray-500">- Emily L.</p>
+                <p className="mt-4 text-sm text-gray-500">- Aymen</p>
               </div>
             </div>
           </section>
         </>
-        
       )}
     </div>
   );

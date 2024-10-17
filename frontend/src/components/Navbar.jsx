@@ -20,7 +20,6 @@ const Navbar = () => {
   
   const { userInfo } = useSelector((state) => state.auth);
   
-  // Updated cartItemsCount to count total quantity of items in the cart
   const cartItemsCount = useSelector((state) => 
     state.cart.cartItems.reduce((total, item) => total + item.quantity, 0)
   );
@@ -68,7 +67,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+    <header className="sticky top-0 z-50 bg-white shadow-md transition-all duration-300 ease-in-out">
       {/* Top Bar with Promotion and Contact Info */}
       <div className="bg-gray-800 text-white py-2">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
@@ -141,14 +140,18 @@ const Navbar = () => {
           {/* Primary Navigation */}
           <div className="hidden lg:flex space-x-8">
             {navLinks.map((link) => (
-              <Link key={link.id} to={link.path} className="text-gray-700 hover:text-gray-900 font-medium transition duration-200 ease-in-out">
+              <Link 
+                key={link.id} 
+                to={link.path} 
+                className="text-gray-700 hover:text-gray-900 font-medium transition duration-300 ease-in-out hover:underline hover:underline-offset-4 hover:decoration-primary-500"
+              >
                 {link.name}
               </Link>
             ))}
 
             {/* Admin Panel - Conditional Rendering */}
             {userInfo && userInfo.isAdmin && (
-              <Link to="/admin" className="text-red-700 hover:text-red-900 font-bold transition duration-200 ease-in-out">
+              <Link to="/admin" className="text-red-700 hover:text-red-900 font-bold transition duration-300 ease-in-out hover:underline hover:underline-offset-4 hover:decoration-red-500">
                 Admin Panel
               </Link>
             )}
@@ -158,9 +161,9 @@ const Navbar = () => {
           <div className="lg:flex hidden items-center space-x-4">
             {userInfo ? (
               <div className="flex items-center gap-2">
-                <h3>{userInfo.FirstName?.toUpperCase() || 'User'}</h3>
+                <h3 className="text-gray-700 font-medium">{userInfo.FirstName?.toUpperCase() || 'User'}</h3>
                 <Link to="/profile">
-                  <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
+                  <img src={userInfo.profileImage || 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726415737/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws_eqk1sd.jpg'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
                 </Link>
                 <button
                   onClick={logoutHandler}
@@ -200,7 +203,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
-            className="lg:hidden flex items-center text-gray-700 hover:text-gray-900 transition duration-200 ease-in-out"
+            className="lg:hidden flex items-center text-gray-700 hover:text-gray-900 transition duration-300 ease-in-out"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
@@ -231,9 +234,9 @@ const Navbar = () => {
               {/* Login and Signup Buttons for Mobile */}
               {userInfo ? (
                 <div className="flex flex-col items-center space-y-3 mt-4">
-                  <h3>{userInfo.LastName?.toUpperCase() || 'User'}</h3>
+                  <h3 className="text-gray-700 font-medium">{userInfo.LastName?.toUpperCase() || 'User'}</h3>
                   <Link to="/profile">
-                    <img src={userInfo.profileImage || 'https://via.placeholder.com/150'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
+                    <img src={userInfo.profileImage || 'https://res.cloudinary.com/dc1zy9h63/image/upload/v1726415737/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws_eqk1sd.jpg'} className="h-11 w-11 rounded-full object-cover" alt="User Profile" />
                   </Link>
                   <button
                     onClick={logoutHandler}

@@ -10,15 +10,14 @@ export const purchaseItems = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: mongoose.Types.ObjectId(userId) }).populate('cartItems.product');
 
-    if (!cart || !cart.cartItems || cart.cartItems.length === 0) {
+    if (!cart || cart.cartItems.length === 0) {
       return res.status(400).json({ message: 'Cart is empty or not found' });
     }
 
-    // Check stock and prepare order items
     const orderItems = [];
     for (const item of cart.cartItems) {
-      const product = await Product.findById(mongoose.Types.ObjectId(item.product._id));
-      
+      const product = await Product.findById(item.product._id);
+
       if (!product) {
         return res.status(400).json({ message: `Product not found: ${item.product.name}` });
       }
@@ -27,7 +26,7 @@ export const purchaseItems = async (req, res) => {
         return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
       }
 
-      // Add to orderItems array
+      // Prepare order items
       orderItems.push({
         product: product._id,
         quantity: item.quantity,
@@ -35,8 +34,10 @@ export const purchaseItems = async (req, res) => {
       });
     }
 
-    // Create new order
+    // Calculate total amount
     const totalAmount = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    // Create new order
     const newOrder = new Order({
       user: mongoose.Types.ObjectId(userId),
       orderItems,
@@ -44,17 +45,16 @@ export const purchaseItems = async (req, res) => {
       paymentMethod,
       totalAmount,
     });
-
     await newOrder.save();
 
-    // Update stock quantities for each product
+    // Update product stock and clear the cart
     for (const item of cart.cartItems) {
-      const product = await Product.findById(mongoose.Types.ObjectId(item.product._id));
+      const product = await Product.findById(item.product._id);
       product.quantity -= item.quantity;
       await product.save();
     }
 
-    // Clear the user's cart after successful purchase
+    // Clear user's cart after purchase
     await Cart.findOneAndDelete({ user: mongoose.Types.ObjectId(userId) });
 
     res.status(200).json({ message: 'Purchase successful', order: newOrder });
@@ -93,24 +93,30 @@ export const addToCart = async (req, res) => {
       return res.status(400).json({ message: 'Product is not available or insufficient stock' });
     }
 
+    // Find the user's cart
     let cart = await Cart.findOne({ user: mongoose.Types.ObjectId(userId) });
 
     if (cart) {
-      // Update quantity if item already exists
+      // Check if the product is already in the cart
       const itemIndex = cart.cartItems.findIndex(item => item.product.toString() === productId);
+
       if (itemIndex > -1) {
+        // Increment the quantity
         cart.cartItems[itemIndex].quantity += quantity;
       } else {
-        // Add new item if it doesn't exist
+        // Add the new product to the cart
         cart.cartItems.push({ product: mongoose.Types.ObjectId(productId), quantity });
       }
     } else {
-      // Create a new cart if none exists
-      cart = new Cart({ user: mongoose.Types.ObjectId(userId), cartItems: [{ product: mongoose.Types.ObjectId(productId), quantity }] });
+      // If no cart exists, create a new one
+      cart = new Cart({
+        user: mongoose.Types.ObjectId(userId),
+        cartItems: [{ product: mongoose.Types.ObjectId(productId), quantity }],
+      });
     }
 
     await cart.save();
-    res.status(200).json(cart);
+    res.status(200).json({ message: 'Product added to cart', cart });
   } catch (error) {
     console.error('Error adding item to cart:', error);
     res.status(500).json({ message: 'Server error adding item to cart' });
@@ -127,17 +133,16 @@ export const removeFromCart = async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // Filter out the item to be removed
+    // Remove the product from cartItems
     cart.cartItems = cart.cartItems.filter(item => item.product.toString() !== productId);
 
     if (cart.cartItems.length === 0) {
-      // If cart is empty after removal, delete the cart
       await Cart.findOneAndDelete({ user: mongoose.Types.ObjectId(userId) });
     } else {
-      await cart.save(); // Otherwise, just save the updated cart
+      await cart.save();
     }
 
-    res.status(200).json(cart);
+    res.status(200).json({ message: 'Item removed from cart', cart });
   } catch (error) {
     console.error('Error removing item from cart:', error);
     res.status(500).json({ message: 'Server error removing item from cart' });
