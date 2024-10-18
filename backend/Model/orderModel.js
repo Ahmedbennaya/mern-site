@@ -11,11 +11,9 @@ const orderSchema = mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product', // Reference the Product model
+          ref: 'Product',
           required: true,
         },
-        name: { type: String, required: true },
-        image: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
@@ -29,16 +27,19 @@ const orderSchema = mongoose.Schema(
         type: String,
         required: true,
         validate: {
-          validator: function (v) {
-            return /^\d{8}$/.test(v); 
+          validator: function(v) {
+            // Validate international phone numbers in E.164 format
+            return /^\+?[1-9]\d{1,14}$/.test(v);
           },
-          message: (props) => `${props.value} is not a valid Tunisian phone number!`,
+          message: props => `${props.value} is not a valid phone number! It must be in the E.164 format.`,
         },
       },
     },
-    paymentMethod: { type: String, required: true },
-    totalAmount: { type: Number, required: true },
-    isConfirmed: { type: Boolean, default: false },
+    paymentMethod: { type: String, required: true }, // e.g., 'Credit Card', 'PayPal'
+    totalAmount: { type: Number, required: true },   // Total cost of the order
+    isConfirmed: { type: Boolean, default: false },  // Whether the order is confirmed
+    isShipped: { type: Boolean, default: false },    // Shipping status
+    isDelivered: { type: Boolean, default: false },  // Delivery status
   },
   { timestamps: true }
 );

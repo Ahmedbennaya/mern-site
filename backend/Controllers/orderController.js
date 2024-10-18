@@ -26,10 +26,10 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
   }
 
-  // Validate phone number format (Tunisian numbers should have exactly 8 digits)
-  const phoneRegex = /^\d{8}$/;
+  // Validate phone number format (International E.164 format)
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
   if (!phoneRegex.test(shippingAddress.phone)) {
-    return res.status(400).json({ message: 'Invalid Tunisian phone number. It must be exactly 8 digits.' });
+    return res.status(400).json({ message: 'Invalid phone number. It must follow the E.164 international format.' });
   }
 
   // Create the new order

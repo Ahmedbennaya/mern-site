@@ -17,12 +17,11 @@ const Checkout = () => {
 
   // Updated shipping address state to include phone number
   const [shippingAddress, setShippingAddress] = useState({
-    street: '',
+    address: '',   // Changed from 'street' to 'address' to match backend
     city: '',
-    state: '',
-    zipCode: '',
+    postalCode: '', // Changed from 'zipCode' to 'postalCode' to match backend
     country: '',
-    phone: ''  // Added phone field
+    phone: ''       // Phone field for shipping address
   });
 
   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
@@ -38,6 +37,7 @@ const Checkout = () => {
 
   // Handle order submission
   const handleOrderSubmit = async () => {
+    // Validate that all fields are filled
     if (!Object.values(shippingAddress).every(Boolean)) {
       toast.error('Please fill in all shipping address fields');
       return;
@@ -56,17 +56,20 @@ const Checkout = () => {
         product: item.product._id,  // Correct field name
         quantity: item.quantity,
         price: item.product.price,
+        // Optional fields, include if required or useful
+        name: item.product.name,    // Optional: Include product name for reference
+        image: item.product.image,  // Optional: Include product image if needed
       })),
       shippingAddress: {
-        address: shippingAddress.street,
+        address: shippingAddress.address, // Update to match backend expectation
         city: shippingAddress.city,
-        postalCode: shippingAddress.zipCode,
+        postalCode: shippingAddress.postalCode, // Update field name
         country: shippingAddress.country,
         phone: shippingAddress.phone  // Include phone number in order data
       },
       paymentMethod,
       totalAmount
-    };
+    };  
 
     // Dispatch the createOrder action and handle success/error
     try {
@@ -85,12 +88,12 @@ const Checkout = () => {
 
       <h3 className="text-xl font-semibold mb-2">Shipping Address</h3>
       <div className="mb-4">
-        <label className="block text-sm font-medium">Street:</label>
+        <label className="block text-sm font-medium">Address:</label>
         <input
           type="text"
-          name="street"
-          placeholder="Enter street"
-          value={shippingAddress.street}
+          name="address"
+          placeholder="Enter street address"
+          value={shippingAddress.address}
           onChange={handleShippingChange}
           className="w-full px-3 py-2 border rounded-md"
         />
@@ -107,23 +110,12 @@ const Checkout = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium">State:</label>
+        <label className="block text-sm font-medium">Postal Code:</label>
         <input
           type="text"
-          name="state"
-          placeholder="Enter state"
-          value={shippingAddress.state}
-          onChange={handleShippingChange}
-          className="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium">Zip Code:</label>
-        <input
-          type="text"
-          name="zipCode"
-          placeholder="Enter zip code"
-          value={shippingAddress.zipCode}
+          name="postalCode"
+          placeholder="Enter postal code"
+          value={shippingAddress.postalCode}
           onChange={handleShippingChange}
           className="w-full px-3 py-2 border rounded-md"
         />
@@ -146,7 +138,7 @@ const Checkout = () => {
           type="text"
           name="phone"
           placeholder="Enter phone number"
-          value={shippingAddress.phone}  // Added phone input field
+          value={shippingAddress.phone}  // Phone input field
           onChange={handleShippingChange}
           className="w-full px-3 py-2 border rounded-md"
         />

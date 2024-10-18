@@ -20,6 +20,11 @@ const AdminOrders = () => {
 
   if (loading) return <p className="text-center text-gray-500">Loading orders...</p>;
   if (error) return <p className="text-center text-red-500">Error fetching orders: {error}</p>;
+  if (!userInfo?.isAdmin) return <p className="text-center text-red-500">Access denied</p>;
+
+  if (!orders.length) {
+    return <p className="text-center text-gray-500">No orders found.</p>;
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
@@ -31,9 +36,9 @@ const AdminOrders = () => {
             <tr>
               <th className="py-3 px-6 text-left">Order ID</th>
               <th className="py-3 px-6 text-left">Customer</th>
-              <th className="py-3 px-6 text-left">Phone</th> {/* New column for phone number */}
+              <th className="py-3 px-6 text-left">Phone</th>
               <th className="py-3 px-6 text-left">Date Placed</th>
-              <th className="py-3 px-6 text-left">Products</th> {/* New column for product image */}
+              <th className="py-3 px-6 text-left">Products</th>
               <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-right">Total</th>
               <th className="py-3 px-6 text-center">Actions</th>
@@ -48,7 +53,7 @@ const AdminOrders = () => {
                 <td className="py-3 px-6 text-left">
                   <span>{`${order.user?.FirstName || ''} ${order.user?.LastName || ''}`}</span>
                 </td>
-                <td className="py-3 px-6 text-left"> {/* Display phone number from shippingAddress */}
+                <td className="py-3 px-6 text-left">
                   <span>{order.shippingAddress?.phone || 'N/A'}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
@@ -69,7 +74,7 @@ const AdminOrders = () => {
                       ))}
                     </ul>
                   ) : (
-                    <span>No products</span>  // Fallback in case products array is empty or undefined
+                    <span>No products</span>
                   )}
                 </td>
                 <td className="py-3 px-6 text-left">
@@ -85,6 +90,7 @@ const AdminOrders = () => {
                     <button
                       onClick={() => handleConfirm(order._id)}
                       className="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition duration-200"
+                      disabled={loading}
                     >
                       Confirm
                     </button>
