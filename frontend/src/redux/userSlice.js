@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { setCredentials, clearCredentials } from './features/authSlice'; 
+import { setCredentials, clearCredentials } from './features/authSlice';
 
 axios.defaults.withCredentials = true;
 
@@ -11,7 +11,7 @@ export const signin = createAsyncThunk(
   async (user, { dispatch, rejectWithValue }) => {
     try {
       const { data } = await axios.post('https://mern-site-z5gs.onrender.com/api/users/login', user);
-      dispatch(setCredentials(data)); 
+      dispatch(setCredentials(data));
       toast.success('Logged In');
       return data;
     } catch (error) {
@@ -104,7 +104,7 @@ export const updateUser = createAsyncThunk(
         }
       );
 
-      dispatch(setCredentials(data)); 
+      dispatch(setCredentials(data));
       toast.success('Profile updated successfully');
       return data;
     } catch (error) {
@@ -160,7 +160,7 @@ const userSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      // Existing reducers...
+      // Signin
       .addCase(signin.pending, (state) => {
         state.loading = true;
       })
@@ -171,6 +171,7 @@ const userSlice = createSlice({
       .addCase(signin.rejected, (state) => {
         state.loading = false;
       })
+      // Signup
       .addCase(signUp.pending, (state) => {
         state.loading = true;
       })
@@ -181,6 +182,7 @@ const userSlice = createSlice({
       .addCase(signUp.rejected, (state) => {
         state.loading = false;
       })
+      // Logout
       .addCase(logout.pending, (state) => {
         state.loading = true;
       })
@@ -191,6 +193,7 @@ const userSlice = createSlice({
       .addCase(logout.rejected, (state) => {
         state.loading = false;
       })
+      // Password reset request
       .addCase(requestPasswordReset.pending, (state) => {
         state.loading = true;
       })
@@ -202,6 +205,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetRequested = false;
       })
+      // Reset password
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
       })
@@ -213,6 +217,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.passwordResetSuccessful = false;
       })
+      // Update user
       .addCase(updateUser.pending, (state) => {
         state.loading = true;
       })
@@ -224,7 +229,7 @@ const userSlice = createSlice({
       .addCase(updateUser.rejected, (state) => {
         state.loading = false;
       })
-      // Fetch users cases
+      // Fetch users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
       })
@@ -236,7 +241,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Delete user cases
+      // Delete user
       .addCase(deleteUser.pending, (state) => {
         state.loading = true;
       })

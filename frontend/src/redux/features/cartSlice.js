@@ -9,6 +9,12 @@ export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
+      // Check if user is logged in
+      if (!userId) {
+        toast.error('You need to login to add items to the cart.');
+        return rejectWithValue('User not logged in');
+      }
+
       const { data: product } = await axios.get(`${API_BASE_URL}/api/products/${productId}`);
       const cartItem = {
         userId,
@@ -28,9 +34,10 @@ export const addToCart = createAsyncThunk(
 // Remove from Cart Thunk
 export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
-  async ({ userId, productId }, { rejectWithValue }) => {
+  async ({ productId }, { rejectWithValue }) => {
     try {
-      toast.success('Item removed from cart');
+      const { data: product } = await axios.get(`${API_BASE_URL}/api/products/${productId}`);
+      toast.success(`${product.name} removed from cart`);
       return productId;
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error removing item from cart';
@@ -43,7 +50,7 @@ export const removeFromCart = createAsyncThunk(
 // Clear Cart Thunk
 export const clearCart = createAsyncThunk(
   'cart/clearCart',
-  async (userId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       toast.success('Cart cleared');
       return { cartItems: [], totalAmount: 0 };

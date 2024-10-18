@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice'; // Import addToCart action
 import ClipLoader from 'react-spinners/ClipLoader';
+import toast from 'react-hot-toast';
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -14,7 +15,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.auth); // Assuming user info is in the auth slice
+  const { userInfo } = useSelector((state) => state.auth); 
 
   // Fetch product details
   useEffect(() => {
@@ -31,7 +32,7 @@ const ProductPage = () => {
         });
         setActiveImage(response.data.imageUrl);
       } catch (error) {
-        setError('Failed to load product details. Please try again.');
+        toast.error(`Please log in to add ${product.name} to your cart.`);
       } finally {
         setLoading(false);
       }
@@ -47,7 +48,7 @@ const ProductPage = () => {
   // Handle add to cart
   const handleAddToCart = () => {
     if (!userInfo) {
-      alert('Please log in to add items to your cart.');
+      toast.error(`Please log in to add ${product.name} to your cart.`);
       return;
     }
     // Dispatch the addToCart action

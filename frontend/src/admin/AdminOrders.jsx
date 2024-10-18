@@ -33,7 +33,7 @@ const AdminOrders = () => {
               <th className="py-3 px-6 text-left">Customer</th>
               <th className="py-3 px-6 text-left">Phone</th> {/* New column for phone number */}
               <th className="py-3 px-6 text-left">Date Placed</th>
-              <th className="py-3 px-6 text-left">Products</th>
+              <th className="py-3 px-6 text-left">Products</th> {/* New column for product image */}
               <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-right">Total</th>
               <th className="py-3 px-6 text-center">Actions</th>
@@ -49,18 +49,22 @@ const AdminOrders = () => {
                   <span>{`${order.user?.FirstName || ''} ${order.user?.LastName || ''}`}</span>
                 </td>
                 <td className="py-3 px-6 text-left"> {/* Display phone number from shippingAddress */}
-                  <span>{order.phone || 'N/A'}</span>
+                  <span>{order.shippingAddress?.phone || 'N/A'}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
                   <span>{format(new Date(order.createdAt), 'PP')}</span>
                 </td>
                 <td className="py-3 px-6 text-left">
-                  {/* Safe check for products array */}
                   {order.orderItems?.length ? (
                     <ul>
                       {order.orderItems.map((item) => (
-                        <li key={item.product._id} className="text-sm text-gray-800">
-                          {item.product.name}
+                        <li key={item.product._id} className="flex items-center space-x-2">
+                          <img
+                            src={item.product.image}  // Assuming your product has an 'image' field
+                            alt={item.product.name}
+                            className="w-10 h-10 object-cover rounded"
+                          />
+                          <span className="text-sm text-gray-800">{item.product.name}</span>
                         </li>
                       ))}
                     </ul>

@@ -97,7 +97,6 @@ const Home = () => {
           {/* Features Section */}
           <section id="features" className="p-4 bg-white text-left" data-aos="fade-up">
             <h5 className="text-2xl font-semibold text-gray-800 mb-5 ml-4 md:ml-72">
-              <span className='text-red-700'>|</span> Bargaoui Products
             </h5>
             <p className="text-gray-600 ml-4 md:ml-72 italic hover:not-italic tracking-tight">
               Start decorating your space with Bargaoui Rideaux Tahar's wide range of blinds, curtains, shades, and more.
@@ -187,7 +186,7 @@ const Home = () => {
       </div>
     </div>
     <div className="relative bg-white rounded-lg overflow-hidden shadow-md">
-      <img aria-hidden="true" alt="Hoya Obovata" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1728548645/Plan_de_travail_2_f40a2v.png" className="w-full h-full object-cover" />
+      <img aria-hidden="true" alt="Hoya Obovata" src="https://res.cloudinary.com/dc1zy9h63/image/upload/v1729201428/Snapinsta.app_463288920_573521975245526_2869954971934448845_n_1080_jky7hi.jpg" className="w-full h-full object-cover" />
       <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2">
 
       </div>

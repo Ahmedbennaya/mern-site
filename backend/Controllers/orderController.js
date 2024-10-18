@@ -26,11 +26,17 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
   }
 
+  // Validate phone number format (Tunisian numbers should have exactly 8 digits)
+  const phoneRegex = /^\d{8}$/;
+  if (!phoneRegex.test(shippingAddress.phone)) {
+    return res.status(400).json({ message: 'Invalid Tunisian phone number. It must be exactly 8 digits.' });
+  }
+
   // Create the new order
   const order = new Order({
     user,
     orderItems,
-    shippingAddress,   // shippingAddress includes the phone number
+    shippingAddress, // shippingAddress includes the phone number
     paymentMethod,
     totalAmount,
   });
@@ -39,7 +45,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   const savedOrder = await order.save();
 
   // Extract phone number from shippingAddress
-  const phone = shippingAddress.phone;   // Access the phone number here
+  const phone = shippingAddress.phone;
 
   // Log or use the phone number for sending confirmation
   console.log(`Phone number for this order: ${phone}`);
@@ -76,14 +82,8 @@ const sendOrderConfirmationEmail = async (userId, order) => {
       `)
       .join('');
 
-    // Create a nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Create a nodemailer transporter (separate function for better testing)
+    const transporter = createEmailTransporter();
 
     // Define the email options, including phone number in the content
     const mailOptions = {
@@ -96,7 +96,7 @@ const sendOrderConfirmationEmail = async (userId, order) => {
         <ul>
           ${orderItemsHTML}
         </ul>
-        <p><strong>Total Amount:</strong> $${order.totalAmount.toFixed(3)}</p>
+        <p><strong>Total Amount:</strong> $${order.totalAmount.toFixed(2)}</p>
         <p><strong>Phone:</strong> ${phone}</p> <!-- Include phone number in the email -->
         <p>Order ID: ${order._id}</p>
       `,
@@ -110,3 +110,53 @@ const sendOrderConfirmationEmail = async (userId, order) => {
     throw new Error('Email could not be sent');
   }
 };
+
+// Function to create nodemailer transporter for better modularity
+const createEmailTransporter = () => {
+  return nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+};
+
+// Controller to fetch all orders (for admin)
+export const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    // Populate user details and product details in orderItems
+    const orders = await Order.find()
+      .populate('user', 'FirstName LastName')  // Populate user info (FirstName, LastName)
+      .populate('orderItems.product', 'name image');  // Populate product name and image
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
+  }
+});
+
+// Controller to confirm an order
+export const confirmOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Mark order as confirmed
+    order.isConfirmed = true;
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      message: 'Order confirmed successfully',
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error('Error confirming order:', error);
+    res.status(500).json({ message: 'Failed to confirm order', error: error.message });
+  }
+});

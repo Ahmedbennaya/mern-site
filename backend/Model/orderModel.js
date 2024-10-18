@@ -11,9 +11,11 @@ const orderSchema = mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: 'Product', // Reference the Product model
           required: true,
         },
+        name: { type: String, required: true },
+        image: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
@@ -25,18 +27,18 @@ const orderSchema = mongoose.Schema(
       country: { type: String, required: true },
       phone: {
         type: String,
-        required: true, // Make phone number required
+        required: true,
         validate: {
-          validator: function(v) {
-            return /\d{10,15}/.test(v); // Validate that the phone number is between 10 and 15 digits
+          validator: function (v) {
+            return /^\d{8}$/.test(v); 
           },
-          message: props => `${props.value} is not a valid phone number!`
-        }
+          message: (props) => `${props.value} is not a valid Tunisian phone number!`,
+        },
       },
     },
     paymentMethod: { type: String, required: true },
     totalAmount: { type: Number, required: true },
-    isConfirmed: { type: Boolean, default: false }, 
+    isConfirmed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

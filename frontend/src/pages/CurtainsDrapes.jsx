@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';  // Added to enable navigation to detai
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/features/cartSlice';
+import toast from 'react-hot-toast';
 
 const sharedClasses = {
   card: 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
@@ -212,12 +213,7 @@ const CurtainsDrapes = () => {
 
   const handleAddToCart = (product) => {
     if (!userInfo || !userInfo._id) {
-      console.error('User ID is required to add to cart');
-      return;
-    }
-
-    if (!product || !product._id) {
-      console.error('Product ID is required to add to cart');
+      toast.error(`Please log in to add ${product.name} to your cart.`);
       return;
     }
 
