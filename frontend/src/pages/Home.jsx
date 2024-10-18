@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('Blinds & Shades');
@@ -217,8 +216,10 @@ const Home = () => {
     </div>
   </div>
   <div className="mt-6 text-center">
-    <a href="/curtains-drapes" className="bg-primary text-primary-foreground hover:bg-primary/80 py-2 px-4 rounded-lg">Shop Now</a>
-  </div>
+  <Link to="/curtains-drapes" className="bg-primary text-primary-foreground hover:bg-primary/80 py-2 px-4 rounded-lg">
+    Shop Now
+  </Link>
+</div>
 </section>
 
           {/* Consultation Section */}

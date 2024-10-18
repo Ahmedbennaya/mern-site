@@ -9,7 +9,6 @@ export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
-      // Check if user is logged in
       if (!userId) {
         toast.error('You need to login to add items to the cart.');
         return rejectWithValue('User not logged in');
@@ -19,7 +18,7 @@ export const addToCart = createAsyncThunk(
       const cartItem = {
         userId,
         product,
-        quantity,
+        quantity,  // Ensure correct quantity is passed
       };
       toast.success(`${product.name} added to cart`);
       return cartItem;
@@ -85,11 +84,13 @@ const cartSlice = createSlice({
         const existingItem = state.cartItems.find(item => item.product._id === newItem.product._id);
 
         if (existingItem) {
-          existingItem.quantity += newItem.quantity;
+          // Update the quantity without adding twice
+          existingItem.quantity = newItem.quantity;
         } else {
-          state.cartItems.push(newItem);
+          state.cartItems.push(newItem); // Add the new item to the cart
         }
 
+        // Recalculate the total amount after adding/updating
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0
@@ -108,6 +109,8 @@ const cartSlice = createSlice({
       .addCase(removeFromCart.fulfilled, (state, action) => {
         const productId = action.payload;
         state.cartItems = state.cartItems.filter(item => item.product._id !== productId);
+
+        // Recalculate total amount after removing an item
         state.totalAmount = state.cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0

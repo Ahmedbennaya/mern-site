@@ -103,7 +103,6 @@ const FilterSection = ({ filters, handleFilterChange, handleClearFilters }) => (
   </div>
 );
 
-
 const ProductCard = ({ product, onAddToCart }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -112,17 +111,22 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <div className={`${sharedClasses.card} mb-8 transform hover:scale-105 transition-transform duration-300`}>
-    <div className="relative w-full aspect-w-16 aspect-h-9 overflow-hidden rounded-lg mb-4 cursor-pointer" onClick={openModal}>
-  <img
-    src={product.imageUrl}
-    alt={product.name}
-    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-  />
-</div>
+      <div className="relative w-full aspect-w-16 aspect-h-9 overflow-hidden rounded-lg mb-4 cursor-pointer" onClick={openModal}>
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+        />
+      </div>
       <h3 className="text-2xl font-bold mb-2 text-gray-900">{product.name}</h3>
       <h4 className="text-xl font-semibold mb-2 text-gray-900">From DT {product.price.toFixed(2)}</h4>
       <p className="text-gray-600 mb-4">{product.description}</p>
-      
+
+      {/* Include product dimensions here */}
+      <p className="text-gray-600 mb-4">
+      one piece: Cm{product.dimensions.width} x {product.dimensions.height} Cm
+      </p>
+
       <div className="flex justify-between items-center">
         <button
           onClick={onAddToCart}
