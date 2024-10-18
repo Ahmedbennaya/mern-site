@@ -1,3 +1,4 @@
+
 import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 import User from "../Model/UserModel.js";
@@ -13,11 +14,11 @@ const authenticate = expressAsyncHandler(async (req, res, next) => {
       next();
     } catch (error) {
       res.status(401);
-      throw new Error("Not authorized , invalid token");
+      throw new Error("Not authorized, invalid token");
     }
   } else {
     res.status(401);
-    throw new Error("Not authorized , expired token");
+    throw new Error("Not authorized, no token");
   }
 });
 
